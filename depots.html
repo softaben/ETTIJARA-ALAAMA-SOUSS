@@ -3,334 +3,2342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETTIJARA ALAAMA SOUSS - Gestion des Dépôts</title>
+    <title>ETTIJARA ALAAMA SOUSS - Inventaire des Dépôts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
     <style>
         :root {
             --primary: #1a237e;
             --secondary: #0d47a1;
             --accent: #1565c0;
+            --light: #e3f2fd;
+            --bg: #f5f7fa;
+            --success: #2e7d32;
+            --warning: #f57c00;
+            --danger: #c62828;
+            --info: #0277bd;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f5f7fa; direction: rtl; color: #333; padding: 20px; }
+        body { background-color: var(--bg); direction: rtl; color: #333; }
 
+        /* Header */
         .header { 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
             color: white; 
-            padding: 20px; 
-            border-radius: 10px;
-            margin-bottom: 30px;
+            height: 70px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            padding: 0 30px; 
+            position: fixed; 
+            width: 100%; 
+            top: 0; 
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo i { font-size: 28px; }
+        .logo h1 { font-size: 22px; font-weight: 700; }
+        .logo span { color: #bbdefb; font-size: 14px; margin-top: 3px; }
+        
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-info img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 70px;
+            width: 250px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.05);
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 25px;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-right: 3px solid transparent;
+        }
+        .sidebar-item:hover, .sidebar-item.active {
+            background: var(--light);
+            color: var(--primary);
+            border-right-color: var(--primary);
+        }
+        .sidebar-item i { width: 20px; }
+        
+        /* Main Content */
+        .main-content { 
+            margin-right: 250px; 
+            padding: 90px 30px 30px; 
+            min-height: calc(100vh - 70px);
+        }
+        
+        /* Page Header */
+        .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 30px;
         }
-        
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            border-top: 4px solid var(--primary);
-        }
-        
-        .card h3 {
+        .page-header h2 {
+            font-size: 28px;
             color: var(--primary);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
-        .depot-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            margin-bottom: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent);
-        }
-        
-        .depot-info h4 { margin: 0; color: #333; }
-        .depot-info p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
-        
-        .depot-stats {
+        .page-header .actions {
             display: flex;
             gap: 15px;
-            text-align: center;
         }
         
-        .stat-box {
-            background: white;
-            padding: 10px 15px;
-            border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 14px;
         }
-        
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        .btn-info {
+            background-color: var(--info);
+            color: white;
+        }
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
             color: var(--primary);
         }
-        
-        .stat-label {
+        .btn-outline:hover {
+            background-color: var(--light);
+        }
+        .btn-sm {
+            padding: 6px 12px;
             font-size: 12px;
-            color: #777;
         }
         
-        .map-placeholder {
-            background: #e3f2fd;
-            height: 200px;
-            border-radius: 8px;
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent);
+            font-size: 24px;
+        }
+        .stat-icon.depots { background-color: #e3f2fd; color: var(--primary); }
+        .stat-icon.products { background-color: #e8f5e8; color: var(--success); }
+        .stat-icon.value { background-color: #fff3e0; color: var(--warning); }
+        .stat-icon.low { background-color: #ffebee; color: var(--danger); }
+        .stat-details h3 { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .stat-details .value { font-size: 24px; font-weight: 700; }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px 10px 0 0;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            margin-bottom: 0;
+        }
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
             font-weight: 600;
         }
+        .tab:hover {
+            background-color: #f9f9f9;
+        }
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background-color: var(--light);
+        }
         
-        button {
-            padding: 10px 20px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
+        /* Depots Grid */
+        .depots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .depot-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        .depot-card:hover {
+            transform: translateY(-5px);
+        }
+        .depot-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .depot-header h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .depot-status {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
             font-weight: 600;
-            transition: all 0.3s;
+        }
+        .status-active { background: rgba(255,255,255,0.2); }
+        .status-inactive { background: rgba(255,255,255,0.1); }
+        
+        .depot-body {
+            padding: 20px;
+        }
+        .depot-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            color: #666;
+            font-size: 14px;
+        }
+        .info-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .depot-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        /* Inventory Table */
+        .inventory-container {
+            background: white;
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .inventory-table th {
+            background-color: var(--light);
+            color: var(--primary);
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+            border-bottom: 2px solid #ddd;
+        }
+        .inventory-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .inventory-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .product-info {
             display: flex;
             align-items: center;
+            gap: 10px;
+        }
+        .product-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 18px;
+        }
+        .stock-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .stock-high { background-color: #e8f5e8; color: var(--success); }
+        .stock-medium { background-color: #fff3e0; color: var(--warning); }
+        .stock-low { background-color: #ffebee; color: var(--danger); }
+        .stock-out { background-color: #f5f5f5; color: #666; }
+        
+        .action-buttons {
+            display: flex;
             gap: 8px;
         }
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .action-btn.edit { background-color: #e3f2fd; color: var(--primary); }
+        .action-btn.delete { background-color: #ffebee; color: var(--danger); }
+        .action-btn.view { background-color: #e8f5e8; color: var(--success); }
+        .action-btn.move { background-color: #e3f2fd; color: var(--info); }
+        .action-btn:hover { opacity: 0.8; }
         
-        .btn-primary {
-            background: var(--primary);
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            gap: 5px;
+        }
+        .pagination-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .pagination-btn.active {
+            background-color: var(--primary);
             color: white;
+            border-color: var(--primary);
+        }
+        .pagination-btn:hover:not(.active) {
+            background-color: #f5f5f5;
         }
         
-        .btn-primary:hover { background: var(--secondary); }
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            color: var(--primary);
+            font-size: 20px;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+        }
+        .modal-body {
+            padding: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
         
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .loading i {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 3000;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast.success { border-right: 4px solid var(--success); }
+        .toast.error { border-right: 4px solid var(--danger); }
+        .toast.info { border-right: 4px solid var(--primary); }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        /* Search and Filter */
+        .search-filter {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        .filter-select {
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        
+        /* Inventory Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        .chart-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: 16px;
+        }
+        .chart-placeholder {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f9;
+            border-radius: 8px;
+            color: #666;
+        }
+        
+        /* Depot Status */
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+        .status-online { background-color: var(--success); }
+        .status-offline { background-color: var(--danger); }
+        .status-warning { background-color: var(--warning); }
+        
+        /* Responsive */
         @media (max-width: 992px) {
-            .container { grid-template-columns: 1fr; }
+            .sidebar { width: 70px; }
+            .sidebar-item span { display: none; }
+            .main-content { margin-right: 70px; }
+            .search-box { min-width: 100%; }
+            .depots-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .form-row { flex-direction: column; }
+            .inventory-table th, .inventory-table td { padding: 10px; }
+            .tabs { flex-direction: column; }
+            .tab { width: 100%; text-align: center; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1><i class="fas fa-warehouse"></i> ETTIJARA ALAAMA SOUSS - Gestion des Dépôts</h1>
-        <div style="display: flex; gap: 10px;">
-            <a href="dashboard.html" style="color: white; text-decoration: none;">
-                <i class="fas fa-home"></i> Tableau de Bord
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-warehouse"></i>
+            <div>
+                <h1>ETTIJARA ALAAMA SOUSS</h1>
+                <span>Système de Gestion des Livraisons</span>
+            </div>
+        </div>
+        <div class="user-info">
+            <span>Admin User</span>
+            <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D47A1&color=fff" alt="User">
+        </div>
+    </header>
+
+    <nav class="sidebar">
+        <a href="dashboard.html" class="sidebar-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Tableau de Bord</span>
+        </a>
+        <a href="deliveries.html" class="sidebar-item">
+            <i class="fas fa-truck"></i>
+            <span>Livraisons</span>
+        </a>
+        <a href="clients.html" class="sidebar-item">
+            <i class="fas fa-users"></i>
+            <span>Clients</span>
+        </a>
+        <a href="products.html" class="sidebar-item">
+            <i class="fas fa-boxes"></i>
+            <span>Produits</span>
+        </a>
+        <a href="depots.html" class="sidebar-item active">
+            <i class="fas fa-warehouse"></i>
+            <span>Dépôts</span>
+        </a>
+        <a href="reports.html" class="sidebar-item">
+            <i class="fas fa-chart-bar"></i>
+            <span>Rapports</span>
+        </a>
+        <a href="print.html" class="sidebar-item">
+            <i class="fas fa-print"></i>
+            <span>Impression</span>
+        </a>
+        <a href="settings.html" class="sidebar-item">
+            <i class="fas fa-cog"></i>
+            <span>Paramètres</span>
+        </a>
+        <div style="padding: 20px 25px; margin-top: 30px; border-top: 1px solid #eee;">
+            <a href="index.html" class="sidebar-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
             </a>
         </div>
-    </div>
-    
-    <div class="container">
-        <div class="card">
-            <h3><i class="fas fa-map-marker-alt"></i> Nos Dépôts Régionaux</h3>
-            
-            <div class="depot-item">
-                <div class="depot-info">
-                    <h4>Dépôt Principal Jihadia</h4>
-                    <p>Quartier Jihadia, Agadir | Responsable: Ahmed Alami</p>
-                </div>
-                <div class="depot-stats">
-                    <div class="stat-box">
-                        <div class="stat-value">156</div>
-                        <div class="stat-label">Clients</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">24</div>
-                        <div class="stat-label">Liv./Jour</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="depot-item">
-                <div class="depot-info">
-                    <h4>Dépôt Ait Melloul</h4>
-                    <p>Zone Industrielle, Ait Melloul | Responsable: Fatima Zahra</p>
-                </div>
-                <div class="depot-stats">
-                    <div class="stat-box">
-                        <div class="stat-value">89</div>
-                        <div class="stat-label">Clients</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">18</div>
-                        <div class="stat-label">Liv./Jour</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="depot-item">
-                <div class="depot-info">
-                    <h4>Dépôt Inezgane</h4>
-                    <p>Centre Ville, Inezgane | Responsable: Karim Bennani</p>
-                </div>
-                <div class="depot-stats">
-                    <div class="stat-box">
-                        <div class="stat-value">67</div>
-                        <div class="stat-label">Clients</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">12</div>
-                        <div class="stat-label">Liv./Jour</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="depot-item">
-                <div class="depot-info">
-                    <h4>Dépôt Dcheira</h4>
-                    <p>Route de Marrakech, Dcheira | Responsable: Youssef Lafki</p>
-                </div>
-                <div class="depot-stats">
-                    <div class="stat-box">
-                        <div class="stat-value">42</div>
-                        <div class="stat-label">Clients</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">8</div>
-                        <div class="stat-label">Liv./Jour</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <button class="btn-primary">
-                    <i class="fas fa-plus"></i> Ajouter un Nouveau Dépôt
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h2><i class="fas fa-warehouse"></i> Inventaire des Dépôts</h2>
+            <div class="actions">
+                <button class="btn btn-outline" id="exportBtn">
+                    <i class="fas fa-download"></i> Exporter
+                </button>
+                <button class="btn btn-primary" id="addDepotBtn">
+                    <i class="fas fa-plus"></i> Nouveau Dépôt
                 </button>
             </div>
         </div>
         
-        <div class="card">
-            <h3><i class="fas fa-chart-line"></i> Statistiques par Dépôt</h3>
+        <div class="quick-actions">
+            <button class="btn btn-outline btn-sm" onclick="startInventory()">
+                <i class="fas fa-clipboard-check"></i> Démarrer Inventaire
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="transferStock()">
+                <i class="fas fa-exchange-alt"></i> Transfert de Stock
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="showLowStock()">
+                <i class="fas fa-exclamation-triangle"></i> Stock Faible
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="createSampleData()">
+                <i class="fas fa-vial"></i> Données Test
+            </button>
+        </div>
+        
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon depots">
+                    <i class="fas fa-warehouse"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>TOTAL DÉPÔTS</h3>
+                    <div class="value" id="totalDepots">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon products">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>PRODUITS EN STOCK</h3>
+                    <div class="value" id="totalProducts">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon value">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>VALEUR TOTALE</h3>
+                    <div class="value" id="totalValue">0 DH</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon low">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>STOCK FAIBLE</h3>
+                    <div class="value" id="lowStock">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs" id="tabs">
+            <div class="tab active" onclick="switchTab('depots')">
+                <i class="fas fa-warehouse"></i> Vue Dépôts
+            </div>
+            <div class="tab" onclick="switchTab('inventory')">
+                <i class="fas fa-clipboard-list"></i> Inventaire Complet
+            </div>
+            <div class="tab" onclick="switchTab('reports')">
+                <i class="fas fa-chart-bar"></i> Rapports
+            </div>
+        </div>
+        
+        <!-- Vue Dépôts -->
+        <div id="depotsView" class="tab-content">
+            <div class="search-filter">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchDepot" placeholder="Rechercher dépôt par nom, ville, responsable...">
+                </div>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">Tous statuts</option>
+                    <option value="active">Actif</option>
+                    <option value="inactive">Inactif</option>
+                    <option value="maintenance">Maintenance</option>
+                </select>
+                <button class="btn btn-outline" id="resetDepotFiltersBtn">
+                    <i class="fas fa-redo"></i> Réinitialiser
+                </button>
+            </div>
             
-            <div class="map-placeholder">
-                <i class="fas fa-map" style="font-size: 40px; margin-right: 15px;"></i>
-                <div>
-                    <div>Carte des Dépôts - Région Souss Massa</div>
-                    <div style="font-size: 14px; font-weight: normal; margin-top: 5px;">Agadir, Ait Melloul, Inezgane, Dcheira</div>
+            <div class="depots-grid" id="depotsGrid">
+                <!-- Les cartes de dépôts seront chargées ici -->
+                <div class="loading" style="grid-column: 1/-1;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <div>Chargement des dépôts...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vue Inventaire Complet -->
+        <div id="inventoryView" class="tab-content" style="display: none;">
+            <div class="search-filter">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInventory" placeholder="Rechercher produit par nom, code, catégorie...">
+                </div>
+                <select class="filter-select" id="depotFilter">
+                    <option value="">Tous dépôts</option>
+                </select>
+                <select class="filter-select" id="stockFilter">
+                    <option value="">Tous stocks</option>
+                    <option value="high">Élevé</option>
+                    <option value="medium">Moyen</option>
+                    <option value="low">Faible</option>
+                    <option value="out">Rupture</option>
+                </select>
+                <button class="btn btn-outline" id="resetInventoryFiltersBtn">
+                    <i class="fas fa-redo"></i> Réinitialiser
+                </button>
+            </div>
+            
+            <div class="inventory-container">
+                <div class="table-responsive">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>PRODUIT</th>
+                                <th>DÉPÔT</th>
+                                <th>CATÉGORIE</th>
+                                <th>STOCK ACTUEL</th>
+                                <th>STOCK MIN</th>
+                                <th>VALEUR</th>
+                                <th>STATUT</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <tr>
+                                <td colspan="8" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Chargement de l'inventaire...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination" id="inventoryPagination">
+                    <!-- Pagination sera générée ici -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vue Rapports -->
+        <div id="reportsView" class="tab-content" style="display: none;">
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-pie"></i> Répartition par Dépôt</h3>
+                    <div class="chart-placeholder" id="depotChart">
+                        <i class="fas fa-chart-pie fa-2x"></i>
+                        <div style="margin-right: 10px;">Graphique de répartition</div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-bar"></i> Top Produits</h3>
+                    <div class="chart-placeholder" id="productsChart">
+                        <i class="fas fa-chart-bar fa-2x"></i>
+                        <div style="margin-right: 10px;">Graphique des produits</div>
+                    </div>
                 </div>
             </div>
             
-            <div style="margin-top: 25px;">
-                <h4>Répartition du Chiffre d'Affaires (Mois)</h4>
-                <div style="margin-top: 15px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Dépôt Jihadia</span>
-                        <span><strong>145,780 DH</strong> (45%)</span>
-                    </div>
-                    <div style="height: 10px; background: #e0e0e0; border-radius: 5px; margin-bottom: 15px;">
-                        <div style="width: 45%; height: 100%; background: var(--primary); border-radius: 5px;"></div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Dépôt Ait Melloul</span>
-                        <span><strong>89,450 DH</strong> (28%)</span>
-                    </div>
-                    <div style="height: 10px; background: #e0e0e0; border-radius: 5px; margin-bottom: 15px;">
-                        <div style="width: 28%; height: 100%; background: var(--accent); border-radius: 5px;"></div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Dépôt Inezgane</span>
-                        <span><strong>62,300 DH</strong> (19%)</span>
-                    </div>
-                    <div style="height: 10px; background: #e0e0e0; border-radius: 5px; margin-bottom: 15px;">
-                        <div style="width: 19%; height: 100%; background: #42a5f5; border-radius: 5px;"></div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Dépôt Dcheira</span>
-                        <span><strong>28,250 DH</strong> (8%)</span>
-                    </div>
-                    <div style="height: 10px; background: #e0e0e0; border-radius: 5px; margin-bottom: 15px;">
-                        <div style="width: 8%; height: 100%; background: #90caf9; border-radius: 5px;"></div>
-                    </div>
+            <div class="inventory-container">
+                <div class="table-responsive">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>DÉPÔT</th>
+                                <th>PRODUITS</th>
+                                <th>VALEUR STOCK</th>
+                                <th>STOCK FAIBLE</th>
+                                <th>CAPACITÉ</th>
+                                <th>TAUX REMPLISSAGE</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody">
+                            <tr>
+                                <td colspan="7" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Chargement des rapports...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            
-            <div style="margin-top: 25px; padding: 15px; background: #f1f8e9; border-radius: 8px; border-right: 4px solid #7cb342;">
-                <h4 style="color: #33691e; margin-top: 0;"><i class="fas fa-info-circle"></i> Information</h4>
-                <p style="margin: 0; font-size: 14px;">Chaque dépôt gère son stock indépendamment. Les transferts entre dépôts sont possibles sur demande.</p>
+        </div>
+    </main>
+    
+    <!-- Modal Ajouter/Modifier Dépôt -->
+    <div class="modal" id="depotModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Ajouter un Nouveau Dépôt</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="depotForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="depotName">Nom du Dépôt *</label>
+                            <input type="text" id="depotName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="depotCode">Code Dépôt *</label>
+                            <input type="text" id="depotCode" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="depotType">Type de Dépôt *</label>
+                            <select id="depotType" class="form-control" required>
+                                <option value="">Sélectionner</option>
+                                <option value="principal">Principal</option>
+                                <option value="regional">Régional</option>
+                                <option value="distribution">Centre de Distribution</option>
+                                <option value="temporary">Temporaire</option>
+                                <option value="cold">Chambre Froide</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="depotStatus">Statut *</label>
+                            <select id="depotStatus" class="form-control" required>
+                                <option value="active">Actif</option>
+                                <option value="inactive">Inactif</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="depotAddress">Adresse Complète *</label>
+                        <textarea id="depotAddress" class="form-control" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="depotCity">Ville *</label>
+                            <input type="text" id="depotCity" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="depotPhone">Téléphone</label>
+                            <input type="tel" id="depotPhone" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="depotManager">Responsable *</label>
+                            <input type="text" id="depotManager" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="depotEmail">Email Responsable</label>
+                            <input type="email" id="depotEmail" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="depotCapacity">Capacité (m²) *</label>
+                            <input type="number" id="depotCapacity" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="depotUsed">Espace Utilisé (m²)</label>
+                            <input type="number" id="depotUsed" class="form-control" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="depotDescription">Description</label>
+                        <textarea id="depotDescription" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <input type="hidden" id="depotId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelBtn">Annuler</button>
+                <button class="btn btn-primary" id="saveDepotBtn">Enregistrer</button>
             </div>
         </div>
     </div>
     
-    <div class="card">
-        <h3><i class="fas fa-clipboard-list"></i> Inventaire des Dépôts</h3>
-        
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                <thead>
-                    <tr style="background: #f8f9fa;">
-                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e0e0e0;">Produit</th>
-                        <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e0e0e0;">Dépôt Jihadia</th>
-                        <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e0e0e0;">Dépôt Ait Melloul</th>
-                        <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e0e0e0;">Dépôt Inezgane</th>
-                        <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e0e0e0;">Dépôt Dcheira</th>
-                        <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e0e0e0;">Stock Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #f0f0f0;"><strong>Farine Spéciale (25kg)</strong></td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">450</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">320</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">280</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">150</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0; font-weight: bold; color: var(--primary);">1,200</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #f0f0f0;"><strong>Huile de Table (5L)</strong></td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">380</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">250</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">180</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">90</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0; font-weight: bold; color: var(--primary);">900</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #f0f0f0;"><strong>Sucre Raffiné (2kg)</strong></td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">620</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">410</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">350</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">220</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0; font-weight: bold; color: var(--primary);">1,600</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #f0f0f0;"><strong>Lait en Poudre (900g)</strong></td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">280</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">190</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">150</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0;">80</td>
-                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0; font-weight: bold; color: var(--primary);">700</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <div style="margin-top: 25px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <button class="btn-primary">
-                    <i class="fas fa-sync"></i> Actualiser l'Inventaire
-                </button>
+    <!-- Modal Transfert de Stock -->
+    <div class="modal" id="transferModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> Transfert de Stock</h3>
+                <button class="close-modal" id="closeTransferModal">&times;</button>
             </div>
-            <div style="color: #666; font-size: 14px;">
-                Dernière mise à jour: 24/01/2026 à 14:30
+            <div class="modal-body">
+                <form id="transferForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fromDepot">Depuis Dépôt *</label>
+                            <select id="fromDepot" class="form-control" required>
+                                <option value="">Sélectionner</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="toDepot">Vers Dépôt *</label>
+                            <select id="toDepot" class="form-control" required>
+                                <option value="">Sélectionner</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transferProduct">Produit *</label>
+                        <select id="transferProduct" class="form-control" required>
+                            <option value="">Sélectionner un produit</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Stock disponible: <span id="availableStock">0</span></label>
+                        </div>
+                        <div class="form-group">
+                            <label for="transferQuantity">Quantité à transférer *</label>
+                            <input type="number" id="transferQuantity" class="form-control" required min="1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transferReason">Raison du transfert</label>
+                        <select id="transferReason" class="form-control">
+                            <option value="inventory">Rééquilibrage d'inventaire</option>
+                            <option value="demand">Demande spécifique</option>
+                            <option value="shortage">Pénurie locale</option>
+                            <option value="expiration">Rotation de stock</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transferNotes">Notes</label>
+                        <textarea id="transferNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelTransferBtn">Annuler</button>
+                <button class="btn btn-primary" id="saveTransferBtn">Exécuter Transfert</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Démarrer Inventaire -->
+    <div class="modal" id="inventoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-clipboard-check"></i> Nouvel Inventaire</h3>
+                <button class="close-modal" id="closeInventoryModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="inventoryForm">
+                    <div class="form-group">
+                        <label for="inventoryDepot">Dépôt à inventorier *</label>
+                        <select id="inventoryDepot" class="form-control" required>
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="inventoryType">Type d'inventaire *</label>
+                            <select id="inventoryType" class="form-control" required>
+                                <option value="complete">Complet</option>
+                                <option value="partial">Partiel</option>
+                                <option value="cyclic">Cyclique</option>
+                                <option value="random">Aléatoire</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="inventoryDate">Date prévue</label>
+                            <input type="date" id="inventoryDate" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="inventoryTeam">Équipe responsable</label>
+                        <input type="text" id="inventoryTeam" class="form-control" placeholder="Noms des membres de l'équipe">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="inventoryNotes">Notes / Instructions</label>
+                        <textarea id="inventoryNotes" class="form-control" rows="3" placeholder="Instructions spéciales, zones à vérifier..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="info-item">
+                            <span class="info-label">Produits à inventorier:</span>
+                            <span class="info-value" id="productsCount">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Valeur estimée:</span>
+                            <span class="info-value" id="estimatedValue">0 DH</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelInventoryBtn">Annuler</button>
+                <button class="btn btn-success" id="startInventoryBtn">Démarrer l'Inventaire</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Confirmation Suppression -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Confirmation</h3>
+                <button class="close-modal" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer ce dépôt ? Cette action est irréversible.</p>
+                <p><strong id="deleteDepotName"></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelDeleteBtn">Annuler</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
             </div>
         </div>
     </div>
 
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAV_c5Gt_f1h5nZF47FcPjW_h4P24LYADk",
+            authDomain: "commerce22-610cc.firebaseapp.com",
+            databaseURL: "https://commerce22-610cc-default-rtdb.firebaseio.com",
+            projectId: "commerce22-610cc",
+            storageBucket: "commerce22-610cc.firebasestorage.app",
+            messagingSenderId: "458158894252",
+            appId: "1:458158894252:web:d1e640b2e16ef32d978309"
+        };
+        
+        // Initialiser Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase initialisé avec succès");
+        } catch (error) {
+            console.error("Erreur d'initialisation Firebase:", error);
+            showToast("Erreur de connexion à la base de données", "error");
+        }
+        
+        const database = firebase.database();
+        
+        // Variables globales
+        let depots = [];
+        let products = [];
+        let inventory = [];
+        let currentTab = 'depots';
+        let depotToDelete = null;
+        let isEditMode = false;
+        let inventoryPage = 1;
+        const inventoryPerPage = 15;
+        let filteredInventory = [];
+        
+        // Fonction pour afficher une notification
+        function showToast(message, type = "info") {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        // Charger les données depuis Firebase
+        function loadData() {
+            loadDepots();
+            loadProducts();
+            loadInventory();
+        }
+        
+        // Charger les dépôts
+        function loadDepots() {
+            try {
+                const depotsRef = database.ref('depots');
+                
+                depotsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    depots = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            depots.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        // Mettre à jour les statistiques
+                        updateStats();
+                        
+                        // Mettre à jour les filtres
+                        updateDepotFilters();
+                        
+                        // Afficher les dépôts
+                        displayDepots();
+                        
+                        // Mettre à jour les sélecteurs de dépôts dans les modals
+                        updateDepotSelectors();
+                    } else {
+                        showEmptyDepotsState();
+                    }
+                    
+                }, (error) => {
+                    console.error("Erreur de chargement des dépôts:", error);
+                    showErrorState("Erreur de chargement des dépôts", 'depotsGrid');
+                });
+                
+            } catch (error) {
+                console.error("Erreur dans loadDepots:", error);
+                showErrorState("Erreur de connexion", 'depotsGrid');
+            }
+        }
+        
+        // Charger les produits
+        function loadProducts() {
+            try {
+                const productsRef = database.ref('products');
+                
+                productsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    products = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            products.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        // Mettre à jour les sélecteurs de produits
+                        updateProductSelectors();
+                    }
+                    
+                }, (error) => {
+                    console.error("Erreur de chargement des produits:", error);
+                });
+                
+            } catch (error) {
+                console.error("Erreur dans loadProducts:", error);
+            }
+        }
+        
+        // Charger l'inventaire
+        function loadInventory() {
+            try {
+                const inventoryRef = database.ref('inventory');
+                
+                inventoryRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    inventory = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            inventory.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        // Afficher l'inventaire si on est sur l'onglet inventaire
+                        if (currentTab === 'inventory') {
+                            applyInventoryFilters();
+                            displayInventory();
+                            updateInventoryPagination();
+                        }
+                    }
+                    
+                }, (error) => {
+                    console.error("Erreur de chargement de l'inventaire:", error);
+                    if (currentTab === 'inventory') {
+                        showErrorState("Erreur de chargement de l'inventaire", 'inventoryTableBody');
+                    }
+                });
+                
+            } catch (error) {
+                console.error("Erreur dans loadInventory:", error);
+            }
+        }
+        
+        // Mettre à jour les statistiques
+        function updateStats() {
+            const totalDepots = depots.length;
+            
+            // Calculer le nombre total de produits (basé sur l'inventaire)
+            const totalProducts = inventory.reduce((total, item) => {
+                return total + (parseInt(item.quantity) || 0);
+            }, 0);
+            
+            // Calculer la valeur totale
+            const totalValue = inventory.reduce((total, item) => {
+                const product = products.find(p => p.id === item.productId);
+                if (product) {
+                    const price = parseFloat(product.price) || 0;
+                    const quantity = parseInt(item.quantity) || 0;
+                    return total + (price * quantity);
+                }
+                return total;
+            }, 0);
+            
+            // Calculer le stock faible
+            const lowStock = inventory.filter(item => {
+                const product = products.find(p => p.id === item.productId);
+                if (product) {
+                    const quantity = parseInt(item.quantity) || 0;
+                    const minStock = parseInt(product.minStock) || 10;
+                    return quantity > 0 && quantity <= minStock;
+                }
+                return false;
+            }).length;
+            
+            document.getElementById('totalDepots').textContent = totalDepots;
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('totalValue').textContent = totalValue.toFixed(2) + ' DH';
+            document.getElementById('lowStock').textContent = lowStock;
+        }
+        
+        // Mettre à jour les filtres de dépôts
+        function updateDepotFilters() {
+            const depotFilter = document.getElementById('depotFilter');
+            let options = '<option value="">Tous dépôts</option>';
+            
+            depots.forEach(depot => {
+                options += `<option value="${depot.id}">${depot.name}</option>`;
+            });
+            
+            depotFilter.innerHTML = options;
+        }
+        
+        // Mettre à jour les sélecteurs de dépôts
+        function updateDepotSelectors() {
+            const fromDepot = document.getElementById('fromDepot');
+            const toDepot = document.getElementById('toDepot');
+            const inventoryDepot = document.getElementById('inventoryDepot');
+            
+            let options = '<option value="">Sélectionner</option>';
+            
+            depots.forEach(depot => {
+                options += `<option value="${depot.id}">${depot.name}</option>`;
+            });
+            
+            fromDepot.innerHTML = options;
+            toDepot.innerHTML = options;
+            inventoryDepot.innerHTML = options;
+        }
+        
+        // Mettre à jour les sélecteurs de produits
+        function updateProductSelectors() {
+            const transferProduct = document.getElementById('transferProduct');
+            let options = '<option value="">Sélectionner un produit</option>';
+            
+            products.forEach(product => {
+                options += `<option value="${product.id}">${product.name} (${product.code})</option>`;
+            });
+            
+            transferProduct.innerHTML = options;
+        }
+        
+        // Afficher les dépôts
+        function displayDepots() {
+            const depotsGrid = document.getElementById('depotsGrid');
+            
+            if (depots.length === 0) {
+                showEmptyDepotsState();
+                return;
+            }
+            
+            // Filtrer les dépôts
+            const searchTerm = document.getElementById('searchDepot').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            const filteredDepots = depots.filter(depot => {
+                const matchesSearch = !searchTerm || 
+                    (depot.name && depot.name.toLowerCase().includes(searchTerm)) ||
+                    (depot.city && depot.city.toLowerCase().includes(searchTerm)) ||
+                    (depot.manager && depot.manager.toLowerCase().includes(searchTerm));
+                
+                const matchesStatus = !statusFilter || depot.status === statusFilter;
+                
+                return matchesSearch && matchesStatus;
+            });
+            
+            if (filteredDepots.length === 0) {
+                depotsGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-search"></i>
+                        <h3>Aucun dépôt trouvé</h3>
+                        <p>Aucun dépôt ne correspond à vos critères de recherche</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            filteredDepots.forEach(depot => {
+                // Calculer les statistiques du dépôt
+                const depotInventory = inventory.filter(item => item.depotId === depot.id);
+                const productCount = depotInventory.length;
+                const totalValue = depotInventory.reduce((total, item) => {
+                    const product = products.find(p => p.id === item.productId);
+                    if (product) {
+                        const price = parseFloat(product.price) || 0;
+                        const quantity = parseInt(item.quantity) || 0;
+                        return total + (price * quantity);
+                    }
+                    return total;
+                }, 0);
+                
+                const capacity = parseFloat(depot.capacity) || 0;
+                const used = parseFloat(depot.used) || 0;
+                const usageRate = capacity > 0 ? Math.round((used / capacity) * 100) : 0;
+                
+                // Obtenir l'icône selon le type
+                let depotIcon = 'fas fa-warehouse';
+                switch(depot.type) {
+                    case 'principal': depotIcon = 'fas fa-warehouse'; break;
+                    case 'regional': depotIcon = 'fas fa-map-marker-alt'; break;
+                    case 'distribution': depotIcon = 'fas fa-truck-loading'; break;
+                    case 'temporary': depotIcon = 'fas fa-clock'; break;
+                    case 'cold': depotIcon = 'fas fa-snowflake'; break;
+                }
+                
+                html += `
+                    <div class="depot-card">
+                        <div class="depot-header">
+                            <div>
+                                <h3><i class="${depotIcon}"></i> ${depot.name}</h3>
+                                <small>${depot.code} | ${depot.city}</small>
+                            </div>
+                            <span class="depot-status status-${depot.status || 'active'}">
+                                ${depot.status === 'active' ? 'Actif' : 
+                                  depot.status === 'inactive' ? 'Inactif' : 
+                                  depot.status === 'maintenance' ? 'Maintenance' : 'Actif'}
+                            </span>
+                        </div>
+                        <div class="depot-body">
+                            <div class="depot-info">
+                                <div class="info-item">
+                                    <span class="info-label">Responsable:</span>
+                                    <span class="info-value">${depot.manager || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Téléphone:</span>
+                                    <span class="info-value">${depot.phone || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Produits:</span>
+                                    <span class="info-value">${productCount}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Valeur:</span>
+                                    <span class="info-value">${totalValue.toFixed(2)} DH</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Capacité:</span>
+                                    <span class="info-value">${used}m² / ${capacity}m² (${usageRate}%)</span>
+                                </div>
+                            </div>
+                            <div class="depot-actions">
+                                <button class="btn btn-outline btn-sm" onclick="viewDepotInventory('${depot.id}')">
+                                    <i class="fas fa-eye"></i> Voir
+                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="editDepot('${depot.id}')">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="confirmDeleteDepot('${depot.id}', '${depot.name}')">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            depotsGrid.innerHTML = html;
+        }
+        
+        // Afficher l'inventaire
+        function displayInventory() {
+            const tableBody = document.getElementById('inventoryTableBody');
+            
+            if (filteredInventory.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <h3>Aucun produit en inventaire</h3>
+                            <p>Commencez par ajouter des produits aux dépôts</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Calculer les indices pour la pagination
+            const startIndex = (inventoryPage - 1) * inventoryPerPage;
+            const endIndex = startIndex + inventoryPerPage;
+            const pageInventory = filteredInventory.slice(startIndex, endIndex);
+            
+            let html = '';
+            
+            pageInventory.forEach(item => {
+                const product = products.find(p => p.id === item.productId);
+                const depot = depots.find(d => d.id === item.depotId);
+                
+                if (!product || !depot) return;
+                
+                const quantity = parseInt(item.quantity) || 0;
+                const minStock = parseInt(product.minStock) || 10;
+                const value = quantity * (parseFloat(product.price) || 0);
+                
+                // Déterminer le statut du stock
+                let stockClass = 'stock-high';
+                let stockText = 'Élevé';
+                
+                if (quantity === 0) {
+                    stockClass = 'stock-out';
+                    stockText = 'Rupture';
+                } else if (quantity <= minStock) {
+                    stockClass = 'stock-low';
+                    stockText = 'Faible';
+                } else if (quantity <= minStock * 3) {
+                    stockClass = 'stock-medium';
+                    stockText = 'Moyen';
+                }
+                
+                // Obtenir l'icône de catégorie
+                let categoryIcon = 'fas fa-box';
+                switch(product.category) {
+                    case 'farine': categoryIcon = 'fas fa-wheat'; break;
+                    case 'huile': categoryIcon = 'fas fa-oil-can'; break;
+                    case 'sucre': categoryIcon = 'fas fa-candy-cane'; break;
+                    case 'lait': categoryIcon = 'fas fa-wine-bottle'; break;
+                    case 'boisson': categoryIcon = 'fas fa-wine-glass-alt'; break;
+                    case 'conserves': categoryIcon = 'fas fa-can'; break;
+                    case 'nettoyage': categoryIcon = 'fas fa-soap'; break;
+                }
+                
+                html += `
+                    <tr>
+                        <td>
+                            <div class="product-info">
+                                <div class="product-icon">
+                                    <i class="${categoryIcon}"></i>
+                                </div>
+                                <div>
+                                    <strong>${product.name}</strong><br>
+                                    <small>${product.code}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <strong>${depot.name}</strong><br>
+                            <small>${depot.city}</small>
+                        </td>
+                        <td>
+                            ${getCategoryName(product.category)}
+                        </td>
+                        <td>
+                            <strong>${quantity}</strong> ${product.unit}<br>
+                            <span class="stock-badge ${stockClass}">${stockText}</span>
+                        </td>
+                        <td>${minStock} ${product.unit}</td>
+                        <td>
+                            <strong>${value.toFixed(2)} DH</strong>
+                        </td>
+                        <td>
+                            <span class="status-indicator status-${depot.status === 'active' ? 'online' : 'offline'}"></span>
+                            ${depot.status === 'active' ? 'Actif' : 'Inactif'}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn move" onclick="adjustDepotStock('${item.id}')" title="Ajuster stock">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </button>
+                                <button class="action-btn edit" onclick="editInventoryItem('${item.id}')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" onclick="deleteInventoryItem('${item.id}')" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        }
+        
+        // Obtenir le nom de la catégorie
+        function getCategoryName(categoryKey) {
+            const categoryNames = {
+                'farine': 'Farine',
+                'huile': 'Huile',
+                'sucre': 'Sucre',
+                'lait': 'Produits Laitiers',
+                'boisson': 'Boissons',
+                'conserves': 'Conserves',
+                'nettoyage': 'Produits Nettoyage',
+                'autres': 'Autres'
+            };
+            
+            return categoryNames[categoryKey] || categoryKey;
+        }
+        
+        // Appliquer les filtres d'inventaire
+        function applyInventoryFilters() {
+            const searchTerm = document.getElementById('searchInventory').value.toLowerCase();
+            const depotFilter = document.getElementById('depotFilter').value;
+            const stockFilter = document.getElementById('stockFilter').value;
+            
+            filteredInventory = inventory.filter(item => {
+                const product = products.find(p => p.id === item.productId);
+                const depot = depots.find(d => d.id === item.depotId);
+                
+                if (!product || !depot) return false;
+                
+                // Filtre de recherche
+                const matchesSearch = !searchTerm || 
+                    (product.name && product.name.toLowerCase().includes(searchTerm)) ||
+                    (product.code && product.code.toLowerCase().includes(searchTerm)) ||
+                    (product.category && product.category.toLowerCase().includes(searchTerm));
+                
+                // Filtre par dépôt
+                const matchesDepot = !depotFilter || item.depotId === depotFilter;
+                
+                // Filtre par stock
+                let matchesStock = true;
+                if (stockFilter && product) {
+                    const quantity = parseInt(item.quantity) || 0;
+                    const minStock = parseInt(product.minStock) || 10;
+                    
+                    switch(stockFilter) {
+                        case 'high':
+                            matchesStock = quantity > minStock * 3;
+                            break;
+                        case 'medium':
+                            matchesStock = quantity > minStock && quantity <= minStock * 3;
+                            break;
+                        case 'low':
+                            matchesStock = quantity > 0 && quantity <= minStock;
+                            break;
+                        case 'out':
+                            matchesStock = quantity === 0;
+                            break;
+                    }
+                }
+                
+                return matchesSearch && matchesDepot && matchesStock;
+            });
+            
+            inventoryPage = 1;
+        }
+        
+        // Mettre à jour la pagination de l'inventaire
+        function updateInventoryPagination() {
+            const totalPages = Math.ceil(filteredInventory.length / inventoryPerPage);
+            const paginationDiv = document.getElementById('inventoryPagination');
+            
+            if (totalPages <= 1) {
+                paginationDiv.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            // Bouton Précédent
+            html += `
+                <button class="pagination-btn ${inventoryPage === 1 ? 'disabled' : ''}" 
+                        onclick="changeInventoryPage(${inventoryPage - 1})" ${inventoryPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            
+            // Pages
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= inventoryPage - 1 && i <= inventoryPage + 1)) {
+                    html += `
+                        <button class="pagination-btn ${i === inventoryPage ? 'active' : ''}" 
+                                onclick="changeInventoryPage(${i})">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === inventoryPage - 2 || i === inventoryPage + 2) {
+                    html += `<span class="pagination-btn">...</span>`;
+                }
+            }
+            
+            // Bouton Suivant
+            html += `
+                <button class="pagination-btn ${inventoryPage === totalPages ? 'disabled' : ''}" 
+                        onclick="changeInventoryPage(${inventoryPage + 1})" ${inventoryPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+            
+            paginationDiv.innerHTML = html;
+        }
+        
+        // Changer de page d'inventaire
+        function changeInventoryPage(page) {
+            const totalPages = Math.ceil(filteredInventory.length / inventoryPerPage);
+            
+            if (page < 1 || page > totalPages) return;
+            
+            inventoryPage = page;
+            displayInventory();
+            updateInventoryPagination();
+        }
+        
+        // Changer d'onglet
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Mettre à jour les onglets actifs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Cacher tous les contenus d'onglets
+            document.getElementById('depotsView').style.display = 'none';
+            document.getElementById('inventoryView').style.display = 'none';
+            document.getElementById('reportsView').style.display = 'none';
+            
+            // Afficher l'onglet sélectionné
+            document.getElementById(tabName + 'View').style.display = 'block';
+            
+            // Charger les données si nécessaire
+            if (tabName === 'inventory') {
+                applyInventoryFilters();
+                displayInventory();
+                updateInventoryPagination();
+            } else if (tabName === 'reports') {
+                displayReports();
+            }
+        }
+        
+        // Afficher les rapports
+        function displayReports() {
+            const reportsTableBody = document.getElementById('reportsTableBody');
+            
+            if (depots.length === 0) {
+                reportsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class="fas fa-chart-bar"></i>
+                            <h3>Aucun rapport disponible</h3>
+                            <p>Aucun dépôt trouvé pour générer des rapports</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            depots.forEach(depot => {
+                // Calculer les statistiques du dépôt
+                const depotInventory = inventory.filter(item => item.depotId === depot.id);
+                const productCount = depotInventory.reduce((total, item) => {
+                    return total + (parseInt(item.quantity) || 0);
+                }, 0);
+                
+                const totalValue = depotInventory.reduce((total, item) => {
+                    const product = products.find(p => p.id === item.productId);
+                    if (product) {
+                        const price = parseFloat(product.price) || 0;
+                        const quantity = parseInt(item.quantity) || 0;
+                        return total + (price * quantity);
+                    }
+                    return total;
+                }, 0);
+                
+                const lowStockCount = depotInventory.filter(item => {
+                    const product = products.find(p => p.id === item.productId);
+                    if (product) {
+                        const quantity = parseInt(item.quantity) || 0;
+                        const minStock = parseInt(product.minStock) || 10;
+                        return quantity > 0 && quantity <= minStock;
+                    }
+                    return false;
+                }).length;
+                
+                const capacity = parseFloat(depot.capacity) || 0;
+                const used = parseFloat(depot.used) || 0;
+                const usageRate = capacity > 0 ? Math.round((used / capacity) * 100) : 0;
+                
+                // Déterminer la couleur du taux de remplissage
+                let usageClass = 'stock-high';
+                if (usageRate >= 90) {
+                    usageClass = 'stock-low';
+                } else if (usageRate >= 70) {
+                    usageClass = 'stock-medium';
+                }
+                
+                html += `
+                    <tr>
+                        <td>
+                            <strong>${depot.name}</strong><br>
+                            <small>${depot.city} (${depot.code})</small>
+                        </td>
+                        <td>${productCount}</td>
+                        <td><strong>${totalValue.toFixed(2)} DH</strong></td>
+                        <td><span class="stock-badge stock-low">${lowStockCount}</span></td>
+                        <td>${used}m² / ${capacity}m²</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="flex-grow: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                                    <div style="width: ${usageRate}%; height: 100%; background-color: ${
+                                        usageRate >= 90 ? 'var(--danger)' : 
+                                        usageRate >= 70 ? 'var(--warning)' : 
+                                        'var(--success)'
+                                    };"></div>
+                                </div>
+                                <span class="stock-badge ${usageClass}">${usageRate}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-indicator status-${depot.status === 'active' ? 'online' : 'offline'}"></span>
+                            ${depot.status === 'active' ? 'Actif' : 'Inactif'}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            reportsTableBody.innerHTML = html;
+        }
+        
+        // Afficher l'état vide des dépôts
+        function showEmptyDepotsState() {
+            const depotsGrid = document.getElementById('depotsGrid');
+            
+            depotsGrid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    <i class="fas fa-warehouse"></i>
+                    <h3>Aucun dépôt trouvé</h3>
+                    <p>Commencez par créer votre premier dépôt</p>
+                    <button class="btn btn-primary" onclick="openAddDepotModal()" style="margin-top: 15px;">
+                        <i class="fas fa-plus"></i> Créer un dépôt
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Afficher l'état d'erreur
+        function showErrorState(message, elementId) {
+            const element = document.getElementById(elementId);
+            
+            element.innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Erreur de connexion</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+        
+        // Ouvrir modal d'ajout de dépôt
+        function openAddDepotModal() {
+            isEditMode = false;
+            document.getElementById('modalTitle').textContent = 'Ajouter un Nouveau Dépôt';
+            document.getElementById('depotForm').reset();
+            document.getElementById('depotId').value = '';
+            document.getElementById('depotStatus').value = 'active';
+            document.getElementById('depotUsed').value = '0';
+            document.getElementById('depotModal').style.display = 'flex';
+        }
+        
+        // Ouvrir modal d'édition de dépôt
+        function editDepot(depotId) {
+            isEditMode = true;
+            
+            try {
+                const depotRef = database.ref(`depots/${depotId}`);
+                
+                depotRef.once('value').then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const depot = snapshot.val();
+                        
+                        document.getElementById('modalTitle').textContent = 'Modifier Dépôt';
+                        document.getElementById('depotId').value = depotId;
+                        document.getElementById('depotName').value = depot.name || '';
+                        document.getElementById('depotCode').value = depot.code || '';
+                        document.getElementById('depotType').value = depot.type || '';
+                        document.getElementById('depotStatus').value = depot.status || 'active';
+                        document.getElementById('depotAddress').value = depot.address || '';
+                        document.getElementById('depotCity').value = depot.city || '';
+                        document.getElementById('depotPhone').value = depot.phone || '';
+                        document.getElementById('depotManager').value = depot.manager || '';
+                        document.getElementById('depotEmail').value = depot.email || '';
+                        document.getElementById('depotCapacity').value = depot.capacity || 0;
+                        document.getElementById('depotUsed').value = depot.used || 0;
+                        document.getElementById('depotDescription').value = depot.description || '';
+                        
+                        document.getElementById('depotModal').style.display = 'flex';
+                    }
+                }).catch(error => {
+                    console.error("Erreur de chargement du dépôt:", error);
+                    showToast("Erreur lors du chargement du dépôt", "error");
+                });
+                
+            } catch (error) {
+                console.error("Erreur dans editDepot:", error);
+                showToast("Erreur lors du chargement du dépôt", "error");
+            }
+        }
+        
+        // Confirmer la suppression d'un dépôt
+        function confirmDeleteDepot(depotId, depotName) {
+            depotToDelete = depotId;
+            document.getElementById('deleteDepotName').textContent = depotName;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+        
+        // Enregistrer dépôt (ajout ou modification)
+        function saveDepot() {
+            const depotData = {
+                name: document.getElementById('depotName').value.trim(),
+                code: document.getElementById('depotCode').value.trim(),
+                type: document.getElementById('depotType').value,
+                status: document.getElementById('depotStatus').value,
+                address: document.getElementById('depotAddress').value.trim(),
+                city: document.getElementById('depotCity').value.trim(),
+                phone: document.getElementById('depotPhone').value.trim(),
+                manager: document.getElementById('depotManager').value.trim(),
+                email: document.getElementById('depotEmail').value.trim(),
+                capacity: parseFloat(document.getElementById('depotCapacity').value) || 0,
+                used: parseFloat(document.getElementById('depotUsed').value) || 0,
+                description: document.getElementById('depotDescription').value.trim(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            // Validation simple
+            if (!depotData.name || !depotData.code || !depotData.type || !depotData.city) {
+                showToast("Veuillez remplir les champs obligatoires (*)", "error");
+                return;
+            }
+            
+            if (depotData.used > depotData.capacity) {
+                showToast("L'espace utilisé ne peut pas dépasser la capacité totale", "error");
+                return;
+            }
+            
+            try {
+                if (isEditMode) {
+                    // Mise à jour du dépôt existant
+                    const depotId = document.getElementById('depotId').value;
+                    const depotRef = database.ref(`depots/${depotId}`);
+                    
+                    depotRef.update(depotData)
+                        .then(() => {
+                            showToast("Dépôt modifié avec succès!", "success");
+                            closeModal();
+                        })
+                        .catch(error => {
+                            console.error("Erreur de mise à jour:", error);
+                            showToast("Erreur lors de la modification du dépôt", "error");
+                        });
+                    
+                } else {
+                    // Ajout d'un nouveau dépôt
+                    depotData.createdAt = new Date().toISOString();
+                    const newDepotRef = database.ref('depots').push();
+                    
+                    newDepotRef.set(depotData)
+                        .then(() => {
+                            showToast("Dépôt ajouté avec succès!", "success");
+                            closeModal();
+                        })
+                        .catch(error => {
+                            console.error("Erreur d'ajout:", error);
+                            showToast("Erreur lors de l'ajout du dépôt", "error");
+                        });
+                }
+                
+            } catch (error) {
+                console.error("Erreur dans saveDepot:", error);
+                showToast("Erreur lors de l'enregistrement du dépôt", "error");
+            }
+        }
+        
+        // Voir l'inventaire d'un dépôt
+        function viewDepotInventory(depotId) {
+            // Filtrer pour afficher uniquement ce dépôt
+            document.getElementById('depotFilter').value = depotId;
+            switchTab('inventory');
+            applyInventoryFilters();
+            displayInventory();
+            updateInventoryPagination();
+        }
+        
+        // Démarrer un inventaire
+        function startInventory() {
+            const inventoryModal = document.getElementById('inventoryModal');
+            inventoryModal.style.display = 'flex';
+        }
+        
+        // Effectuer un transfert de stock
+        function transferStock() {
+            const transferModal = document.getElementById('transferModal');
+            transferModal.style.display = 'flex';
+        }
+        
+        // Afficher le stock faible
+        function showLowStock() {
+            document.getElementById('stockFilter').value = 'low';
+            switchTab('inventory');
+            applyInventoryFilters();
+            displayInventory();
+            updateInventoryPagination();
+            showToast("Affichage des produits en stock faible", "warning");
+        }
+        
+        // Supprimer un dépôt
+        function deleteDepot() {
+            if (!depotToDelete) return;
+            
+            try {
+                const depotRef = database.ref(`depots/${depotToDelete}`);
+                
+                depotRef.remove()
+                    .then(() => {
+                        showToast("Dépôt supprimé avec succès!", "success");
+                        closeDeleteModal();
+                    })
+                    .catch(error => {
+                        console.error("Erreur de suppression:", error);
+                        showToast("Erreur lors de la suppression du dépôt", "error");
+                    });
+                
+            } catch (error) {
+                console.error("Erreur dans deleteDepot:", error);
+                showToast("Erreur lors de la suppression du dépôt", "error");
+            }
+        }
+        
+        // Fermer modals
+        function closeModal() {
+            document.getElementById('depotModal').style.display = 'none';
+        }
+        
+        function closeTransferModal() {
+            document.getElementById('transferModal').style.display = 'none';
+            document.getElementById('transferForm').reset();
+        }
+        
+        function closeInventoryModal() {
+            document.getElementById('inventoryModal').style.display = 'none';
+            document.getElementById('inventoryForm').reset();
+        }
+        
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            depotToDelete = null;
+        }
+        
+        // Exporter les données
+        function exportData() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            if (currentTab === 'depots') {
+                csvContent += "Nom,Code,Type,Ville,Responsable,Téléphone,Capacité,Espace Utilisé,Statut\n";
+                
+                depots.forEach(depot => {
+                    const row = [
+                        depot.name,
+                        depot.code,
+                        depot.type,
+                        depot.city,
+                        depot.manager,
+                        depot.phone,
+                        depot.capacity,
+                        depot.used,
+                        depot.status
+                    ].map(field => `"${field}"`).join(',');
+                    
+                    csvContent += row + "\n";
+                });
+                
+                showToast(`${depots.length} dépôts exportés`, "success");
+            } else if (currentTab === 'inventory') {
+                csvContent += "Produit,Code,Catégorie,Dépôt,Ville,Stock,Unité,Valeur,Statut Stock\n";
+                
+                filteredInventory.forEach(item => {
+                    const product = products.find(p => p.id === item.productId);
+                    const depot = depots.find(d => d.id === item.depotId);
+                    
+                    if (product && depot) {
+                        const quantity = parseInt(item.quantity) || 0;
+                        const value = quantity * (parseFloat(product.price) || 0);
+                        const minStock = parseInt(product.minStock) || 10;
+                        
+                        let stockStatus = 'Élevé';
+                        if (quantity === 0) stockStatus = 'Rupture';
+                        else if (quantity <= minStock) stockStatus = 'Faible';
+                        else if (quantity <= minStock * 3) stockStatus = 'Moyen';
+                        
+                        const row = [
+                            product.name,
+                            product.code,
+                            getCategoryName(product.category),
+                            depot.name,
+                            depot.city,
+                            quantity,
+                            product.unit,
+                            value.toFixed(2),
+                            stockStatus
+                        ].map(field => `"${field}"`).join(',');
+                        
+                        csvContent += row + "\n";
+                    }
+                });
+                
+                showToast(`${filteredInventory.length} produits exportés`, "success");
+            }
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `inventaire_depots_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Créer des données de test
+        function createSampleData() {
+            if (!confirm("Créer des données de test ? Cela ajoutera 3 dépôts et des produits d'exemple.")) {
+                return;
+            }
+            
+            try {
+                // Créer des dépôts de test
+                const sampleDepots = [
+                    {
+                        name: 'Dépôt Principal Agadir',
+                        code: 'DPT001',
+                        type: 'principal',
+                        status: 'active',
+                        address: 'Zone Industrielle Aït Melloul',
+                        city: 'Agadir',
+                        phone: '0528889999',
+                        manager: 'Ahmed El Mansouri',
+                        email: 'ahmed@ettijara.com',
+                        capacity: 1000,
+                        used: 750,
+                        description: 'Dépôt principal pour la région Souss',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        name: 'Centre Distribution Inezgane',
+                        code: 'DPT002',
+                        type: 'distribution',
+                        status: 'active',
+                        address: 'Route Nationale 10',
+                        city: 'Inezgane',
+                        phone: '0528776666',
+                        manager: 'Fatima Zahra',
+                        email: 'fatima@ettijara.com',
+                        capacity: 500,
+                        used: 320,
+                        description: 'Centre de distribution pour Inezgane et Ait Melloul',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        name: 'Dépôt Régional Taroudant',
+                        code: 'DPT003',
+                        type: 'regional',
+                        status: 'active',
+                        address: 'Quartier Industriel',
+                        city: 'Taroudant',
+                        phone: '0528665555',
+                        manager: 'Karim Benjelloun',
+                        email: 'karim@ettijara.com',
+                        capacity: 300,
+                        used: 180,
+                        description: 'Dépôt régional pour Taroudant et sa région',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                
+                let depotPromises = [];
+                let createdDepotIds = [];
+                
+                // Créer les dépôts et récupérer leurs IDs
+                sampleDepots.forEach(depot => {
+                    const newDepotRef = database.ref('depots').push();
+                    createdDepotIds.push(newDepotRef.key);
+                    depotPromises.push(newDepotRef.set(depot));
+                });
+                
+                Promise.all(depotPromises)
+                    .then(() => {
+                        // Ajouter des produits d'exemple à l'inventaire
+                        const sampleProducts = [
+                            { name: 'Farine Spéciale 1kg', code: 'FAR001', category: 'farine', unit: 'sac', price: 15.50 },
+                            { name: 'Huile d\'Olive 1L', code: 'HUI001', category: 'huile', unit: 'bouteille', price: 45.00 },
+                            { name: 'Sucre Blanc 1kg', code: 'SUG001', category: 'sucre', unit: 'sac', price: 12.00 }
+                        ];
+                        
+                        let inventoryPromises = [];
+                        
+                        // Pour chaque produit, créer des entrées d'inventaire dans chaque dépôt
+                        sampleProducts.forEach((product, productIndex) => {
+                            createdDepotIds.forEach((depotId, depotIndex) => {
+                                const inventoryRef = database.ref('inventory').push();
+                                const inventoryItem = {
+                                    productId: product.code + productIndex, // ID temporaire
+                                    depotId: depotId,
+                                    quantity: (depotIndex + 1) * 10, // Quantités différentes par dépôt
+                                    minStock: 10,
+                                    updatedAt: new Date().toISOString()
+                                };
+                                inventoryPromises.push(inventoryRef.set(inventoryItem));
+                            });
+                        });
+                        
+                        return Promise.all(inventoryPromises);
+                    })
+                    .then(() => {
+                        showToast("Données de test créées avec succès: 3 dépôts et inventaire", "success");
+                    })
+                    .catch(error => {
+                        console.error("Erreur création données test:", error);
+                        showToast("Erreur lors de la création des données de test", "error");
+                    });
+                
+            } catch (error) {
+                console.error("Erreur dans createSampleData:", error);
+                showToast("Erreur lors de la création des données de test", "error");
+            }
+        }
+        
+        // Initialiser l'application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier la connexion Firebase et charger les données
+            const connectedRef = database.ref(".info/connected");
+            connectedRef.on("value", function(snap) {
+                if (snap.val() === true) {
+                    loadData();
+                }
+            });
+            
+            // Événements de recherche/filtre pour dépôts
+            document.getElementById('searchDepot').addEventListener('input', displayDepots);
+            document.getElementById('statusFilter').addEventListener('change', displayDepots);
+            document.getElementById('resetDepotFiltersBtn').addEventListener('click', function() {
+                document.getElementById('searchDepot').value = '';
+                document.getElementById('statusFilter').value = '';
+                displayDepots();
+            });
+            
+            // Événements de recherche/filtre pour inventaire
+            document.getElementById('searchInventory').addEventListener('input', function() {
+                applyInventoryFilters();
+                displayInventory();
+                updateInventoryPagination();
+            });
+            
+            document.getElementById('depotFilter').addEventListener('change', function() {
+                applyInventoryFilters();
+                displayInventory();
+                updateInventoryPagination();
+            });
+            
+            document.getElementById('stockFilter').addEventListener('change', function() {
+                applyInventoryFilters();
+                displayInventory();
+                updateInventoryPagination();
+            });
+            
+            document.getElementById('resetInventoryFiltersBtn').addEventListener('click', function() {
+                document.getElementById('searchInventory').value = '';
+                document.getElementById('depotFilter').value = '';
+                document.getElementById('stockFilter').value = '';
+                applyInventoryFilters();
+                displayInventory();
+                updateInventoryPagination();
+            });
+            
+            // Événements modals
+            document.getElementById('addDepotBtn').addEventListener('click', openAddDepotModal);
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('cancelBtn').addEventListener('click', closeModal);
+            document.getElementById('saveDepotBtn').addEventListener('click', saveDepot);
+            
+            document.getElementById('closeTransferModal').addEventListener('click', closeTransferModal);
+            document.getElementById('cancelTransferBtn').addEventListener('click', closeTransferModal);
+            
+            document.getElementById('closeInventoryModal').addEventListener('click', closeInventoryModal);
+            document.getElementById('cancelInventoryBtn').addEventListener('click', closeInventoryModal);
+            
+            document.getElementById('closeDeleteModal').addEventListener('click', closeDeleteModal);
+            document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
+            document.getElementById('confirmDeleteBtn').addEventListener('click', deleteDepot);
+            
+            // Export
+            document.getElementById('exportBtn').addEventListener('click', exportData);
+            
+            // Fermer modal en cliquant en dehors
+            window.addEventListener('click', function(event) {
+                const depotModal = document.getElementById('depotModal');
+                const transferModal = document.getElementById('transferModal');
+                const inventoryModal = document.getElementById('inventoryModal');
+                const deleteModal = document.getElementById('deleteModal');
+                
+                if (event.target === depotModal) closeModal();
+                if (event.target === transferModal) closeTransferModal();
+                if (event.target === inventoryModal) closeInventoryModal();
+                if (event.target === deleteModal) closeDeleteModal();
+            });
+            
+            // Soumission des formulaires avec Entrée
+            document.getElementById('depotForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveDepot();
+            });
+            
+            // Rafraîchir automatiquement toutes les 30 secondes
+            setInterval(() => {
+                if (depots.length === 0) {
+                    loadData();
+                }
+            }, 30000);
+        });
+    </script>
 </body>
 </html>
