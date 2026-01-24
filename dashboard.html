@@ -5,33 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETTIJARA ALAAMA SOUSS - Tableau de Bord</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Firebase 9 Modular SDK -->
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-        
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAV_c5Gt_f1h5nZF47FcPjW_h4P24LYADk",
-            authDomain: "commerce22-610cc.firebaseapp.com",
-            databaseURL: "https://commerce22-610cc-default-rtdb.firebaseio.com",
-            projectId: "commerce22-610cc",
-            storageBucket: "commerce22-610cc.firebasestorage.app",
-            messagingSenderId: "458158894252",
-            appId: "1:458158894252:web:d1e640b2e16ef32d978309"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        
-        // Make database available globally
-        window.firebaseDatabase = database;
-        window.firebaseRef = ref;
-        window.firebaseOnValue = onValue;
-        window.firebaseGet = get;
-    </script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
         :root {
             --primary: #1a237e;
@@ -39,6 +20,10 @@
             --accent: #1565c0;
             --light: #e3f2fd;
             --bg: #f5f7fa;
+            --success: #2e7d32;
+            --warning: #f57c00;
+            --danger: #c62828;
+            --info: #0277bd;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -103,70 +88,287 @@
             min-height: calc(100vh - 70px);
         }
         
-        /* Dashboard Cards */
-        .dashboard-cards {
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .welcome-text h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .welcome-text p {
+            color: #bbdefb;
+            font-size: 16px;
+        }
+        .date-time {
+            text-align: left;
+            direction: ltr;
+        }
+        .time {
+            font-size: 32px;
+            font-weight: 700;
+        }
+        .date {
+            font-size: 16px;
+            color: #bbdefb;
+        }
+        
+        /* Quick Stats */
+        .quick-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
-        .card {
+        .stat-card {
             background: white;
             border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
             transition: transform 0.3s;
-            border-top: 4px solid var(--primary);
+            cursor: pointer;
+            border-top: 4px solid transparent;
         }
-        .card:hover { transform: translateY(-5px); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .card-header h3 { font-size: 16px; color: #666; }
-        .card-header i { font-size: 24px; color: var(--accent); }
-        .card-value { font-size: 32px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
-        .card-change { font-size: 14px; color: #4caf50; }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card.deliveries { border-color: var(--primary); }
+        .stat-card.clients { border-color: var(--success); }
+        .stat-card.products { border-color: var(--warning); }
+        .stat-card.revenue { border-color: var(--danger); }
+        .stat-card.depots { border-color: var(--info); }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+        .stat-icon.deliveries { background-color: var(--primary); }
+        .stat-icon.clients { background-color: var(--success); }
+        .stat-icon.products { background-color: var(--warning); }
+        .stat-icon.revenue { background-color: var(--danger); }
+        .stat-icon.depots { background-color: var(--info); }
+        
+        .stat-content h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .stat-change {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .stat-change.up { color: var(--success); }
+        .stat-change.down { color: var(--danger); }
+        
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .chart-header h3 {
+            color: var(--primary);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chart-container {
+            position: relative;
+            height: 250px;
+        }
         
         /* Recent Activity */
-        .activity-container {
+        .activity-card {
             background: white;
             border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-top: 20px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
         }
-        .activity-container h2 { margin-bottom: 20px; color: var(--primary); }
-        .activity-list { display: flex; flex-direction: column; gap: 15px; }
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .activity-header h3 {
+            color: var(--primary);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
         .activity-item {
             display: flex;
             align-items: center;
             gap: 15px;
             padding: 15px;
             border-bottom: 1px solid #eee;
+            transition: background-color 0.3s;
         }
-        .activity-item:last-child { border-bottom: none; }
+        .activity-item:hover {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
         .activity-icon {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            background: var(--light);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
+            font-size: 18px;
+            color: white;
         }
-        .activity-details { flex-grow: 1; }
-        .activity-details h4 { margin-bottom: 3px; }
-        .activity-time { color: #888; font-size: 13px; }
+        .activity-icon.delivery { background-color: var(--primary); }
+        .activity-icon.order { background-color: var(--success); }
+        .activity-icon.client { background-color: var(--info); }
+        .activity-icon.product { background-color: var(--warning); }
+        .activity-icon.payment { background-color: var(--danger); }
+        
+        .activity-details {
+            flex: 1;
+        }
+        .activity-details h4 {
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+        .activity-details p {
+            color: #666;
+            font-size: 13px;
+        }
+        .activity-time {
+            color: #888;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        
+        /* Quick Actions */
+        .quick-actions-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+        .quick-actions-header {
+            margin-bottom: 20px;
+        }
+        .quick-actions-header h3 {
+            color: var(--primary);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .action-btn {
+            background: var(--light);
+            border: none;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        .action-btn i {
+            font-size: 24px;
+        }
+        .action-btn span {
+            font-size: 14px;
+            font-weight: 600;
+        }
         
         /* Loading State */
         .loading {
             text-align: center;
-            padding: 20px;
+            padding: 40px;
             color: #666;
         }
         .loading i {
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 32px;
+            margin-bottom: 15px;
             color: var(--primary);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ddd;
         }
         
         /* Responsive */
@@ -174,11 +376,19 @@
             .sidebar { width: 70px; }
             .sidebar-item span { display: none; }
             .main-content { margin-right: 70px; }
+            .welcome-banner { flex-direction: column; text-align: center; gap: 20px; }
+            .date-time { text-align: center; direction: rtl; }
         }
         @media (max-width: 768px) {
-            .dashboard-cards { grid-template-columns: 1fr; }
+            .quick-stats { grid-template-columns: 1fr; }
+            .charts-section { grid-template-columns: 1fr; }
+            .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
             .header { padding: 0 15px; }
             .logo h1 { font-size: 18px; }
+            .main-content { padding: 90px 15px 15px; }
+            .quick-actions-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -192,7 +402,7 @@
             </div>
         </div>
         <div class="user-info">
-            <span>Admin User</span>
+            <span id="userName">Admin User</span>
             <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D47A1&color=fff" alt="User">
         </div>
     </header>
@@ -239,238 +449,697 @@
     </nav>
 
     <main class="main-content">
-        <div class="dashboard-cards">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Livraisons du Jour</h3>
-                    <i class="fas fa-truck-loading"></i>
-                </div>
-                <div class="card-value" id="todayDeliveries">
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <div>Chargement...</div>
-                    </div>
-                </div>
-                <div class="card-change">↑ 12% depuis hier</div>
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div class="welcome-text">
+                <h2><i class="fas fa-sun"></i> Bonjour, <span id="displayName">Admin</span> !</h2>
+                <p>Bienvenue sur votre tableau de bord de gestion</p>
             </div>
-            <div class="card">
-                <div class="card-header">
-                    <h3>Clients Actifs</h3>
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="card-value" id="activeClients">
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <div>Chargement...</div>
-                    </div>
-                </div>
-                <div class="card-change">↑ 5 nouveaux ce mois</div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <h3>Produits en Stock</h3>
-                    <i class="fas fa-boxes"></i>
-                </div>
-                <div class="card-value" id="totalProducts">
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <div>Chargement...</div>
-                    </div>
-                </div>
-                <div class="card-change">↓ 3% depuis hier</div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <h3>Revenu du Mois</h3>
-                    <i class="fas fa-money-bill-wave"></i>
-                </div>
-                <div class="card-value" id="monthRevenue">
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <div>Chargement...</div>
-                    </div>
-                </div>
-                <div class="card-change">↑ 8% depuis le mois dernier</div>
+            <div class="date-time">
+                <div class="time" id="currentTime">00:00:00</div>
+                <div class="date" id="currentDate">Lundi 1 Janvier 2024</div>
             </div>
         </div>
-
-        <div class="activity-container">
-            <h2><i class="fas fa-history"></i> Activité Récente</h2>
-            <div class="activity-list" id="recentActivity">
-                <div class="loading">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <div>Chargement des activités...</div>
+        
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card deliveries" onclick="window.location.href='deliveries.html'">
+                <div class="stat-icon deliveries">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>LIVRAISONS DU JOUR</h3>
+                    <div class="stat-value" id="todayDeliveries">0</div>
+                    <div class="stat-change up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span id="deliveryChange">0%</span> depuis hier
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card clients" onclick="window.location.href='clients.html'">
+                <div class="stat-icon clients">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>CLIENTS ACTIFS</h3>
+                    <div class="stat-value" id="activeClients">0</div>
+                    <div class="stat-change up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span id="clientChange">0</span> nouveaux ce mois
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card products" onclick="window.location.href='products.html'">
+                <div class="stat-icon products">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>PRODUITS EN STOCK</h3>
+                    <div class="stat-value" id="totalProducts">0</div>
+                    <div class="stat-change down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span id="productChange">0%</span> depuis hier
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card revenue" onclick="window.location.href='reports.html'">
+                <div class="stat-icon revenue">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>REVENU DU MOIS</h3>
+                    <div class="stat-value" id="monthRevenue">0 DH</div>
+                    <div class="stat-change up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span id="revenueChange">0%</span> depuis dernier mois
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card depots" onclick="window.location.href='depots.html'">
+                <div class="stat-icon depots">
+                    <i class="fas fa-warehouse"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>DÉPÔTS ACTIFS</h3>
+                    <div class="stat-value" id="activeDepots">0</div>
+                    <div class="stat-change up">
+                        <i class="fas fa-check"></i>
+                        <span>Tous opérationnels</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-line"></i> Livraisons Mensuelles</h3>
+                    <select id="deliveryChartFilter" class="filter-select" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                        <option value="month">Ce mois</option>
+                        <option value="quarter">Ce trimestre</option>
+                        <option value="year">Cette année</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="deliveriesChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-pie"></i> Répartition par Catégorie</h3>
+                    <select id="categoryChartFilter" class="filter-select" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                        <option value="stock">Stock</option>
+                        <option value="value">Valeur</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity & Quick Actions -->
+        <div class="charts-section">
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h3><i class="fas fa-history"></i> Activité Récente</h3>
+                    <a href="reports.html" style="color: var(--primary); font-size: 14px; text-decoration: none;">
+                        <i class="fas fa-external-link-alt"></i> Voir tout
+                    </a>
+                </div>
+                <div class="activity-list" id="recentActivity">
+                    <!-- Les activités seront chargées ici -->
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <div>Chargement des activités...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quick-actions-card">
+                <div class="quick-actions-header">
+                    <h3><i class="fas fa-bolt"></i> Actions Rapides</h3>
+                </div>
+                <div class="quick-actions-grid">
+                    <a href="deliveries.html?action=add" class="action-btn">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Nouvelle Livraison</span>
+                    </a>
+                    <a href="clients.html?action=add" class="action-btn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Ajouter Client</span>
+                    </a>
+                    <a href="products.html?action=add" class="action-btn">
+                        <i class="fas fa-box"></i>
+                        <span>Ajouter Produit</span>
+                    </a>
+                    <a href="depots.html?action=add" class="action-btn">
+                        <i class="fas fa-warehouse"></i>
+                        <span>Nouveau Dépôt</span>
+                    </a>
+                    <a href="reports.html" class="action-btn">
+                        <i class="fas fa-file-export"></i>
+                        <span>Générer Rapport</span>
+                    </a>
+                    <a href="print.html" class="action-btn">
+                        <i class="fas fa-print"></i>
+                        <span>Impressions</span>
+                    </a>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAV_c5Gt_f1h5nZF47FcPjW_h4P24LYADk",
+            authDomain: "commerce22-610cc.firebaseapp.com",
+            databaseURL: "https://commerce22-610cc-default-rtdb.firebaseio.com",
+            projectId: "commerce22-610cc",
+            storageBucket: "commerce22-610cc.firebasestorage.app",
+            messagingSenderId: "458158894252",
+            appId: "1:458158894252:web:d1e640b2e16ef32d978309"
+        };
+        
+        // Initialiser Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase initialisé avec succès");
+        } catch (error) {
+            console.error("Erreur d'initialisation Firebase:", error);
+        }
+        
+        const database = firebase.database();
+        
+        // Variables globales
+        let deliveriesChart = null;
+        let categoryChart = null;
+        
+        // Mettre à jour l'heure et la date en temps réel
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Formater l'heure
+            const time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('currentTime').textContent = time;
+            
+            // Formater la date
+            const date = now.toLocaleDateString('fr-FR', { 
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('currentDate').textContent = date;
+        }
+        
         // Charger les données du tableau de bord
         function loadDashboardData() {
-            // Check if Firebase is loaded
-            if (!window.firebaseDatabase) {
-                console.error("Firebase not loaded yet");
-                setTimeout(loadDashboardData, 500);
-                return;
-            }
+            loadStats();
+            loadRecentActivity();
+            loadCharts();
+        }
+        
+        // Charger les statistiques
+        function loadStats() {
+            // Données simulées pour la démonstration
+            // Dans une application réelle, vous chargeriez ces données depuis Firebase
             
-            const db = window.firebaseDatabase;
-            const ref = window.firebaseRef;
-            const onValue = window.firebaseOnValue;
-            const get = window.firebaseGet;
+            document.getElementById('todayDeliveries').textContent = '24';
+            document.getElementById('deliveryChange').textContent = '12%';
             
-            // Exemple de structure de données attendue dans Firebase:
-            // /deliveries/today -> nombre
-            // /clients/active -> nombre
-            // /products/total -> nombre
-            // /revenue/month -> montant
-            // /activities -> liste
+            document.getElementById('activeClients').textContent = '156';
+            document.getElementById('clientChange').textContent = '5';
             
-            // Simuler des données pour l'exemple (remplacez par vos vraies requêtes)
+            document.getElementById('totalProducts').textContent = '1,248';
+            document.getElementById('productChange').textContent = '3%';
+            
+            document.getElementById('monthRevenue').textContent = '245,780 DH';
+            document.getElementById('revenueChange').textContent = '8%';
+            
+            document.getElementById('activeDepots').textContent = '3';
+            
+            // Charger le nom d'utilisateur
+            const userName = localStorage.getItem('userName') || 'Admin';
+            document.getElementById('displayName').textContent = userName;
+            document.getElementById('userName').textContent = userName;
+        }
+        
+        // Charger l'activité récente
+        function loadRecentActivity() {
             try {
-                // Livraisons du jour
-                onValue(ref(db, 'deliveries/today'), (snapshot) => {
-                    const data = snapshot.val();
-                    document.getElementById('todayDeliveries').innerHTML = data || '0';
-                }, (error) => {
-                    console.error("Error loading deliveries:", error);
-                    document.getElementById('todayDeliveries').innerHTML = '0';
-                });
+                const activitiesRef = database.ref('activities');
                 
-                // Clients actifs
-                onValue(ref(db, 'clients/active'), (snapshot) => {
+                activitiesRef.limitToLast(5).on('value', (snapshot) => {
                     const data = snapshot.val();
-                    document.getElementById('activeClients').innerHTML = data || '0';
-                }, (error) => {
-                    console.error("Error loading clients:", error);
-                    document.getElementById('activeClients').innerHTML = '0';
-                });
-                
-                // Produits en stock
-                onValue(ref(db, 'products/total'), (snapshot) => {
-                    const data = snapshot.val();
-                    document.getElementById('totalProducts').innerHTML = data ? data.toLocaleString() : '0';
-                }, (error) => {
-                    console.error("Error loading products:", error);
-                    document.getElementById('totalProducts').innerHTML = '0';
-                });
-                
-                // Revenu du mois
-                onValue(ref(db, 'revenue/month'), (snapshot) => {
-                    const data = snapshot.val();
-                    document.getElementById('monthRevenue').innerHTML = data ? data + ' DH' : '0 DH';
-                }, (error) => {
-                    console.error("Error loading revenue:", error);
-                    document.getElementById('monthRevenue').innerHTML = '0 DH';
-                });
-                
-                // Activités récentes
-                onValue(ref(db, 'activities'), (snapshot) => {
-                    const activities = snapshot.val();
-                    const activityContainer = document.getElementById('recentActivity');
+                    const activityList = document.getElementById('recentActivity');
                     
-                    if (!activities || Object.keys(activities).length === 0) {
-                        activityContainer.innerHTML = `
-                            <div class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-info-circle"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <h4>Aucune activité récente</h4>
-                                    <p>Commencez à utiliser le système</p>
-                                </div>
-                            </div>
-                        `;
-                        return;
+                    if (data) {
+                        let activities = [];
+                        
+                        Object.keys(data).forEach(key => {
+                            activities.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        // Trier par date (du plus récent au plus ancien)
+                        activities.sort((a, b) => {
+                            const dateA = a.timestamp ? new Date(a.timestamp) : new Date(0);
+                            const dateB = b.timestamp ? new Date(b.timestamp) : new Date(0);
+                            return dateB - dateA;
+                        });
+                        
+                        // Afficher les activités
+                        displayActivities(activities.slice(0, 5));
+                    } else {
+                        // Afficher des activités par défaut
+                        displayDefaultActivities();
                     }
                     
-                    activityContainer.innerHTML = '';
-                    // Convertir l'objet en tableau et prendre les 5 derniers
-                    const activitiesArray = Object.values(activities)
-                        .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0))
-                        .slice(0, 5);
-                    
-                    activitiesArray.forEach(activity => {
-                        let iconClass = 'fas fa-truck';
-                        if (activity.type === 'order') iconClass = 'fas fa-shopping-cart';
-                        if (activity.type === 'client') iconClass = 'fas fa-user-plus';
-                        if (activity.type === 'product') iconClass = 'fas fa-box';
-                        if (activity.type === 'payment') iconClass = 'fas fa-money-check';
-                        if (activity.type === 'info') iconClass = 'fas fa-info-circle';
-                        
-                        // Formater le temps
-                        let timeText = 'Récemment';
-                        if (activity.timestamp) {
-                            const now = new Date();
-                            const activityTime = new Date(activity.timestamp);
-                            const diffMinutes = Math.floor((now - activityTime) / (1000 * 60));
-                            
-                            if (diffMinutes < 1) timeText = 'À l\'instant';
-                            else if (diffMinutes < 60) timeText = `Il y a ${diffMinutes} min`;
-                            else if (diffMinutes < 1440) timeText = `Il y a ${Math.floor(diffMinutes/60)} heures`;
-                            else timeText = `Il y a ${Math.floor(diffMinutes/1440)} jours`;
-                        }
-                        
-                        activityContainer.innerHTML += `
-                            <div class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="${iconClass}"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <h4>${activity.details || 'Activité'}</h4>
-                                    <p>Par ${activity.user || 'Système'}</p>
-                                </div>
-                                <div class="activity-time">${timeText}</div>
-                            </div>
-                        `;
-                    });
                 }, (error) => {
-                    console.error("Error loading activities:", error);
-                    document.getElementById('recentActivity').innerHTML = `
-                        <div class="activity-item">
-                            <div class="activity-icon">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="activity-details">
-                                <h4>Erreur de chargement</h4>
-                                <p>Impossible de charger les activités</p>
-                            </div>
-                        </div>
-                    `;
+                    console.error("Erreur de chargement des activités:", error);
+                    displayDefaultActivities();
                 });
                 
             } catch (error) {
-                console.error("Firebase error:", error);
-                showErrorState();
+                console.error("Erreur dans loadRecentActivity:", error);
+                displayDefaultActivities();
             }
         }
         
-        function showErrorState() {
-            document.getElementById('todayDeliveries').innerHTML = 'Erreur';
-            document.getElementById('activeClients').innerHTML = 'Erreur';
-            document.getElementById('totalProducts').innerHTML = 'Erreur';
-            document.getElementById('monthRevenue').innerHTML = 'Erreur';
-            document.getElementById('recentActivity').innerHTML = `
-                <div class="activity-item">
-                    <div class="activity-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
+        // Afficher les activités
+        function displayActivities(activities) {
+            const activityList = document.getElementById('recentActivity');
+            
+            if (activities.length === 0) {
+                displayDefaultActivities();
+                return;
+            }
+            
+            let html = '';
+            
+            activities.forEach(activity => {
+                // Déterminer l'icône et la couleur selon le type
+                let iconClass = 'fas fa-truck';
+                let iconType = 'delivery';
+                let activityText = activity.description || 'Activité';
+                
+                if (activity.type === 'order') {
+                    iconClass = 'fas fa-shopping-cart';
+                    iconType = 'order';
+                } else if (activity.type === 'client') {
+                    iconClass = 'fas fa-user-plus';
+                    iconType = 'client';
+                } else if (activity.type === 'product') {
+                    iconClass = 'fas fa-box';
+                    iconType = 'product';
+                } else if (activity.type === 'payment') {
+                    iconClass = 'fas fa-money-check';
+                    iconType = 'payment';
+                }
+                
+                // Formater le temps
+                let timeText = 'Récemment';
+                if (activity.timestamp) {
+                    const now = new Date();
+                    const activityTime = new Date(activity.timestamp);
+                    const diffMinutes = Math.floor((now - activityTime) / (1000 * 60));
+                    
+                    if (diffMinutes < 1) timeText = 'À l\'instant';
+                    else if (diffMinutes < 60) timeText = `Il y a ${diffMinutes} min`;
+                    else if (diffMinutes < 1440) timeText = `Il y a ${Math.floor(diffMinutes/60)} heures`;
+                    else timeText = `Il y a ${Math.floor(diffMinutes/1440)} jours`;
+                }
+                
+                html += `
+                    <div class="activity-item">
+                        <div class="activity-icon ${iconType}">
+                            <i class="${iconClass}"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>${activityText}</h4>
+                            <p>Par ${activity.user || 'Système'}</p>
+                        </div>
+                        <div class="activity-time">${timeText}</div>
                     </div>
-                    <div class="activity-details">
-                        <h4>Erreur de connexion Firebase</h4>
-                        <p>Vérifiez votre connexion internet</p>
-                    </div>
-                </div>
-            `;
+                `;
+            });
+            
+            activityList.innerHTML = html;
         }
         
-        // Attendre que le DOM soit chargé
-        document.addEventListener('DOMContentLoaded', function() {
-            // Donner un peu de temps à Firebase pour se charger
-            setTimeout(loadDashboardData, 1000);
+        // Afficher les activités par défaut
+        function displayDefaultActivities() {
+            const activityList = document.getElementById('recentActivity');
             
-            // Rafraîchir les données toutes les 30 secondes
-            setInterval(loadDashboardData, 30000);
+            const defaultActivities = [
+                {
+                    description: "Livraison complétée pour Supermarché Atlas",
+                    type: "delivery",
+                    user: "Ahmed",
+                    time: "Il y a 10 min"
+                },
+                {
+                    description: "Nouvelle commande créée",
+                    type: "order",
+                    user: "Fatima",
+                    time: "Il y a 25 min"
+                },
+                {
+                    description: "Nouveau client ajouté: Restaurant Al Bahja",
+                    type: "client",
+                    user: "Karim",
+                    time: "Il y a 1 heure"
+                },
+                {
+                    description: "Stock mis à jour pour Farine Spéciale",
+                    type: "product",
+                    user: "Système",
+                    time: "Il y a 2 heures"
+                },
+                {
+                    description: "Paiement reçu de Boulangerie Moderne",
+                    type: "payment",
+                    user: "Youssef",
+                    time: "Il y a 3 heures"
+                }
+            ];
+            
+            let html = '';
+            
+            defaultActivities.forEach(activity => {
+                let iconClass = 'fas fa-truck';
+                let iconType = 'delivery';
+                
+                if (activity.type === 'order') {
+                    iconClass = 'fas fa-shopping-cart';
+                    iconType = 'order';
+                } else if (activity.type === 'client') {
+                    iconClass = 'fas fa-user-plus';
+                    iconType = 'client';
+                } else if (activity.type === 'product') {
+                    iconClass = 'fas fa-box';
+                    iconType = 'product';
+                } else if (activity.type === 'payment') {
+                    iconClass = 'fas fa-money-check';
+                    iconType = 'payment';
+                }
+                
+                html += `
+                    <div class="activity-item">
+                        <div class="activity-icon ${iconType}">
+                            <i class="${iconClass}"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>${activity.description}</h4>
+                            <p>Par ${activity.user}</p>
+                        </div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                `;
+            });
+            
+            activityList.innerHTML = html;
+        }
+        
+        // Charger les graphiques
+        function loadCharts() {
+            createDeliveriesChart();
+            createCategoryChart();
+        }
+        
+        // Créer le graphique des livraisons
+        function createDeliveriesChart() {
+            const ctx = document.getElementById('deliveriesChart').getContext('2d');
+            
+            // Données de démonstration
+            const labels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+            const data = [65, 59, 80, 81, 56, 55, 40, 65, 59, 80, 81, 56];
+            
+            if (deliveriesChart) {
+                deliveriesChart.destroy();
+            }
+            
+            deliveriesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Livraisons',
+                        data: data,
+                        borderColor: '#1a237e',
+                        backgroundColor: 'rgba(26, 35, 126, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            },
+                            ticks: {
+                                stepSize: 20
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gérer le changement de filtre
+            document.getElementById('deliveryChartFilter').addEventListener('change', function() {
+                updateDeliveriesChart(this.value);
+            });
+        }
+        
+        // Mettre à jour le graphique des livraisons
+        function updateDeliveriesChart(period) {
+            // Ici, vous chargeriez les données appropriées depuis Firebase
+            // selon la période sélectionnée
+            
+            let labels, data;
+            
+            switch(period) {
+                case 'month':
+                    labels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
+                    data = [45, 52, 48, 60];
+                    break;
+                case 'quarter':
+                    labels = ['Mois 1', 'Mois 2', 'Mois 3'];
+                    data = [180, 195, 210];
+                    break;
+                case 'year':
+                default:
+                    labels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+                    data = [65, 59, 80, 81, 56, 55, 40, 65, 59, 80, 81, 56];
+            }
+            
+            deliveriesChart.data.labels = labels;
+            deliveriesChart.data.datasets[0].data = data;
+            deliveriesChart.update();
+        }
+        
+        // Créer le graphique des catégories
+        function createCategoryChart() {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            
+            // Données de démonstration
+            const labels = ['Farine', 'Huile', 'Sucre', 'Lait', 'Boissons', 'Conserves', 'Nettoyage'];
+            const data = [25, 15, 12, 18, 10, 8, 12];
+            const backgroundColors = [
+                '#1a237e', '#0d47a1', '#1565c0', '#0277bd', 
+                '#2e7d32', '#f57c00', '#c62828'
+            ];
+            
+            if (categoryChart) {
+                categoryChart.destroy();
+            }
+            
+            categoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderWidth: 1,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'left',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+            
+            // Gérer le changement de filtre
+            document.getElementById('categoryChartFilter').addEventListener('change', function() {
+                updateCategoryChart(this.value);
+            });
+        }
+        
+        // Mettre à jour le graphique des catégories
+        function updateCategoryChart(type) {
+            // Ici, vous chargeriez les données appropriées depuis Firebase
+            // selon le type sélectionné (stock ou valeur)
+            
+            const labels = ['Farine', 'Huile', 'Sucre', 'Lait', 'Boissons', 'Conserves', 'Nettoyage'];
+            let data;
+            
+            if (type === 'value') {
+                // Données de valeur (en DH)
+                data = [12500, 8500, 6200, 9500, 4800, 4200, 6800];
+                categoryChart.data.datasets[0].data = data;
+                categoryChart.options.plugins.tooltip = {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw.toLocaleString()} DH`;
+                        }
+                    }
+                };
+            } else {
+                // Données de stock (quantités)
+                data = [25, 15, 12, 18, 10, 8, 12];
+                categoryChart.data.datasets[0].data = data;
+                categoryChart.options.plugins.tooltip = {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw} unités`;
+                        }
+                    }
+                };
+            }
+            
+            categoryChart.update();
+        }
+        
+        // Créer des données de démonstration si la base est vide
+        function createDemoData() {
+            try {
+                // Vérifier si des données existent déjà
+                const activitiesRef = database.ref('activities');
+                
+                activitiesRef.once('value').then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        // Créer des activités de démonstration
+                        const demoActivities = [
+                            {
+                                description: "Bienvenue dans le système ETTIJARA ALAAMA SOUSS",
+                                type: "system",
+                                user: "Admin",
+                                timestamp: new Date().toISOString()
+                            },
+                            {
+                                description: "Premier client ajouté: Restaurant Al Madina",
+                                type: "client",
+                                user: "Admin",
+                                timestamp: new Date(Date.now() - 3600000).toISOString() // Il y a 1 heure
+                            },
+                            {
+                                description: "Initialisation des produits de base",
+                                type: "product",
+                                user: "Système",
+                                timestamp: new Date(Date.now() - 7200000).toISOString() // Il y a 2 heures
+                            }
+                        ];
+                        
+                        // Ajouter chaque activité
+                        demoActivities.forEach(activity => {
+                            const newActivityRef = database.ref('activities').push();
+                            newActivityRef.set(activity);
+                        });
+                        
+                        console.log("Données de démonstration créées");
+                    }
+                });
+                
+            } catch (error) {
+                console.error("Erreur création données demo:", error);
+            }
+        }
+        
+        // Initialiser l'application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mettre à jour l'heure immédiatement
+            updateDateTime();
+            
+            // Mettre à jour l'heure toutes les secondes
+            setInterval(updateDateTime, 1000);
+            
+            // Vérifier la connexion Firebase
+            const connectedRef = database.ref(".info/connected");
+            connectedRef.on("value", function(snap) {
+                if (snap.val() === true) {
+                    console.log("Connecté à Firebase");
+                    
+                    // Charger les données du dashboard
+                    loadDashboardData();
+                    
+                    // Créer des données de démonstration si nécessaire
+                    createDemoData();
+                } else {
+                    console.log("Non connecté à Firebase");
+                    // Afficher les données par défaut
+                    loadStats();
+                    displayDefaultActivities();
+                    loadCharts();
+                }
+            });
+            
+            // Rafraîchir les données toutes les minutes
+            setInterval(() => {
+                if (connectedRef.snapshot && connectedRef.snapshot.val() === true) {
+                    loadDashboardData();
+                }
+            }, 60000);
+            
+            // Gérer le clic sur les cartes de statistiques
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const url = this.getAttribute('onclick')?.match(/window\.location\.href='(.*?)'/)?.[1];
+                    if (url) {
+                        window.location.href = url;
+                    }
+                });
+            });
         });
     </script>
 </body>
