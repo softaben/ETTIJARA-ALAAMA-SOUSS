@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETTIJARA ALAAMA SOUSS - Système de Livraison</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --bg: #f8fafc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg); direction: rtl; }
+
+        /* Interface Admin */
+        .header { background: var(--primary); color: white; height: 60px; display: flex; align-items: center; padding: 0 20px; position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .main-content { padding: 90px 20px 20px; }
+        .table-container { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 950px; margin: auto; }
+        
+        .controls { display: flex; gap: 20px; align-items: center; margin-bottom: 25px; background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        select { padding: 8px 15px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 600; color: var(--primary); outline: none; cursor: pointer; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #f8fafc; padding: 15px; border-bottom: 2px solid #e2e8f0; text-align: center; color: #64748b; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; text-align: center; color: #1e293b; font-weight: 500; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; background: var(--secondary); color: white; font-weight: bold; }
+
+        /* Modal Overlay */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 12px; width: 95%; max-width: 850px; }
+
+        /* --- MODULE IMPRESSION A5 --- */
+        #a5DeliveryNote { 
+            display: none; 
+            width: 148mm; 
+            min-height: 210mm; 
+            padding: 10mm; 
+            background: white; 
+            margin: 0 auto; 
+            color: #000;
+            direction: ltr;
+            position: relative;
+        }
+
+        .print-header { display: flex; justify-content: space-between; border-bottom: 2.5px solid #000; padding-bottom: 10px; }
+        .print-title { text-align: center; margin: 15px 0; }
+        .print-title h2 { border: 2px solid #000; display: inline-block; padding: 5px 25px; font-size: 18px; }
+
+        .print-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .print-table th, .print-table td { border: 1.5px solid #000; padding: 6px; font-size: 11px; text-align: center; }
+        .print-table th { background: #f2f2f2 !important; }
+        
+        .print-footer { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* الختم الدائري المعدل */
+        .round-stamp {
+            width: 110px;
+            height: 110px;
+            border: 3px double #1e3a8a;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #1e3a8a;
+            font-weight: bold;
+            transform: rotate(-12deg);
+        }
+
+        .round-stamp .comp-name { font-size: 9px; text-transform: uppercase; }
+        .round-stamp .depo-label { font-size: 8px; border-top: 1px solid #1e3a8a; width: 80%; margin-top: 2px; }
+        .round-stamp .depo-name { font-size: 10px; color: #b91c1c; }
+
+        .sig-box { border-top: 1px solid #000; width: 130px; margin-top: 40px; text-align: center; font-size: 11px; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #a5DeliveryNote, #a5DeliveryNote * { visibility: visible; }
+            #a5DeliveryNote { display: block !important; position: absolute; left: 0; top: 0; width: 148mm; height: 210mm; border: none; }
+            .no-print { display: none !important; }
+            @page { size: A5 portrait; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h2>ATIJARA AL AMA</h2>
+    </header>
+
+    <main class="main-content">
+        <div class="table-container">
+            <div class="controls">
+                <label><i class="fas fa-warehouse"></i> Sélectionner le Dépôt :</label>
+                <select id="depotSelector">
+                    <option value="Jihadia">Dépôt Jihadia</option>
+                    <option value="Ait Melloul">Dépôt Ait Melloul</option>
+                </select>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Réf Bon</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>BL-2026-0510</strong></td>
+                        <td>Alimentation Nour Agadir</td>
+                        <td>24/01/2026</td>
+                        <td><button class="btn" onclick="showPrint()"><i class="fas fa-eye"></i> Voir le Bon</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div class="modal" id="printModal">
+        <div class="modal-content">
+            <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3>Bon de Livraison A5</h3>
+                <div>
+                    <button class="btn" onclick="window.print()" style="background: #059669;">Imprimer</button>
+                    <button class="btn" onclick="closeModal()" style="background: #ef4444;">Fermer</button>
+                </div>
+            </div>
+            <div id="a5DeliveryNote">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { ref: "AL-10", label: "Farine Spéciale (25kg)", qty: 20, pu: 118.50 },
+            { ref: "AL-22", label: "Huile de Table (5L)", qty: 30, pu: 94.00 },
+            { ref: "AL-05", label: "Sucre Raffiné (2kg)", qty: 60, pu: 13.80 },
+            { ref: "AL-40", label: "Lait en Poudre (900g)", qty: 12, pu: 85.00 }
+        ];
+
+        function showPrint() {
+            const selectedDepot = document.getElementById('depotSelector').value;
+            const container = document.getElementById('a5DeliveryNote');
+            let grandTotal = 0;
+            
+            const rows = products.map(p => {
+                const total = p.qty * p.pu;
+                grandTotal += total;
+                return `<tr><td>${p.ref}</td><td style="text-align:left;">${p.label}</td><td>${p.qty}</td><td>${p.pu.toFixed(2)}</td><td>${total.toFixed(2)}</td></tr>`;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="print-header">
+                    <div style="text-align:left;">
+                        <h3 style="margin:0;">ATIJARA AL AMA</h3>
+                        <p style="font-size:9px;">Produits Alimentaires de Gros</p>
+                        <p style="font-size:9px;">Dépôt: <strong>${selectedDepot}</strong></p>
+                    </div>
+                    <div style="text-align:right; font-size:11px;">
+                        <p><strong>N°:</strong> BL-2026-0510</p>
+                        <p><strong>Date:</strong> 24/01/2026</p>
+                    </div>
+                </div>
+
+                <div class="print-title"><h2>BON DE LIVRAISON</h2></div>
+
+                <div style="margin-bottom:12px; text-align:left;">
+                    <p style="font-size:10px; font-weight:bold;">CLIENT :</p>
+                    <p style="font-size:13px;"><strong>Alimentation Nour Agadir</strong></p>
+                </div>
+
+                <table class="print-table">
+                    <thead>
+                        <tr>
+                            <th width="15%">Réf</th>
+                            <th width="45%">Désignation</th>
+                            <th width="10%">Qté</th>
+                            <th width="15%">P.U</th>
+                            <th width="15%">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" style="text-align:right; border:none; padding-top:12px;"><strong>TOTAL À PAYER (DH) :</strong></td>
+                            <td style="border:2.5px solid #000; padding-top:12px; background:#f9f9f9;"><strong>${grandTotal.toFixed(2)}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="print-footer">
+                    <div style="text-align:center;">
+                        <p>Signature du Client</p>
+                        <div class="sig-box"></div>
+                    </div>
+
+                    <div class="round-stamp">
+                        <div class="comp-name">Atijara Al Ama</div>
+                        <div class="depo-label">DÉPÔT</div>
+                        <div class="depo-name">${selectedDepot}</div>
+                    </div>
+
+                    <div style="text-align:center;">
+                        <p>Signature Société</p>
+                        <div class="sig-box"></div>
+                    </div>
+                </div>
+                <p style="font-size:8px; text-align:center; margin-top:25px; color:#555;">Document de livraison interne - Dépôt ${selectedDepot}</p>
+            `;
+            
+            document.getElementById('printModal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('printModal').style.display = 'none'; }
+    </script>
+</body>
+</html>
