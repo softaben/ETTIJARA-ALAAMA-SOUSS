@@ -5,8 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETTIJARA ALAAMA SOUSS - Tableau de Bord</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- Firebase 9 Modular SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAV_c5Gt_f1h5nZF47FcPjW_h4P24LYADk",
+            authDomain: "commerce22-610cc.firebaseapp.com",
+            databaseURL: "https://commerce22-610cc-default-rtdb.firebaseio.com",
+            projectId: "commerce22-610cc",
+            storageBucket: "commerce22-610cc.firebasestorage.app",
+            messagingSenderId: "458158894252",
+            appId: "1:458158894252:web:d1e640b2e16ef32d978309"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        // Make database available globally
+        window.firebaseDatabase = database;
+        window.firebaseRef = ref;
+        window.firebaseOnValue = onValue;
+        window.firebaseGet = get;
+    </script>
     <style>
         :root {
             --primary: #1a237e;
@@ -132,6 +157,18 @@
         .activity-details h4 { margin-bottom: 3px; }
         .activity-time { color: #888; font-size: 13px; }
         
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .loading i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
         /* Responsive */
         @media (max-width: 992px) {
             .sidebar { width: 70px; }
@@ -208,7 +245,12 @@
                     <h3>Livraisons du Jour</h3>
                     <i class="fas fa-truck-loading"></i>
                 </div>
-                <div class="card-value" id="todayDeliveries">24</div>
+                <div class="card-value" id="todayDeliveries">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <div>Chargement...</div>
+                    </div>
+                </div>
                 <div class="card-change">↑ 12% depuis hier</div>
             </div>
             <div class="card">
@@ -216,7 +258,12 @@
                     <h3>Clients Actifs</h3>
                     <i class="fas fa-users"></i>
                 </div>
-                <div class="card-value" id="activeClients">156</div>
+                <div class="card-value" id="activeClients">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <div>Chargement...</div>
+                    </div>
+                </div>
                 <div class="card-change">↑ 5 nouveaux ce mois</div>
             </div>
             <div class="card">
@@ -224,7 +271,12 @@
                     <h3>Produits en Stock</h3>
                     <i class="fas fa-boxes"></i>
                 </div>
-                <div class="card-value" id="totalProducts">1,248</div>
+                <div class="card-value" id="totalProducts">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <div>Chargement...</div>
+                    </div>
+                </div>
                 <div class="card-change">↓ 3% depuis hier</div>
             </div>
             <div class="card">
@@ -232,7 +284,12 @@
                     <h3>Revenu du Mois</h3>
                     <i class="fas fa-money-bill-wave"></i>
                 </div>
-                <div class="card-value" id="monthRevenue">245,780 DH</div>
+                <div class="card-value" id="monthRevenue">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <div>Chargement...</div>
+                    </div>
+                </div>
                 <div class="card-change">↑ 8% depuis le mois dernier</div>
             </div>
         </div>
@@ -240,71 +297,181 @@
         <div class="activity-container">
             <h2><i class="fas fa-history"></i> Activité Récente</h2>
             <div class="activity-list" id="recentActivity">
-                <!-- Les activités seront chargées depuis Firebase -->
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <div>Chargement des activités...</div>
+                </div>
             </div>
         </div>
     </main>
 
     <script>
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "ettijara-alaama-souss.firebaseapp.com",
-            databaseURL: "https://ettijara-alaama-souss-default-rtdb.firebaseio.com",
-            projectId: "ettijara-alaama-souss",
-            storageBucket: "ettijara-alaama-souss.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-        
-        // Initialiser Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        
         // Charger les données du tableau de bord
         function loadDashboardData() {
-            // Simuler le chargement de données
-            setTimeout(() => {
-                // Ici, vous pouvez charger les données depuis Firebase
-                // Exemple: database.ref('deliveries/today').once('value', ...)
+            // Check if Firebase is loaded
+            if (!window.firebaseDatabase) {
+                console.error("Firebase not loaded yet");
+                setTimeout(loadDashboardData, 500);
+                return;
+            }
+            
+            const db = window.firebaseDatabase;
+            const ref = window.firebaseRef;
+            const onValue = window.firebaseOnValue;
+            const get = window.firebaseGet;
+            
+            // Exemple de structure de données attendue dans Firebase:
+            // /deliveries/today -> nombre
+            // /clients/active -> nombre
+            // /products/total -> nombre
+            // /revenue/month -> montant
+            // /activities -> liste
+            
+            // Simuler des données pour l'exemple (remplacez par vos vraies requêtes)
+            try {
+                // Livraisons du jour
+                onValue(ref(db, 'deliveries/today'), (snapshot) => {
+                    const data = snapshot.val();
+                    document.getElementById('todayDeliveries').innerHTML = data || '0';
+                }, (error) => {
+                    console.error("Error loading deliveries:", error);
+                    document.getElementById('todayDeliveries').innerHTML = '0';
+                });
                 
-                // Pour l'exemple, nous allons simuler des données
-                const activities = [
-                    { type: "delivery", user: "Ahmed", details: "Livraison complétée pour Supermarché Atlas", time: "Il y a 10 min" },
-                    { type: "order", user: "Fatima", details: "Nouvelle commande créée", time: "Il y a 25 min" },
-                    { type: "client", user: "Karim", details: "Nouveau client ajouté: Restaurant Al Bahja", time: "Il y a 1 heure" },
-                    { type: "product", user: "System", details: "Stock mis à jour pour Farine Spéciale", time: "Il y a 2 heures" },
-                    { type: "payment", user: "Youssef", details: "Paiement reçu de Boulangerie Moderne", time: "Il y a 3 heures" }
-                ];
+                // Clients actifs
+                onValue(ref(db, 'clients/active'), (snapshot) => {
+                    const data = snapshot.val();
+                    document.getElementById('activeClients').innerHTML = data || '0';
+                }, (error) => {
+                    console.error("Error loading clients:", error);
+                    document.getElementById('activeClients').innerHTML = '0';
+                });
                 
-                const activityContainer = document.getElementById('recentActivity');
-                activityContainer.innerHTML = '';
+                // Produits en stock
+                onValue(ref(db, 'products/total'), (snapshot) => {
+                    const data = snapshot.val();
+                    document.getElementById('totalProducts').innerHTML = data ? data.toLocaleString() : '0';
+                }, (error) => {
+                    console.error("Error loading products:", error);
+                    document.getElementById('totalProducts').innerHTML = '0';
+                });
                 
-                activities.forEach(activity => {
-                    let iconClass = 'fas fa-truck';
-                    if (activity.type === 'order') iconClass = 'fas fa-shopping-cart';
-                    if (activity.type === 'client') iconClass = 'fas fa-user-plus';
-                    if (activity.type === 'product') iconClass = 'fas fa-box';
-                    if (activity.type === 'payment') iconClass = 'fas fa-money-check';
+                // Revenu du mois
+                onValue(ref(db, 'revenue/month'), (snapshot) => {
+                    const data = snapshot.val();
+                    document.getElementById('monthRevenue').innerHTML = data ? data + ' DH' : '0 DH';
+                }, (error) => {
+                    console.error("Error loading revenue:", error);
+                    document.getElementById('monthRevenue').innerHTML = '0 DH';
+                });
+                
+                // Activités récentes
+                onValue(ref(db, 'activities'), (snapshot) => {
+                    const activities = snapshot.val();
+                    const activityContainer = document.getElementById('recentActivity');
                     
-                    activityContainer.innerHTML += `
+                    if (!activities || Object.keys(activities).length === 0) {
+                        activityContainer.innerHTML = `
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <h4>Aucune activité récente</h4>
+                                    <p>Commencez à utiliser le système</p>
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    activityContainer.innerHTML = '';
+                    // Convertir l'objet en tableau et prendre les 5 derniers
+                    const activitiesArray = Object.values(activities)
+                        .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0))
+                        .slice(0, 5);
+                    
+                    activitiesArray.forEach(activity => {
+                        let iconClass = 'fas fa-truck';
+                        if (activity.type === 'order') iconClass = 'fas fa-shopping-cart';
+                        if (activity.type === 'client') iconClass = 'fas fa-user-plus';
+                        if (activity.type === 'product') iconClass = 'fas fa-box';
+                        if (activity.type === 'payment') iconClass = 'fas fa-money-check';
+                        if (activity.type === 'info') iconClass = 'fas fa-info-circle';
+                        
+                        // Formater le temps
+                        let timeText = 'Récemment';
+                        if (activity.timestamp) {
+                            const now = new Date();
+                            const activityTime = new Date(activity.timestamp);
+                            const diffMinutes = Math.floor((now - activityTime) / (1000 * 60));
+                            
+                            if (diffMinutes < 1) timeText = 'À l\'instant';
+                            else if (diffMinutes < 60) timeText = `Il y a ${diffMinutes} min`;
+                            else if (diffMinutes < 1440) timeText = `Il y a ${Math.floor(diffMinutes/60)} heures`;
+                            else timeText = `Il y a ${Math.floor(diffMinutes/1440)} jours`;
+                        }
+                        
+                        activityContainer.innerHTML += `
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="${iconClass}"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <h4>${activity.details || 'Activité'}</h4>
+                                    <p>Par ${activity.user || 'Système'}</p>
+                                </div>
+                                <div class="activity-time">${timeText}</div>
+                            </div>
+                        `;
+                    });
+                }, (error) => {
+                    console.error("Error loading activities:", error);
+                    document.getElementById('recentActivity').innerHTML = `
                         <div class="activity-item">
                             <div class="activity-icon">
-                                <i class="${iconClass}"></i>
+                                <i class="fas fa-exclamation-triangle"></i>
                             </div>
                             <div class="activity-details">
-                                <h4>${activity.details}</h4>
-                                <p>Par ${activity.user}</p>
+                                <h4>Erreur de chargement</h4>
+                                <p>Impossible de charger les activités</p>
                             </div>
-                            <div class="activity-time">${activity.time}</div>
                         </div>
                     `;
                 });
-            }, 500);
+                
+            } catch (error) {
+                console.error("Firebase error:", error);
+                showErrorState();
+            }
         }
         
-        // Charger les données au démarrage
-        document.addEventListener('DOMContentLoaded', loadDashboardData);
+        function showErrorState() {
+            document.getElementById('todayDeliveries').innerHTML = 'Erreur';
+            document.getElementById('activeClients').innerHTML = 'Erreur';
+            document.getElementById('totalProducts').innerHTML = 'Erreur';
+            document.getElementById('monthRevenue').innerHTML = 'Erreur';
+            document.getElementById('recentActivity').innerHTML = `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="activity-details">
+                        <h4>Erreur de connexion Firebase</h4>
+                        <p>Vérifiez votre connexion internet</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Attendre que le DOM soit chargé
+        document.addEventListener('DOMContentLoaded', function() {
+            // Donner un peu de temps à Firebase pour se charger
+            setTimeout(loadDashboardData, 1000);
+            
+            // Rafraîchir les données toutes les 30 secondes
+            setInterval(loadDashboardData, 30000);
+        });
     </script>
 </body>
 </html>
