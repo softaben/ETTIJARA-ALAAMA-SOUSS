@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="fr" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETTIJARA ALAAMA SOUSS - Rapports</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1a237e;
+            --secondary: #0d47a1;
+            --accent: #1565c0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f5f7fa; direction: rtl; color: #333; padding: 20px; }
+
+        .header { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .reports-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .report-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .report-header h3 {
+            color: var(--primary);
+            margin: 0;
+        }
+        
+        .time-filters {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .time-btn {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .time-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .stat-change {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .stat-change.positive {
+            color: #2e7d32;
+        }
+        
+        .stat-change.negative {
+            color: #c62828;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: right;
+            color: var(--primary);
+            font-weight: 700;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f3f4;
+            color: #555;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #555;
+        }
+        
+        @media (max-width: 768px) {
+            .report-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .time-filters {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .time-btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-chart-bar"></i> ETTIJARA ALAAMA SOUSS - Rapports & Statistiques</h1>
+        <div style="display: flex; gap: 10px;">
+            <a href="dashboard.html" style="color: white; text-decoration: none;">
+                <i class="fas fa-arrow-right"></i> Tableau de Bord
+            </a>
+        </div>
+    </div>
+    
+    <div class="reports-container">
+        <!-- Rapport des Ventes -->
+        <div class="report-card">
+            <div class="report-header">
+                <h3><i class="fas fa-chart-line"></i> Rapport des Ventes</h3>
+                <div class="time-filters">
+                    <button class="time-btn active" data-period="week">Cette Semaine</button>
+                    <button class="time-btn" data-period="month">Ce Mois</button>
+                    <button class="time-btn" data-period="quarter">Ce Trimestre</button>
+                    <button class="time-btn" data-period="year">Cette Année</button>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value">245,780 DH</div>
+                    <div class="stat-label">Chiffre d'Affaires</div>
+                    <div class="stat-change positive">↑ 12.5% depuis le mois dernier</div>
+                </div>
+                
+                <div class="stat-box">
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">Clients Actifs</div>
+                    <div class="stat-change positive">↑ 8% depuis le mois dernier</div>
+                </div>
+                
+                <div class="stat-box">
+                    <div class="stat-value">428</div>
+                    <div class="stat-label">Livraisons Effectuées</div>
+                    <div class="stat-change positive">↑ 15.2% depuis le mois dernier</div>
+                </div>
+                
+                <div class="stat-box">
+                    <div class="stat-value">1,248</div>
+                    <div class="stat-label">Produits Vendus</div>
+                    <div class="stat-change positive">↑ 9.8% depuis le mois dernier</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+            
+            <div class="export-buttons">
+                <button class="btn btn-primary">
+                    <i class="fas fa-file-excel"></i> Exporter en Excel
+                </button>
+                <button class="btn btn-success">
+                    <i class="fas fa-file-pdf"></i> Exporter en PDF
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-print"></i> Imprimer le Rapport
+                </button>
+            </div>
+        </div>
+        
+        <!-- Top Produits -->
+        <div class="report-card">
+            <div class="report-header">
+                <h3><i class="fas fa-star"></i> Top 5 des Produits</h3>
+                <select style="padding: 8px 15px; border-radius: 6px; border: 1px solid #ddd;">
+                    <option>Par Quantité Vendue</option>
+                    <option>Par Chiffre d'Affaires</option>
+                    <option>Par Marge</option>
+                </select>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="productsChart"></canvas>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Quantité Vendue</th>
+                            <th>Chiffre d'Affaires</th>
+                            <th>Marge</th>
+                            <th>Part de Marché</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Farine Spéciale (25kg)</strong></td>
+                            <td>1,250 unités</td>
+                            <td>148,125 DH</td>
+                            <td>29,625 DH</td>
+                            <td>22.5%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Huile de Table (5L)</strong></td>
+                            <td>980 unités</td>
+                            <td>92,120 DH</td>
+                            <td>18,424 DH</td>
+                            <td>18.2%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sucre Raffiné (2kg)</strong></td>
+                            <td>2,150 unités</td>
+                            <td>29,670 DH</td>
+                            <td>5,934 DH</td>
+                            <td>15.8%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Lait en Poudre (900g)</strong></td>
+                            <td>720 unités</td>
+                            <td>61,200 DH</td>
+                            <td>12,240 DH</td>
+                            <td>12.5%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pâtes Alimentaires (1kg)</strong></td>
+                            <td>1,850 unités</td>
+                            <td>15,725 DH</td>
+                            <td>3,145 DH</td>
+                            <td>10.2%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Performance par Dépôt -->
+        <div class="report-card">
+            <div class="report-header">
+                <h3><i class="fas fa-warehouse"></i> Performance par Dépôt</h3>
+                <div>
+                    <select style="padding: 8px 15px; border-radius: 6px; border: 1px solid #ddd;">
+                        <option>Janvier 2026</option>
+                        <option>Décembre 2025</option>
+                        <option>Novembre 2025</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="depotsChart"></canvas>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dépôt</th>
+                            <th>Responsable</th>
+                            <th>Livraisons</th>
+                            <th>Chiffre d'Affaires</th>
+                            <th>Clients</th>
+                            <th>Taux de Satisfaction</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Dépôt Jihadia</strong></td>
+                            <td>Ahmed Alami</td>
+                            <td>156</td>
+                            <td>145,780 DH</td>
+                            <td>62</td>
+                            <td><span style="color: #2e7d32; font-weight: bold;">98%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dépôt Ait Melloul</strong></td>
+                            <td>Fatima Zahra</td>
+                            <td>112</td>
+                            <td>89,450 DH</td>
+                            <td>38</td>
+                            <td><span style="color: #2e7d32; font-weight: bold;">96%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dépôt Inezgane</strong></td>
+                            <td>Karim Bennani</td>
+                            <td>98</td>
+                            <td>62,300 DH</td>
+                            <td>34</td>
+                            <td><span style="color: #ff9800; font-weight: bold;">92%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dépôt Dcheira</strong></td>
+                            <td>Youssef Lafki</td>
+                            <td>62</td>
+                            <td>28,250 DH</td>
+                            <td>22</td>
+                            <td><span style="color: #2e7d32; font-weight: bold;">95%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Rapport des Paiements -->
+        <div class="report-card">
+            <div class="report-header">
+                <h3><i class="fas fa-money-bill-wave"></i> État des Paiements</h3>
+                <div class="time-filters">
+                    <button class="time-btn active" data-period="pending">En Attente</button>
+                    <button class="time-btn" data-period="paid">Payés</button>
+                    <button class="time-btn" data-period="overdue">En Retard</button>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value">325,420 DH</div>
+                    <div class="stat-label">Total à Recevoir</div>
+                </div>
+                
+                <div class="stat-box">
+                    <div class="stat-value">245,780 DH</div>
+                    <div class="stat-label">Payés ce Mois</div>
+                </div>
+                
+                <div class="stat-box">
+                    <div class="stat-value">79,640 DH</div>
+                    <div class="stat-label">En Retard</div>
+                </div>
+                
+                <div class="stat-box">
+                    <div class="stat-value">92%</div>
+                    <div class="stat-label">Taux de Recouvrement</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="paymentsChart"></canvas>
+            </div>
+            
+            <div class="export-buttons">
+                <button class="btn btn-primary">
+                    <i class="fas fa-envelope"></i> Envoyer des Rappels
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-file-invoice"></i> Générer les Factures
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion des filtres de temps
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Retirer la classe active de tous les boutons dans le même groupe
+                this.parentElement.querySelectorAll('.time-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                
+                // Ajouter la classe active au bouton cliqué
+                this.classList.add('active');
+                
+                // Ici, vous mettriez à jour les graphiques en fonction de la période
+                const period = this.getAttribute('data-period');
+                updateCharts(period);
+            });
+        });
+        
+        // Initialiser les graphiques
+        function initializeCharts() {
+            // Graphique des ventes
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            const salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+                    datasets: [{
+                        label: 'Chiffre d\'Affaires (DH)',
+                        data: [28500, 31200, 29800, 36500, 41800, 39200, 38700],
+                        borderColor: '#1a237e',
+                        backgroundColor: 'rgba(26, 35, 126, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            rtl: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' DH';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Graphique des produits
+            const productsCtx = document.getElementById('productsChart').getContext('2d');
+            const productsChart = new Chart(productsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Farine', 'Huile', 'Sucre', 'Lait', 'Pâtes'],
+                    datasets: [{
+                        label: 'Quantité Vendue',
+                        data: [1250, 980, 2150, 720, 1850],
+                        backgroundColor: [
+                            'rgba(26, 35, 126, 0.7)',
+                            'rgba(13, 71, 161, 0.7)',
+                            'rgba(21, 101, 192, 0.7)',
+                            'rgba(66, 165, 245, 0.7)',
+                            'rgba(144, 202, 249, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(26, 35, 126)',
+                            'rgb(13, 71, 161)',
+                            'rgb(21, 101, 192)',
+                            'rgb(66, 165, 245)',
+                            'rgb(144, 202, 249)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            rtl: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Graphique des dépôts
+            const depotsCtx = document.getElementById('depotsChart').getContext('2d');
+            const depotsChart = new Chart(depotsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Dépôt Jihadia', 'Dépôt Ait Melloul', 'Dépôt Inezgane', 'Dépôt Dcheira'],
+                    datasets: [{
+                        label: 'Chiffre d\'Affaires (DH)',
+                        data: [145780, 89450, 62300, 28250],
+                        backgroundColor: [
+                            'rgba(26, 35, 126, 0.7)',
+                            'rgba(13, 71, 161, 0.7)',
+                            'rgba(21, 101, 192, 0.7)',
+                            'rgba(66, 165, 245, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(26, 35, 126)',
+                            'rgb(13, 71, 161)',
+                            'rgb(21, 101, 192)',
+                            'rgb(66, 165, 245)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            rtl: true
+                        }
+                    }
+                }
+            });
+            
+            // Graphique des paiements
+            const paymentsCtx = document.getElementById('paymentsChart').getContext('2d');
+            const paymentsChart = new Chart(paymentsCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Payés', 'En Attente', 'En Retard'],
+                    datasets: [{
+                        label: 'Montant (DH)',
+                        data: [245780, 156420, 79640],
+                        backgroundColor: [
+                            'rgba(46, 125, 50, 0.7)',
+                            'rgba(255, 152, 0, 0.7)',
+                            'rgba(198, 40, 40, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(46, 125, 50)',
+                            'rgb(255, 152, 0)',
+                            'rgb(198, 40, 40)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            rtl: true
+                        }
+                    }
+                }
+            });
+            
+            // Stocker les graphiques pour les mettre à jour plus tard
+            window.charts = {
+                sales: salesChart,
+                products: productsChart,
+                depots: depotsChart,
+                payments: paymentsChart
+            };
+        }
+        
+        // Mettre à jour les graphiques en fonction de la période
+        function updateCharts(period) {
+            // Dans un vrai projet, vous chargeriez de nouvelles données depuis Firebase
+            // Pour cet exemple, nous allons simplement simuler un changement
+            
+            if (period === 'month') {
+                // Données pour le mois
+                if (window.charts && window.charts.sales) {
+                    window.charts.sales.data.datasets[0].data = [28500, 31200, 29800, 36500, 41800, 39200, 38700];
+                    window.charts.sales.update();
+                }
+            } else if (period === 'quarter') {
+                // Données pour le trimestre
+                if (window.charts && window.charts.sales) {
+                    window.charts.sales.data.labels = ['Jan', 'Fév', 'Mar'];
+                    window.charts.sales.data.datasets[0].data = [245780, 218450, 265320];
+                    window.charts.sales.update();
+                }
+            }
+        }
+        
+        // Initialiser les graphiques au chargement de la page
+        document.addEventListener('DOMContentLoaded', initializeCharts);
+    </script>
+</body>
+</html>
