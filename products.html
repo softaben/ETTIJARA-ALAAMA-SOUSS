@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETTIJARA ALAAMA SOUSS - Gestion des Produits</title>
+    <title>ETTIJARA ALAAMA SOUSS - Gestion des Produits par Dépôt</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase SDK -->
@@ -82,6 +82,68 @@
             margin-right: 250px; 
             padding: 90px 30px 30px; 
             min-height: calc(100vh - 70px);
+        }
+        
+        /* Depot Selector */
+        .depot-selector-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+        .depot-selector {
+            flex: 1;
+            min-width: 300px;
+        }
+        .depot-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .depot-selector select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--light);
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s;
+        }
+        .depot-selector select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .selected-depot-info {
+            flex: 2;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 8px;
+            border-right: 4px solid var(--primary);
+        }
+        .depot-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .depot-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #555;
         }
         
         /* Page Header */
@@ -299,6 +361,7 @@
         .action-btn.edit { background-color: #e3f2fd; color: var(--primary); }
         .action-btn.delete { background-color: #ffebee; color: var(--danger); }
         .action-btn.view { background-color: #e8f5e8; color: var(--success); }
+        .action-btn.move { background-color: #fff3e0; color: var(--warning); }
         .action-btn:hover { opacity: 0.8; }
         
         /* Pagination */
@@ -478,17 +541,37 @@
             flex-wrap: wrap;
         }
         
+        /* Depot Warning */
+        .depot-warning {
+            background: #fff3e0;
+            border: 1px solid #ffb74d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .depot-warning i {
+            color: var(--warning);
+            font-size: 24px;
+        }
+        
         /* Responsive */
         @media (max-width: 992px) {
             .sidebar { width: 70px; }
             .sidebar-item span { display: none; }
             .main-content { margin-right: 70px; }
             .search-box { min-width: 100%; }
+            .depot-selector { min-width: 100%; }
+            .depot-selector-container { flex-direction: column; }
         }
         @media (max-width: 768px) {
             .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
             .form-row { flex-direction: column; }
             .products-table th, .products-table td { padding: 10px; }
+            .action-buttons { flex-direction: column; }
+            .action-btn { width: 100%; }
         }
     </style>
 </head>
@@ -549,120 +632,163 @@
     </nav>
 
     <main class="main-content">
-        <div class="page-header">
-            <h2><i class="fas fa-boxes"></i> Gestion des Produits</h2>
-            <div class="actions">
-                <button class="btn btn-outline" id="exportBtn">
-                    <i class="fas fa-download"></i> Exporter
-                </button>
-                <button class="btn btn-primary" id="addProductBtn">
-                    <i class="fas fa-plus"></i> Ajouter Produit
-                </button>
+        <!-- Sélecteur de Dépôt -->
+        <div class="depot-selector-container">
+            <div class="depot-selector">
+                <label for="depotSelect"><i class="fas fa-warehouse"></i> Sélectionner un Dépôt</label>
+                <select id="depotSelect" onchange="changeDepot()">
+                    <option value="">-- Choisir un dépôt --</option>
+                </select>
             </div>
-        </div>
-        
-        <div class="quick-actions">
-            <button class="btn btn-outline btn-sm" onclick="adjustStock('increase')">
-                <i class="fas fa-plus-circle"></i> Augmenter Stock
-            </button>
-            <button class="btn btn-outline btn-sm" onclick="adjustStock('decrease')">
-                <i class="fas fa-minus-circle"></i> Diminuer Stock
-            </button>
-            <button class="btn btn-outline btn-sm" onclick="checkLowStock()">
-                <i class="fas fa-exclamation-triangle"></i> Stock Faible
-            </button>
-            <button class="btn btn-outline btn-sm" onclick="createSampleData()">
-                <i class="fas fa-vial"></i> Données Test
-            </button>
-        </div>
-        
-        <div class="stats-cards">
-            <div class="stat-card">
-                <div class="stat-icon total">
-                    <i class="fas fa-box"></i>
-                </div>
-                <div class="stat-details">
-                    <h3>TOTAL PRODUITS</h3>
-                    <div class="value" id="totalProducts">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon low">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <div class="stat-details">
-                    <h3>STOCK FAIBLE</h3>
-                    <div class="value" id="lowStock">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon value">
-                    <i class="fas fa-money-bill-wave"></i>
-                </div>
-                <div class="stat-details">
-                    <h3>VALEUR STOCK</h3>
-                    <div class="value" id="stockValue">0 DH</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon categories">
-                    <i class="fas fa-tags"></i>
-                </div>
-                <div class="stat-details">
-                    <h3>CATÉGORIES</h3>
-                    <div class="value" id="totalCategories">0</div>
+            <div class="selected-depot-info" id="depotInfo" style="display: none;">
+                <div class="depot-name" id="depotName">Nom du Dépôt</div>
+                <div class="depot-details">
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="depotLocation">Agadir</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-user"></i>
+                        <span id="depotManager">Responsable</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-phone"></i>
+                        <span id="depotPhone">0528 88 99 99</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-boxes"></i>
+                        <span id="depotProducts">0 produits</span>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="search-filter">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Rechercher produit par nom, code, référence...">
+        <!-- Message d'avertissement si aucun dépôt n'est sélectionné -->
+        <div class="depot-warning" id="depotWarning" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Attention : Aucun dépôt sélectionné</strong>
+                <p>Veuillez sélectionner un dépôt pour afficher et gérer les produits.</p>
             </div>
-            <select class="filter-select" id="categoryFilter">
-                <option value="">Toutes catégories</option>
-                <!-- Les catégories seront chargées dynamiquement -->
-            </select>
-            <select class="filter-select" id="stockFilter">
-                <option value="">Tous les stocks</option>
-                <option value="high">Stock élevé</option>
-                <option value="medium">Stock moyen</option>
-                <option value="low">Stock faible</option>
-                <option value="out">Rupture</option>
-            </select>
-            <button class="btn btn-outline" id="resetFiltersBtn">
-                <i class="fas fa-redo"></i> Réinitialiser
-            </button>
         </div>
-        
-        <div class="products-container">
-            <div class="table-responsive">
-                <table class="products-table">
-                    <thead>
-                        <tr>
-                            <th>PRODUIT</th>
-                            <th>CODE</th>
-                            <th>CATÉGORIE</th>
-                            <th>PRIX</th>
-                            <th>STOCK</th>
-                            <th>VALEUR</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productsTableBody">
-                        <tr>
-                            <td colspan="7" class="loading">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <div>Chargement des produits...</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+        <!-- Contenu principal (caché si aucun dépôt) -->
+        <div id="mainContent" style="display: none;">
+            <div class="page-header">
+                <h2><i class="fas fa-boxes"></i> Gestion des Produits</h2>
+                <div class="actions">
+                    <button class="btn btn-outline" id="exportBtn">
+                        <i class="fas fa-download"></i> Exporter
+                    </button>
+                    <button class="btn btn-primary" id="addProductBtn">
+                        <i class="fas fa-plus"></i> Ajouter Produit
+                    </button>
+                </div>
             </div>
             
-            <div class="pagination" id="pagination">
-                <!-- Pagination sera générée ici -->
+            <div class="quick-actions">
+                <button class="btn btn-outline btn-sm" onclick="adjustStock('increase')">
+                    <i class="fas fa-plus-circle"></i> Augmenter Stock
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="adjustStock('decrease')">
+                    <i class="fas fa-minus-circle"></i> Diminuer Stock
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="transferToOtherDepot()">
+                    <i class="fas fa-exchange-alt"></i> Transférer vers autre dépôt
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="checkLowStock()">
+                    <i class="fas fa-exclamation-triangle"></i> Stock Faible
+                </button>
+            </div>
+            
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon total">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>TOTAL PRODUITS</h3>
+                        <div class="value" id="totalProducts">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon low">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>STOCK FAIBLE</h3>
+                        <div class="value" id="lowStock">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon value">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>VALEUR STOCK</h3>
+                        <div class="value" id="stockValue">0 DH</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon categories">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>CATÉGORIES</h3>
+                        <div class="value" id="totalCategories">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="search-filter">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Rechercher produit par nom, code, référence...">
+                </div>
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">Toutes catégories</option>
+                    <!-- Les catégories seront chargées dynamiquement -->
+                </select>
+                <select class="filter-select" id="stockFilter">
+                    <option value="">Tous les stocks</option>
+                    <option value="high">Stock élevé</option>
+                    <option value="medium">Stock moyen</option>
+                    <option value="low">Stock faible</option>
+                    <option value="out">Rupture</option>
+                </select>
+                <button class="btn btn-outline" id="resetFiltersBtn">
+                    <i class="fas fa-redo"></i> Réinitialiser
+                </button>
+            </div>
+            
+            <div class="products-container">
+                <div class="table-responsive">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>PRODUIT</th>
+                                <th>CODE</th>
+                                <th>CATÉGORIE</th>
+                                <th>PRIX</th>
+                                <th>STOCK</th>
+                                <th>VALEUR</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td colspan="7" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Chargement des produits...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination" id="pagination">
+                    <!-- Pagination sera générée ici -->
+                </div>
             </div>
         </div>
     </main>
@@ -742,7 +868,7 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="productLocation">Emplacement</label>
+                            <label for="productLocation">Emplacement dans le dépôt</label>
                             <input type="text" id="productLocation" class="form-control" placeholder="Ex: Rayon A, Étagère 3">
                         </div>
                         <div class="form-group">
@@ -766,6 +892,7 @@
                     </div>
                     
                     <input type="hidden" id="productId">
+                    <input type="hidden" id="currentDepotId">
                 </form>
             </div>
             <div class="modal-footer">
@@ -812,46 +939,110 @@
                     
                     <div class="form-group">
                         <label for="adjustReason">Raison</label>
-                        <select id="adjustReason" class="form-control">
-                            <option value="inventory">Inventaire</option>
-                            <option value="purchase">Nouvel achat</option>
-                            <option value="sale">Vente</option>
-                            <option value="damage">Produit endommagé</option>
-                            <option value="expired">Produit expiré</option>
-                            <option value="adjustment">Ajustement manuel</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="adjustNotes">Notes</label>
-                        <textarea id="adjustNotes" class="form-control" rows="2"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" id="cancelStockBtn">Annuler</button>
-                <button class="btn btn-primary" id="saveStockBtn">Ajuster Stock</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal Confirmation Suppression -->
-    <div class="modal" id="deleteModal">
-        <div class="modal-content" style="max-width: 400px;">
-            <div class="modal-header">
-                <h3><i class="fas fa-exclamation-triangle"></i> Confirmation</h3>
-                <button class="close-modal" id="closeDeleteModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.</p>
-                <p><strong id="deleteProductName"></strong></p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" id="cancelDeleteBtn">Annuler</button>
-                <button class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
+                            <select id="adjustReason" class="form-control">
+                                <option value="inventory">Inventaire</option>
+                                <option value="purchase">Nouvel achat</option>
+                                <option value="sale">Vente</option>
+                                <option value="damage">Produit endommagé</option>
+                                <option value="expired">Produit expiré</option>
+                                <option value="adjustment">Ajustement manuel</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="adjustNotes">Notes</label>
+                            <textarea id="adjustNotes" class="form-control" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancelStockBtn">Annuler</button>
+                    <button class="btn btn-primary" id="saveStockBtn">Ajuster Stock</button>
+                </div>
             </div>
         </div>
-    </div>
+        
+        <!-- Modal Transfert vers autre dépôt -->
+        <div class="modal" id="transferModal">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h3><i class="fas fa-exchange-alt"></i> Transfert de Stock vers autre Dépôt</h3>
+                    <button class="close-modal" id="closeTransferModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="transferForm">
+                        <div class="form-group">
+                            <label>Depuis le dépôt:</label>
+                            <div class="form-control" style="background: #f5f5f5;">
+                                <strong id="fromDepotName">--</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="toDepotSelect">Vers le dépôt *</label>
+                            <select id="toDepotSelect" class="form-control" required>
+                                <option value="">Sélectionner un dépôt</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="transferProduct">Produit à transférer *</label>
+                            <select id="transferProduct" class="form-control" required>
+                                <option value="">Sélectionner un produit</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Stock disponible: <span id="availableStockForTransfer">0</span></label>
+                            </div>
+                            <div class="form-group">
+                                <label for="transferQuantity">Quantité à transférer *</label>
+                                <input type="number" id="transferQuantity" class="form-control" required min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="transferReason">Raison du transfert</label>
+                            <select id="transferReason" class="form-control">
+                                <option value="inventory">Rééquilibrage d'inventaire</option>
+                                <option value="demand">Demande spécifique</option>
+                                <option value="shortage">Pénurie locale</option>
+                                <option value="expiration">Rotation de stock</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="transferNotes">Notes</label>
+                            <textarea id="transferNotes" class="form-control" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancelTransferBtn">Annuler</button>
+                    <button class="btn btn-primary" id="saveTransferBtn">Exécuter Transfert</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Confirmation Suppression -->
+        <div class="modal" id="deleteModal">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Confirmation</h3>
+                    <button class="close-modal" id="closeDeleteModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.</p>
+                    <p><strong id="deleteProductName"></strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancelDeleteBtn">Annuler</button>
+                    <button class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
+                </div>
+            </div>
+        </div>
 
     <script>
         // Configuration Firebase
@@ -877,13 +1068,16 @@
         const database = firebase.database();
         
         // Variables globales
+        let currentDepot = null;
+        let depots = [];
         let products = [];
-        let filteredProducts = [];
+        let inventory = [];
         let currentPage = 1;
         const productsPerPage = 10;
         let productToDelete = null;
         let isEditMode = false;
         let categories = new Set();
+        let filteredProducts = [];
         
         // Fonction pour afficher une notification
         function showToast(message, type = "info") {
@@ -901,7 +1095,55 @@
             }, 3000);
         }
         
-        // Charger les produits depuis Firebase
+        // Charger les données initiales
+        function loadInitialData() {
+            loadDepots();
+            loadProducts();
+            loadInventory();
+        }
+        
+        // Charger les dépôts
+        function loadDepots() {
+            try {
+                const depotsRef = database.ref('depots');
+                
+                depotsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    depots = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            depots.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        // Remplir le sélecteur de dépôts
+                        updateDepotSelector();
+                        
+                        // Si un dépôt est déjà sélectionné (sauvegardé dans localStorage)
+                        const savedDepotId = localStorage.getItem('selectedDepotId');
+                        if (savedDepotId) {
+                            const savedDepot = depots.find(d => d.id === savedDepotId);
+                            if (savedDepot) {
+                                document.getElementById('depotSelect').value = savedDepotId;
+                                changeDepot();
+                            }
+                        }
+                    }
+                    
+                }, (error) => {
+                    console.error("Erreur de chargement des dépôts:", error);
+                    showToast("Erreur de chargement des dépôts", "error");
+                });
+                
+            } catch (error) {
+                console.error("Erreur dans loadDepots:", error);
+            }
+        }
+        
+        // Charger les produits
         function loadProducts() {
             try {
                 const productsRef = database.ref('products');
@@ -909,54 +1151,183 @@
                 productsRef.on('value', (snapshot) => {
                     const data = snapshot.val();
                     products = [];
-                    categories.clear();
                     
                     if (data) {
                         Object.keys(data).forEach(key => {
-                            const product = {
+                            products.push({
                                 id: key,
                                 ...data[key]
-                            };
-                            products.push(product);
-                            
-                            // Ajouter la catégorie à l'ensemble
-                            if (product.category) {
-                                categories.add(product.category);
-                            }
+                            });
                         });
                         
-                        // Mettre à jour les statistiques
-                        updateStats();
-                        
-                        // Mettre à jour les filtres de catégorie
-                        updateCategoryFilter();
-                        
-                        // Appliquer les filtres
-                        applyFilters();
-                        
-                        // Mettre à jour la pagination
-                        updatePagination();
-                        
-                        // Afficher les produits
-                        displayProducts();
-                    } else {
-                        // Aucun produit trouvé
-                        showEmptyState();
+                        // Mettre à jour les sélecteurs de produits si un dépôt est sélectionné
+                        if (currentDepot) {
+                            updateProductSelectors();
+                        }
                     }
                     
                 }, (error) => {
                     console.error("Erreur de chargement des produits:", error);
-                    showErrorState("Erreur de chargement des produits");
                 });
                 
             } catch (error) {
                 console.error("Erreur dans loadProducts:", error);
-                showErrorState("Erreur de connexion à la base de données");
             }
+        }
+        
+        // Charger l'inventaire
+        function loadInventory() {
+            try {
+                const inventoryRef = database.ref('inventory');
+                
+                inventoryRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    inventory = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            inventory.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        // Si un dépôt est sélectionné, afficher ses produits
+                        if (currentDepot) {
+                            loadDepotProducts();
+                        }
+                    }
+                    
+                }, (error) => {
+                    console.error("Erreur de chargement de l'inventaire:", error);
+                });
+                
+            } catch (error) {
+                console.error("Erreur dans loadInventory:", error);
+            }
+        }
+        
+        // Mettre à jour le sélecteur de dépôts
+        function updateDepotSelector() {
+            const depotSelect = document.getElementById('depotSelect');
+            let options = '<option value="">-- Choisir un dépôt --</option>';
+            
+            depots.forEach(depot => {
+                options += `<option value="${depot.id}">${depot.name} - ${depot.city} (${depot.code})</option>`;
+            });
+            
+            depotSelect.innerHTML = options;
+        }
+        
+        // Changer de dépôt sélectionné
+        function changeDepot() {
+            const depotId = document.getElementById('depotSelect').value;
+            
+            if (!depotId) {
+                // Cacher le contenu principal et afficher l'avertissement
+                document.getElementById('mainContent').style.display = 'none';
+                document.getElementById('depotWarning').style.display = 'flex';
+                document.getElementById('depotInfo').style.display = 'none';
+                currentDepot = null;
+                localStorage.removeItem('selectedDepotId');
+                return;
+            }
+            
+            // Trouver le dépôt sélectionné
+            currentDepot = depots.find(d => d.id === depotId);
+            
+            if (currentDepot) {
+                // Sauvegarder dans localStorage
+                localStorage.setItem('selectedDepotId', depotId);
+                
+                // Afficher les informations du dépôt
+                displayDepotInfo();
+                
+                // Cacher l'avertissement et afficher le contenu principal
+                document.getElementById('depotWarning').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('depotInfo').style.display = 'block';
+                
+                // Charger les produits du dépôt
+                loadDepotProducts();
+                
+                // Mettre à jour les sélecteurs de produits
+                updateProductSelectors();
+                
+                // Mettre à jour le nom du dépôt dans le modal de transfert
+                document.getElementById('fromDepotName').textContent = currentDepot.name;
+                
+                showToast(`Dépôt "${currentDepot.name}" sélectionné`, "success");
+            }
+        }
+        
+        // Afficher les informations du dépôt
+        function displayDepotInfo() {
+            if (!currentDepot) return;
+            
+            document.getElementById('depotName').textContent = currentDepot.name;
+            document.getElementById('depotLocation').textContent = currentDepot.city;
+            document.getElementById('depotManager').textContent = currentDepot.manager || 'Non spécifié';
+            document.getElementById('depotPhone').textContent = currentDepot.phone || 'Non spécifié';
+            
+            // Compter les produits dans ce dépôt
+            const depotProducts = inventory.filter(item => item.depotId === currentDepot.id);
+            document.getElementById('depotProducts').textContent = `${depotProducts.length} produits`;
+        }
+        
+        // Charger les produits du dépôt sélectionné
+        function loadDepotProducts() {
+            if (!currentDepot) return;
+            
+            // Filtrer l'inventaire pour ce dépôt
+            const depotInventory = inventory.filter(item => item.depotId === currentDepot.id);
+            
+            // Associer les produits avec leur stock
+            let depotProducts = [];
+            categories.clear();
+            
+            depotInventory.forEach(invItem => {
+                const product = products.find(p => p.id === invItem.productId);
+                if (product) {
+                    const productWithStock = {
+                        ...product,
+                        inventoryId: invItem.id,
+                        stock: invItem.quantity || 0,
+                        minStock: invItem.minStock || product.minStock || 10,
+                        location: invItem.location || product.location
+                    };
+                    
+                    depotProducts.push(productWithStock);
+                    
+                    // Ajouter la catégorie à l'ensemble
+                    if (product.category) {
+                        categories.add(product.category);
+                    }
+                }
+            });
+            
+            products = depotProducts;
+            
+            // Mettre à jour les statistiques
+            updateStats();
+            
+            // Mettre à jour les filtres de catégorie
+            updateCategoryFilter();
+            
+            // Appliquer les filtres
+            applyFilters();
+            
+            // Mettre à jour la pagination
+            updatePagination();
+            
+            // Afficher les produits
+            displayProducts();
         }
         
         // Mettre à jour les statistiques
         function updateStats() {
+            if (!currentDepot) return;
+            
             const total = products.length;
             
             // Calculer le stock faible
@@ -993,6 +1364,35 @@
             });
             
             categoryFilter.innerHTML = options;
+        }
+        
+        // Mettre à jour les sélecteurs de produits
+        function updateProductSelectors() {
+            const adjustProduct = document.getElementById('adjustProduct');
+            const transferProduct = document.getElementById('transferProduct');
+            
+            let options = '<option value="">Sélectionner un produit</option>';
+            
+            products.forEach(product => {
+                options += `<option value="${product.id}">${product.name} (${product.code})</option>`;
+            });
+            
+            adjustProduct.innerHTML = options;
+            transferProduct.innerHTML = options;
+        }
+        
+        // Mettre à jour le sélecteur de dépôts de destination
+        function updateToDepotSelector() {
+            const toDepotSelect = document.getElementById('toDepotSelect');
+            let options = '<option value="">Sélectionner un dépôt</option>';
+            
+            depots.forEach(depot => {
+                if (depot.id !== currentDepot.id) {
+                    options += `<option value="${depot.id}">${depot.name} - ${depot.city}</option>`;
+                }
+            });
+            
+            toDepotSelect.innerHTML = options;
         }
         
         // Obtenir le nom d'affichage de la catégorie
@@ -1132,7 +1532,7 @@
                     <td colspan="7" class="empty-state">
                         <i class="fas fa-box-open"></i>
                         <h3>Aucun produit trouvé</h3>
-                        <p>Commencez par ajouter votre premier produit</p>
+                        <p>Ce dépôt ne contient aucun produit pour le moment</p>
                         <button class="btn btn-primary" onclick="openAddModal()" style="margin-top: 15px;">
                             <i class="fas fa-plus"></i> Ajouter un produit
                         </button>
@@ -1142,24 +1542,6 @@
             
             // Cacher la pagination
             document.getElementById('pagination').innerHTML = '';
-        }
-        
-        // Afficher l'état d'erreur
-        function showErrorState(message) {
-            const tableBody = document.getElementById('productsTableBody');
-            
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Erreur de connexion</h3>
-                        <p>${message}</p>
-                        <button class="btn btn-primary" onclick="createSampleData()" style="margin-top: 15px;">
-                            <i class="fas fa-plus"></i> Créer des données de test
-                        </button>
-                    </td>
-                </tr>
-            `;
         }
         
         // Appliquer les filtres de recherche
@@ -1264,10 +1646,16 @@
         
         // Ouvrir modal d'ajout
         function openAddModal() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
             isEditMode = false;
             document.getElementById('modalTitle').textContent = 'Ajouter un Nouveau Produit';
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
+            document.getElementById('currentDepotId').value = currentDepot.id;
             document.getElementById('productMinStock').value = '10';
             document.getElementById('productStatus').value = 'active';
             document.getElementById('productModal').style.display = 'flex';
@@ -1277,61 +1665,42 @@
         function editProduct(productId) {
             isEditMode = true;
             
-            try {
-                const productRef = database.ref(`products/${productId}`);
-                
-                productRef.once('value').then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const product = snapshot.val();
-                        
-                        document.getElementById('modalTitle').textContent = 'Modifier Produit';
-                        document.getElementById('productId').value = productId;
-                        document.getElementById('productName').value = product.name || '';
-                        document.getElementById('productCode').value = product.code || '';
-                        document.getElementById('productCategory').value = product.category || '';
-                        document.getElementById('productUnit').value = product.unit || '';
-                        document.getElementById('productPrice').value = parseFloat(product.price || 0).toFixed(2);
-                        document.getElementById('productSalePrice').value = parseFloat(product.salePrice || 0).toFixed(2);
-                        document.getElementById('productStock').value = product.stock || 0;
-                        document.getElementById('productMinStock').value = product.minStock || 10;
-                        document.getElementById('productLocation').value = product.location || '';
-                        document.getElementById('productStatus').value = product.status || 'active';
-                        document.getElementById('productDescription').value = product.description || '';
-                        document.getElementById('productSupplier').value = product.supplier || '';
-                        
-                        document.getElementById('productModal').style.display = 'flex';
-                    }
-                }).catch(error => {
-                    console.error("Erreur de chargement du produit:", error);
-                    showToast("Erreur lors du chargement du produit", "error");
-                });
-                
-            } catch (error) {
-                console.error("Erreur dans editProduct:", error);
-                showToast("Erreur lors du chargement du produit", "error");
-            }
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            document.getElementById('modalTitle').textContent = 'Modifier Produit';
+            document.getElementById('productId').value = productId;
+            document.getElementById('currentDepotId').value = currentDepot.id;
+            document.getElementById('productName').value = product.name || '';
+            document.getElementById('productCode').value = product.code || '';
+            document.getElementById('productCategory').value = product.category || '';
+            document.getElementById('productUnit').value = product.unit || '';
+            document.getElementById('productPrice').value = parseFloat(product.price || 0).toFixed(2);
+            document.getElementById('productSalePrice').value = parseFloat(product.salePrice || 0).toFixed(2);
+            document.getElementById('productStock').value = product.stock || 0;
+            document.getElementById('productMinStock').value = product.minStock || 10;
+            document.getElementById('productLocation').value = product.location || '';
+            document.getElementById('productStatus').value = product.status || 'active';
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productSupplier').value = product.supplier || '';
+            
+            document.getElementById('productModal').style.display = 'flex';
         }
         
         // Ouvrir modal d'ajustement de stock
         function adjustStock(type = 'increase') {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
             const stockModal = document.getElementById('stockModal');
-            const adjustProduct = document.getElementById('adjustProduct');
-            
-            // Remplir la liste des produits
-            let options = '<option value="">Sélectionner un produit</option>';
-            products.forEach(product => {
-                options += `<option value="${product.id}">${product.name} (${product.code})</option>`;
-            });
-            
-            adjustProduct.innerHTML = options;
-            
-            // Définir le type d'ajustement
-            document.getElementById('adjustType').value = type;
             document.getElementById('stockModalTitle').textContent = 
                 type === 'increase' ? 'Augmenter le Stock' : 
                 type === 'decrease' ? 'Diminuer le Stock' : 
                 'Ajuster le Stock';
             
+            document.getElementById('adjustType').value = type;
             stockModal.style.display = 'flex';
         }
         
@@ -1350,8 +1719,52 @@
             }
         }
         
+        // Mettre à jour l'affichage du stock disponible pour transfert
+        function updateAvailableStockForTransfer() {
+            const productId = document.getElementById('transferProduct').value;
+            const availableStockSpan = document.getElementById('availableStockForTransfer');
+            
+            if (productId) {
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    availableStockSpan.textContent = `${product.stock || 0} ${product.unit || ''}`;
+                    // Définir la quantité max pour le transfert
+                    document.getElementById('transferQuantity').max = product.stock || 0;
+                }
+            } else {
+                availableStockSpan.textContent = '0';
+            }
+        }
+        
+        // Ouvrir modal de transfert vers autre dépôt
+        function transferToOtherDepot() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
+            if (products.length === 0) {
+                showToast("Ce dépôt ne contient aucun produit à transférer", "error");
+                return;
+            }
+            
+            // Mettre à jour le sélecteur de dépôts de destination
+            updateToDepotSelector();
+            
+            // Mettre à jour le sélecteur de produits
+            updateProductSelectors();
+            
+            const transferModal = document.getElementById('transferModal');
+            transferModal.style.display = 'flex';
+        }
+        
         // Vérifier le stock faible
         function checkLowStock() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
             const lowStockProducts = products.filter(p => {
                 const stock = parseInt(p.stock) || 0;
                 const minStock = parseInt(p.minStock) || 10;
@@ -1359,7 +1772,7 @@
             });
             
             if (lowStockProducts.length === 0) {
-                showToast("Aucun produit en stock faible", "info");
+                showToast("Aucun produit en stock faible dans ce dépôt", "info");
             } else {
                 // Filtrer pour afficher uniquement les produits en stock faible
                 document.getElementById('stockFilter').value = 'low';
@@ -1372,6 +1785,11 @@
         
         // Confirmer la suppression
         function confirmDelete(productId, productName) {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
             productToDelete = productId;
             document.getElementById('deleteProductName').textContent = productName;
             document.getElementById('deleteModal').style.display = 'flex';
@@ -1379,6 +1797,11 @@
         
         // Enregistrer produit (ajout ou modification)
         function saveProduct() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
             const productData = {
                 name: document.getElementById('productName').value.trim(),
                 code: document.getElementById('productCode').value.trim(),
@@ -1411,16 +1834,37 @@
                 return;
             }
             
+            const productId = document.getElementById('productId').value;
+            const depotId = document.getElementById('currentDepotId').value;
+            
             try {
                 if (isEditMode) {
                     // Mise à jour du produit existant
-                    const productId = document.getElementById('productId').value;
                     const productRef = database.ref(`products/${productId}`);
                     
                     productRef.update(productData)
                         .then(() => {
-                            showToast("Produit modifié avec succès!", "success");
-                            closeModal();
+                            // Mettre à jour l'entrée d'inventaire
+                            const inventoryItem = inventory.find(item => 
+                                item.productId === productId && item.depotId === depotId
+                            );
+                            
+                            if (inventoryItem) {
+                                const inventoryRef = database.ref(`inventory/${inventoryItem.id}`);
+                                inventoryRef.update({
+                                    quantity: productData.stock,
+                                    minStock: productData.minStock,
+                                    location: productData.location,
+                                    updatedAt: new Date().toISOString()
+                                })
+                                .then(() => {
+                                    showToast("Produit modifié avec succès!", "success");
+                                    closeModal();
+                                });
+                            } else {
+                                showToast("Produit modifié avec succès!", "success");
+                                closeModal();
+                            }
                         })
                         .catch(error => {
                             console.error("Erreur de mise à jour:", error);
@@ -1431,11 +1875,27 @@
                     // Ajout d'un nouveau produit
                     productData.createdAt = new Date().toISOString();
                     const newProductRef = database.ref('products').push();
+                    const newProductId = newProductRef.key;
                     
                     newProductRef.set(productData)
                         .then(() => {
-                            showToast("Produit ajouté avec succès!", "success");
-                            closeModal();
+                            // Créer une entrée d'inventaire pour ce dépôt
+                            const inventoryRef = database.ref('inventory').push();
+                            const inventoryData = {
+                                productId: newProductId,
+                                depotId: depotId,
+                                quantity: productData.stock,
+                                minStock: productData.minStock,
+                                location: productData.location,
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString()
+                            };
+                            
+                            inventoryRef.set(inventoryData)
+                                .then(() => {
+                                    showToast("Produit ajouté avec succès!", "success");
+                                    closeModal();
+                                });
                         })
                         .catch(error => {
                             console.error("Erreur d'ajout:", error);
@@ -1451,6 +1911,11 @@
         
         // Ajuster le stock d'un produit
         function adjustProductStock() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
             const productId = document.getElementById('adjustProduct').value;
             const adjustType = document.getElementById('adjustType').value;
             const quantity = parseInt(document.getElementById('adjustQuantity').value) || 0;
@@ -1468,77 +1933,207 @@
             }
             
             try {
-                const productRef = database.ref(`products/${productId}`);
+                // Trouver le produit et son entrée d'inventaire
+                const product = products.find(p => p.id === productId);
+                const inventoryItem = inventory.find(item => 
+                    item.productId === productId && item.depotId === currentDepot.id
+                );
                 
-                productRef.once('value').then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const product = snapshot.val();
-                        let newStock = parseInt(product.stock) || 0;
-                        
-                        // Calculer le nouveau stock selon le type d'ajustement
-                        switch(adjustType) {
-                            case 'increase':
-                                newStock += quantity;
-                                break;
-                            case 'decrease':
-                                if (newStock < quantity) {
-                                    showToast("Stock insuffisant pour cette diminution", "error");
-                                    return;
-                                }
-                                newStock -= quantity;
-                                break;
-                            case 'set':
-                                newStock = quantity;
-                                break;
+                if (!product || !inventoryItem) {
+                    showToast("Produit non trouvé dans l'inventaire", "error");
+                    return;
+                }
+                
+                let newStock = parseInt(inventoryItem.quantity) || 0;
+                
+                // Calculer le nouveau stock selon le type d'ajustement
+                switch(adjustType) {
+                    case 'increase':
+                        newStock += quantity;
+                        break;
+                    case 'decrease':
+                        if (newStock < quantity) {
+                            showToast("Stock insuffisant pour cette diminution", "error");
+                            return;
                         }
-                        
-                        // Mettre à jour le stock
-                        const updateData = {
-                            stock: newStock,
-                            updatedAt: new Date().toISOString()
+                        newStock -= quantity;
+                        break;
+                    case 'set':
+                        newStock = quantity;
+                        break;
+                }
+                
+                // Mettre à jour le stock dans l'inventaire
+                const inventoryRef = database.ref(`inventory/${inventoryItem.id}`);
+                const updateData = {
+                    quantity: newStock,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                inventoryRef.update(updateData)
+                    .then(() => {
+                        // Enregistrer l'historique de l'ajustement
+                        const historyRef = database.ref('stockHistory').push();
+                        const historyData = {
+                            productId: productId,
+                            productName: product.name,
+                            depotId: currentDepot.id,
+                            depotName: currentDepot.name,
+                            adjustType: adjustType,
+                            quantity: quantity,
+                            oldStock: inventoryItem.quantity || 0,
+                            newStock: newStock,
+                            reason: reason,
+                            notes: notes,
+                            user: 'Admin',
+                            createdAt: new Date().toISOString()
                         };
                         
-                        productRef.update(updateData)
+                        historyRef.set(historyData)
                             .then(() => {
-                                // Enregistrer l'historique de l'ajustement
-                                const historyRef = database.ref('stockHistory').push();
-                                const historyData = {
-                                    productId: productId,
-                                    productName: product.name,
-                                    adjustType: adjustType,
-                                    quantity: quantity,
-                                    oldStock: product.stock || 0,
-                                    newStock: newStock,
-                                    reason: reason,
-                                    notes: notes,
-                                    user: 'Admin',
-                                    createdAt: new Date().toISOString()
-                                };
-                                
-                                historyRef.set(historyData)
-                                    .then(() => {
-                                        showToast(`Stock ajusté avec succès! Nouveau stock: ${newStock}`, "success");
-                                        closeStockModal();
-                                    })
-                                    .catch(error => {
-                                        console.error("Erreur d'enregistrement de l'historique:", error);
-                                        showToast("Stock ajusté, mais erreur d'enregistrement de l'historique", "warning");
-                                        closeStockModal();
-                                    });
+                                showToast(`Stock ajusté avec succès! Nouveau stock: ${newStock}`, "success");
+                                closeStockModal();
                             })
                             .catch(error => {
-                                console.error("Erreur d'ajustement du stock:", error);
-                                showToast("Erreur lors de l'ajustement du stock", "error");
+                                console.error("Erreur d'enregistrement de l'historique:", error);
+                                showToast("Stock ajusté, mais erreur d'enregistrement de l'historique", "warning");
+                                closeStockModal();
                             });
-                    }
-                }).catch(error => {
-                    console.error("Erreur de chargement du produit:", error);
-                    showToast("Erreur lors du chargement du produit", "error");
-                });
+                    })
+                    .catch(error => {
+                        console.error("Erreur d'ajustement du stock:", error);
+                        showToast("Erreur lors de l'ajustement du stock", "error");
+                    });
                 
             } catch (error) {
                 console.error("Erreur dans adjustProductStock:", error);
                 showToast("Erreur lors de l'ajustement du stock", "error");
+            }
+        }
+        
+        // Effectuer un transfert de stock vers un autre dépôt
+        function performStockTransfer() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
+            const toDepotId = document.getElementById('toDepotSelect').value;
+            const productId = document.getElementById('transferProduct').value;
+            const quantity = parseInt(document.getElementById('transferQuantity').value) || 0;
+            const reason = document.getElementById('transferReason').value;
+            const notes = document.getElementById('transferNotes').value.trim();
+            
+            if (!toDepotId) {
+                showToast("Veuillez sélectionner un dépôt de destination", "error");
+                return;
+            }
+            
+            if (!productId) {
+                showToast("Veuillez sélectionner un produit", "error");
+                return;
+            }
+            
+            if (quantity <= 0) {
+                showToast("La quantité doit être supérieure à zéro", "error");
+                return;
+            }
+            
+            try {
+                // Trouver le dépôt de destination
+                const toDepot = depots.find(d => d.id === toDepotId);
+                if (!toDepot) {
+                    showToast("Dépôt de destination non trouvé", "error");
+                    return;
+                }
+                
+                // Trouver le produit dans le dépôt source
+                const product = products.find(p => p.id === productId);
+                const sourceInventoryItem = inventory.find(item => 
+                    item.productId === productId && item.depotId === currentDepot.id
+                );
+                
+                if (!product || !sourceInventoryItem) {
+                    showToast("Produit non trouvé dans le dépôt source", "error");
+                    return;
+                }
+                
+                const currentStock = parseInt(sourceInventoryItem.quantity) || 0;
+                if (currentStock < quantity) {
+                    showToast(`Stock insuffisant. Disponible: ${currentStock}`, "error");
+                    return;
+                }
+                
+                // Trouver ou créer l'entrée d'inventaire dans le dépôt destination
+                const targetInventoryItem = inventory.find(item => 
+                    item.productId === productId && item.depotId === toDepotId
+                );
+                
+                // Mettre à jour le stock source
+                const newSourceStock = currentStock - quantity;
+                const sourceRef = database.ref(`inventory/${sourceInventoryItem.id}`);
+                
+                // Mettre à jour ou créer le stock destination
+                let targetPromise;
+                if (targetInventoryItem) {
+                    const targetRef = database.ref(`inventory/${targetInventoryItem.id}`);
+                    const newTargetStock = (parseInt(targetInventoryItem.quantity) || 0) + quantity;
+                    targetPromise = targetRef.update({
+                        quantity: newTargetStock,
+                        updatedAt: new Date().toISOString()
+                    });
+                } else {
+                    const targetRef = database.ref('inventory').push();
+                    targetPromise = targetRef.set({
+                        productId: productId,
+                        depotId: toDepotId,
+                        quantity: quantity,
+                        minStock: product.minStock || 10,
+                        location: '',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    });
+                }
+                
+                // Exécuter les deux opérations
+                Promise.all([
+                    sourceRef.update({
+                        quantity: newSourceStock,
+                        updatedAt: new Date().toISOString()
+                    }),
+                    targetPromise
+                ])
+                .then(() => {
+                    // Enregistrer l'historique du transfert
+                    const historyRef = database.ref('transferHistory').push();
+                    const historyData = {
+                        productId: productId,
+                        productName: product.name,
+                        fromDepotId: currentDepot.id,
+                        fromDepotName: currentDepot.name,
+                        toDepotId: toDepotId,
+                        toDepotName: toDepot.name,
+                        quantity: quantity,
+                        reason: reason,
+                        notes: notes,
+                        user: 'Admin',
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    historyRef.set(historyData)
+                        .then(() => {
+                            showToast(`Transfert de ${quantity} unités effectué avec succès vers ${toDepot.name}`, "success");
+                            closeTransferModal();
+                        });
+                })
+                .catch(error => {
+                    console.error("Erreur de transfert:", error);
+                    showToast("Erreur lors du transfert de stock", "error");
+                });
+                
+            } catch (error) {
+                console.error("Erreur dans performStockTransfer:", error);
+                showToast("Erreur lors du transfert de stock", "error");
             }
         }
         
@@ -1547,17 +2142,26 @@
             if (!productToDelete) return;
             
             try {
-                const productRef = database.ref(`products/${productToDelete}`);
+                // Trouver l'entrée d'inventaire pour ce produit dans ce dépôt
+                const inventoryItem = inventory.find(item => 
+                    item.productId === productToDelete && item.depotId === currentDepot.id
+                );
                 
-                productRef.remove()
-                    .then(() => {
-                        showToast("Produit supprimé avec succès!", "success");
-                        closeDeleteModal();
-                    })
-                    .catch(error => {
-                        console.error("Erreur de suppression:", error);
-                        showToast("Erreur lors de la suppression du produit", "error");
-                    });
+                if (inventoryItem) {
+                    const inventoryRef = database.ref(`inventory/${inventoryItem.id}`);
+                    inventoryRef.remove()
+                        .then(() => {
+                            showToast("Produit supprimé avec succès!", "success");
+                            closeDeleteModal();
+                        })
+                        .catch(error => {
+                            console.error("Erreur de suppression:", error);
+                            showToast("Erreur lors de la suppression du produit", "error");
+                        });
+                } else {
+                    showToast("Produit non trouvé dans l'inventaire", "error");
+                    closeDeleteModal();
+                }
                 
             } catch (error) {
                 console.error("Erreur dans deleteProduct:", error);
@@ -1575,6 +2179,11 @@
             document.getElementById('stockForm').reset();
         }
         
+        function closeTransferModal() {
+            document.getElementById('transferModal').style.display = 'none';
+            document.getElementById('transferForm').reset();
+        }
+        
         function closeDeleteModal() {
             document.getElementById('deleteModal').style.display = 'none';
             productToDelete = null;
@@ -1582,6 +2191,11 @@
         
         // Exporter les produits
         function exportProducts() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
             if (products.length === 0) {
                 showToast("Aucun produit à exporter", "error");
                 return;
@@ -1612,119 +2226,12 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `produits_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute("download", `produits_${currentDepot.name}_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
             showToast(`${products.length} produits exportés avec succès`, "success");
-        }
-        
-        // Créer des données de test
-        function createSampleData() {
-            if (!confirm("Créer des produits de test ? Cela ajoutera 5 produits à votre base de données.")) {
-                return;
-            }
-            
-            try {
-                const sampleProducts = [
-                    {
-                        name: 'Farine Spéciale 1kg',
-                        code: 'FAR001',
-                        category: 'farine',
-                        unit: 'sac',
-                        price: 15.50,
-                        salePrice: 18.00,
-                        stock: 50,
-                        minStock: 10,
-                        location: 'Rayon A, Étagère 1',
-                        status: 'active',
-                        description: 'Farine de blé pour pâtisserie',
-                        supplier: 'Moulins du Souss',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        name: 'Huile d\'Olive 1L',
-                        code: 'HUI001',
-                        category: 'huile',
-                        unit: 'bouteille',
-                        price: 45.00,
-                        salePrice: 52.00,
-                        stock: 25,
-                        minStock: 5,
-                        location: 'Rayon B, Étagère 2',
-                        status: 'active',
-                        description: 'Huile d\'olive vierge extra',
-                        supplier: 'Huilerie Atlas',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        name: 'Sucre Blanc 1kg',
-                        code: 'SUG001',
-                        category: 'sucre',
-                        unit: 'sac',
-                        price: 12.00,
-                        salePrice: 14.50,
-                        stock: 35,
-                        minStock: 8,
-                        location: 'Rayon A, Étagère 3',
-                        status: 'active',
-                        description: 'Sucre cristallisé blanc',
-                        supplier: 'Sucre Maroc',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        name: 'Lait en Poudre 400g',
-                        code: 'LAI001',
-                        category: 'lait',
-                        unit: 'boite',
-                        price: 28.00,
-                        salePrice: 32.00,
-                        stock: 15,
-                        minStock: 5,
-                        location: 'Rayon C, Étagère 1',
-                        status: 'active',
-                        description: 'Lait en poudre entier',
-                        supplier: 'Laitière du Souss',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        name: 'Eau Minérale 1.5L',
-                        code: 'EAU001',
-                        category: 'boisson',
-                        unit: 'bouteille',
-                        price: 4.50,
-                        salePrice: 6.00,
-                        stock: 100,
-                        minStock: 20,
-                        location: 'Rayon D, Étagère 1',
-                        status: 'active',
-                        description: 'Eau minérale naturelle',
-                        supplier: 'Source Atlas',
-                        createdAt: new Date().toISOString()
-                    }
-                ];
-                
-                let promises = [];
-                
-                sampleProducts.forEach(product => {
-                    const newProductRef = database.ref('products').push();
-                    promises.push(newProductRef.set(product));
-                });
-                
-                Promise.all(promises)
-                    .then(() => {
-                        showToast("5 produits de test créés avec succès", "success");
-                    })
-                    .catch(error => {
-                        console.error("Erreur création données test:", error);
-                        showToast("Erreur lors de la création des données de test", "error");
-                    });
-                
-            } catch (error) {
-                console.error("Erreur dans createSampleData:", error);
-                showToast("Erreur lors de la création des données de test", "error");
-            }
         }
         
         // Initialiser l'application
@@ -1733,7 +2240,7 @@
             const connectedRef = database.ref(".info/connected");
             connectedRef.on("value", function(snap) {
                 if (snap.val() === true) {
-                    loadProducts();
+                    loadInitialData();
                 }
             });
             
@@ -1775,12 +2282,17 @@
             document.getElementById('cancelStockBtn').addEventListener('click', closeStockModal);
             document.getElementById('saveStockBtn').addEventListener('click', adjustProductStock);
             
+            document.getElementById('closeTransferModal').addEventListener('click', closeTransferModal);
+            document.getElementById('cancelTransferBtn').addEventListener('click', closeTransferModal);
+            document.getElementById('saveTransferBtn').addEventListener('click', performStockTransfer);
+            
             document.getElementById('closeDeleteModal').addEventListener('click', closeDeleteModal);
             document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
             document.getElementById('confirmDeleteBtn').addEventListener('click', deleteProduct);
             
             // Mettre à jour l'affichage du stock actuel
             document.getElementById('adjustProduct').addEventListener('change', updateCurrentStockDisplay);
+            document.getElementById('transferProduct').addEventListener('change', updateAvailableStockForTransfer);
             
             // Export
             document.getElementById('exportBtn').addEventListener('click', exportProducts);
@@ -1789,10 +2301,12 @@
             window.addEventListener('click', function(event) {
                 const productModal = document.getElementById('productModal');
                 const stockModal = document.getElementById('stockModal');
+                const transferModal = document.getElementById('transferModal');
                 const deleteModal = document.getElementById('deleteModal');
                 
                 if (event.target === productModal) closeModal();
                 if (event.target === stockModal) closeStockModal();
+                if (event.target === transferModal) closeTransferModal();
                 if (event.target === deleteModal) closeDeleteModal();
             });
             
@@ -1807,10 +2321,15 @@
                 adjustProductStock();
             });
             
+            document.getElementById('transferForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                performStockTransfer();
+            });
+            
             // Rafraîchir automatiquement toutes les 30 secondes
             setInterval(() => {
-                if (products.length === 0) {
-                    loadProducts();
+                if (currentDepot && products.length === 0) {
+                    loadDepotProducts();
                 }
             }, 30000);
         });
