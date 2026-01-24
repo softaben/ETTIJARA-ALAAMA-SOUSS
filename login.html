@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETTIJARA ALAAMA SOUSS - Connexion</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --secondary: #0d47a1;
+            --accent: #1565c0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            direction: rtl;
+            padding: 20px;
+        }
+        
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-right {
+            flex: 1;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .logo i {
+            font-size: 40px;
+        }
+        
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .logo span {
+            display: block;
+            font-size: 14px;
+            color: #bbdefb;
+            margin-top: 5px;
+        }
+        
+        .features {
+            margin-top: 40px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-form {
+            width: 100%;
+        }
+        
+        .login-form h2 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        .input-with-icon input {
+            width: 100%;
+            padding: 15px 50px 15px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f9f9f9;
+        }
+        
+        .input-with-icon input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+            background: white;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .remember-forgot a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .remember-forgot a:hover {
+            text-decoration: underline;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-login:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 35, 126, 0.2);
+        }
+        
+        .depot-selector {
+            margin-top: 20px;
+        }
+        
+        .depot-selector select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            font-size: 15px;
+        }
+        
+        .footer-text {
+            text-align: center;
+            margin-top: 30px;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .login-left, .login-right {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-left">
+            <div class="logo">
+                <i class="fas fa-warehouse"></i>
+                <div>
+                    <h1>ETTIJARA ALAAMA SOUSS</h1>
+                    <span>التجارة العامة سوس</span>
+                    <span>Système de Gestion des Livraisons</span>
+                </div>
+            </div>
+            
+            <p style="font-size: 18px; line-height: 1.6; margin-bottom: 20px;">
+                Bienvenue dans le système de gestion des livraisons d'ETTIJARA ALAAMA SOUSS. Connectez-vous pour accéder au tableau de bord complet.
+            </p>
+            
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div>
+                        <h3>Gestion des Livraisons</h3>
+                        <p>Suivez et gérez toutes vos livraisons en temps réel</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h3>Rapports Avancés</h3>
+                        <p>Analysez vos performances avec des rapports détaillés</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <div>
+                        <h3>Impression Automatisée</h3>
+                        <p>Générez et imprimez vos bons de livraison en format A5</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="login-right">
+            <div class="login-form">
+                <h2>Connexion au Système</h2>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur</label>
+                        <div class="input-with-icon">
+                            <input type="text" id="username" placeholder="Entrez votre nom d'utilisateur" required>
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <div class="input-with-icon">
+                            <input type="password" id="password" placeholder="Entrez votre mot de passe" required>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group depot-selector">
+                        <label for="depot">Sélectionnez votre dépôt</label>
+                        <select id="depot" required>
+                            <option value="">-- Choisir un dépôt --</option>
+                            <option value="Jihadia">Dépôt Jihadia - Agadir</option>
+                            <option value="Ait Melloul">Dépôt Ait Melloul</option>
+                            <option value="Inezgane">Dépôt Inezgane</option>
+                            <option value="Dcheira">Dépôt Dcheira</option>
+                            <option value="admin">Administration Centrale</option>
+                        </select>
+                    </div>
+                    
+                    <div class="remember-forgot">
+                        <label>
+                            <input type="checkbox" id="remember">
+                            Se souvenir de moi
+                        </label>
+                        <a href="#">Mot de passe oublié?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn-login">
+                        <i class="fas fa-sign-in-alt"></i> Se Connecter
+                    </button>
+                </form>
+                
+                <div class="footer-text">
+                    <p>© 2026 ETTIJARA ALAAMA SOUSS. Tous droits réservés.</p>
+                    <p>Version 2.1.0 | <a href="#" style="color: var(--accent);">Aide et Support</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion de la connexion
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const depot = document.getElementById('depot').value;
+            
+            // Ici, vous vérifieriez les identifiants avec Firebase Auth
+            // Pour l'exemple, nous acceptons n'importe quelle connexion
+            
+            if (!depot) {
+                alert("Veuillez sélectionner un dépôt");
+                return;
+            }
+            
+            // Simulation de connexion réussie
+            localStorage.setItem('user', username);
+            localStorage.setItem('depot', depot);
+            localStorage.setItem('loggedIn', 'true');
+            
+            // Redirection vers le tableau de bord
+            window.location.href = 'dashboard.html';
+        });
+        
+        // Remplir automatiquement pour la démonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            // Pré-remplir pour faciliter les tests
+            document.getElementById('username').value = 'admin';
+            document.getElementById('password').value = 'password123';
+            document.getElementById('depot').value = 'Jihadia';
+        });
+    </script>
+</body>
+</html>
