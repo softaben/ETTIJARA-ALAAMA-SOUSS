@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETTIJARA ALAAMA SOUSS - Bon de Livraison</title>
+    <title>ETTIJARA ALAAMA SOUSS - Système de Livraison</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase SDK -->
@@ -20,7 +20,6 @@
             --success: #2e7d32;
             --warning: #f57c00;
             --danger: #c62828;
-            --info: #0288d1;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -44,64 +43,13 @@
         .logo { display: flex; align-items: center; gap: 15px; }
         .logo i { font-size: 28px; }
         .logo h1 { font-size: 22px; font-weight: 700; }
-        .logo span { color: #bbdefb; font-size: 14px; margin-top: 3px; }
-        
-        .user-info { display: flex; align-items: center; gap: 15px; }
-        .user-info img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; }
-        
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            right: 0;
-            top: 70px;
-            width: 250px;
-            height: calc(100vh - 70px);
-            background: white;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.05);
-            padding: 20px 0;
-            overflow-y: auto;
-        }
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 15px 25px;
-            color: #555;
-            text-decoration: none;
-            transition: all 0.3s;
-            border-right: 3px solid transparent;
-        }
-        .sidebar-item:hover, .sidebar-item.active {
-            background: var(--light);
-            color: var(--primary);
-            border-right-color: var(--primary);
-        }
-        .sidebar-item i { width: 20px; }
         
         /* Main Content */
         .main-content { 
-            margin-right: 250px; 
             padding: 90px 30px 30px; 
             min-height: calc(100vh - 70px);
-        }
-        
-        /* Page Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        .page-header h2 {
-            font-size: 28px;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .page-header .actions {
-            display: flex;
-            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
         /* Buttons */
@@ -128,219 +76,203 @@
             background-color: var(--success);
             color: white;
         }
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-        .btn-warning {
-            background-color: var(--warning);
-            color: white;
-        }
-        .btn-info {
-            background-color: var(--info);
-            color: white;
-        }
-        .btn-outline {
-            background-color: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-        .btn-outline:hover {
-            background-color: var(--light);
-        }
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
         
-        /* Form Container */
-        .form-container {
+        /* Table Container */
+        .table-container {
             background: white;
             border-radius: 10px;
-            padding: 30px;
+            padding: 25px;
             box-shadow: 0 3px 15px rgba(0,0,0,0.08);
             margin-bottom: 30px;
         }
         
-        .form-section {
-            margin-bottom: 30px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .form-section:last-child {
-            border-bottom: none;
-        }
-        
-        .form-section h3 {
-            color: var(--primary);
-            margin-bottom: 20px;
-            font-size: 18px;
+        .controls {
             display: flex;
+            gap: 20px;
             align-items: center;
-            gap: 10px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-            font-size: 14px;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
+            margin-bottom: 25px;
+            background: #f1f5f9;
+            padding: 15px;
             border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
-            background: white;
+            border: 1px solid #e2e8f0;
         }
         
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-        }
-        
-        /* Smart Search Input */
-        .smart-search-container {
-            position: relative;
-        }
-        
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 0 0 8px 8px;
-            max-height: 250px;
-            overflow-y: auto;
-            z-index: 100;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            display: none;
-        }
-        
-        .search-result-item {
-            padding: 12px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            transition: all 0.2s;
-        }
-        
-        .search-result-item:hover {
-            background-color: var(--light);
-        }
-        
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-        
-        .search-result-item .name {
+        select {
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
             font-weight: 600;
-            color: #333;
+            color: var(--primary);
+            outline: none;
+            cursor: pointer;
+            background: white;
         }
         
-        .search-result-item .details {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
-        }
-        
-        /* Items Table */
-        .items-container {
-            margin-top: 20px;
-        }
-        
-        .items-table {
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-top: 10px;
         }
         
-        .items-table th {
-            background-color: var(--light);
-            color: var(--primary);
-            padding: 12px 15px;
-            text-align: right;
-            font-weight: 600;
-            border-bottom: 2px solid #ddd;
-            font-size: 14px;
-        }
-        
-        .items-table td {
+        th {
+            background: var(--light);
             padding: 15px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: center;
+            color: var(--primary);
+            font-weight: 600;
         }
         
-        .items-table tr:hover {
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: center;
+            color: #1e293b;
+            font-weight: 500;
+        }
+        
+        tr:hover {
             background-color: #f9f9f9;
         }
         
-        .item-actions {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .remove-item {
-            background: none;
-            border: none;
-            color: var(--danger);
-            cursor: pointer;
-            font-size: 18px;
-            width: 30px;
-            height: 30px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
+        /* Modal Overlay */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
             justify-content: center;
-            transition: all 0.3s;
+            align-items: center;
         }
         
-        .remove-item:hover {
-            background-color: #ffebee;
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
-        /* Summary Section */
-        .summary-section {
-            background: #f9f9f9;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
+        /* --- MODULE IMPRESSION A5 --- */
+        #a5DeliveryNote { 
+            display: none; 
+            width: 148mm; 
+            min-height: 210mm; 
+            padding: 10mm; 
+            background: white; 
+            margin: 0 auto; 
+            color: #000;
+            direction: ltr;
+            position: relative;
         }
-        
-        .summary-row {
+
+        .print-header {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed #ddd;
+            border-bottom: 2.5px solid #000;
+            padding-bottom: 10px;
         }
         
-        .summary-row:last-child {
-            border-bottom: none;
-            font-weight: 700;
+        .print-title {
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .print-title h2 {
+            border: 2px solid #000;
+            display: inline-block;
+            padding: 5px 25px;
             font-size: 18px;
-            color: var(--primary);
+        }
+
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
         }
         
-        /* Loading State */
+        .print-table th, .print-table td {
+            border: 1.5px solid #000;
+            padding: 6px;
+            font-size: 11px;
+            text-align: center;
+        }
+        
+        .print-table th {
+            background: #f2f2f2 !important;
+        }
+        
+        .print-footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* الختم الدائري */
+        .round-stamp {
+            width: 110px;
+            height: 110px;
+            border: 3px double var(--primary);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--primary);
+            font-weight: bold;
+            transform: rotate(-12deg);
+        }
+
+        .round-stamp .comp-name {
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+        
+        .round-stamp .depo-label {
+            font-size: 8px;
+            border-top: 1px solid var(--primary);
+            width: 80%;
+            margin-top: 2px;
+        }
+        
+        .round-stamp .depo-name {
+            font-size: 10px;
+            color: var(--danger);
+        }
+
+        .sig-box {
+            border-top: 1px solid #000;
+            width: 130px;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #a5DeliveryNote, #a5DeliveryNote * { visibility: visible; }
+            #a5DeliveryNote {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 148mm;
+                height: 210mm;
+                border: none;
+            }
+            .no-print { display: none !important; }
+            @page { size: A5 portrait; margin: 0; }
+        }
+        
+        /* Loading */
         .loading {
             text-align: center;
             padding: 40px;
@@ -353,7 +285,7 @@
             color: var(--primary);
         }
         
-        /* Notification Toast */
+        /* Toast Notification */
         .toast {
             position: fixed;
             top: 100px;
@@ -376,99 +308,12 @@
         
         .toast.success { border-right: 4px solid var(--success); }
         .toast.error { border-right: 4px solid var(--danger); }
-        .toast.info { border-right: 4px solid var(--primary); }
-        
-        /* Bon Preview */
-        .bon-preview {
-            background: white;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            padding: 30px;
-            margin-top: 30px;
-            font-family: Arial, sans-serif;
-        }
-        
-        .bon-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 20px;
-        }
-        
-        .bon-header h2 {
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-        
-        .bon-info {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .bon-info-section h4 {
-            color: var(--primary);
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-        
-        .bon-items {
-            margin: 30px 0;
-        }
-        
-        .bon-total {
-            text-align: left;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary);
-            padding-top: 20px;
-            border-top: 2px solid #eee;
-        }
-        
-        .signature-section {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid #000;
-        }
-        
-        .signature-box {
-            width: 200px;
-            text-align: center;
-        }
-        
-        /* Print Styles */
-        @media print {
-            .header, .sidebar, .page-header, .actions, .btn {
-                display: none !important;
-            }
-            
-            .main-content {
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            
-            .bon-preview {
-                border: none !important;
-                box-shadow: none !important;
-                padding: 20px !important;
-            }
-        }
         
         /* Responsive */
-        @media (max-width: 992px) {
-            .sidebar { width: 70px; }
-            .sidebar-item span { display: none; }
-            .main-content { margin-right: 70px; }
-            .form-row { flex-direction: column; }
-        }
-        
         @media (max-width: 768px) {
-            .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .bon-info { grid-template-columns: 1fr; }
+            .controls { flex-direction: column; align-items: flex-start; }
+            .header { padding: 0 15px; }
+            .main-content { padding: 90px 15px 15px; }
         }
     </style>
 </head>
@@ -476,283 +321,73 @@
     <header class="header">
         <div class="logo">
             <i class="fas fa-truck"></i>
-            <div>
-                <h1>ETTIJARA ALAAMA SOUSS</h1>
-                <span>Système de Gestion des Livraisons</span>
-            </div>
+            <h1>ETTIJARA ALAAMA SOUSS</h1>
         </div>
         <div class="user-info">
-            <span>Admin User</span>
-            <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D47A1&color=fff" alt="User">
+            <span>Gestion des Livraisons</span>
         </div>
     </header>
 
-    <nav class="sidebar">
-        <a href="dashboard.html" class="sidebar-item">
-            <i class="fas fa-tachometer-alt"></i>
-            <span>Tableau de Bord</span>
-        </a>
-        <a href="deliveries.html" class="sidebar-item active">
-            <i class="fas fa-truck"></i>
-            <span>Livraisons</span>
-        </a>
-        <a href="bon-livraison.html" class="sidebar-item">
-            <i class="fas fa-file-invoice"></i>
-            <span>Bon de Livraison</span>
-        </a>
-        <a href="clients.html" class="sidebar-item">
-            <i class="fas fa-users"></i>
-            <span>Clients</span>
-        </a>
-        <a href="products.html" class="sidebar-item">
-            <i class="fas fa-boxes"></i>
-            <span>Produits</span>
-        </a>
-        <a href="depots.html" class="sidebar-item">
-            <i class="fas fa-warehouse"></i>
-            <span>Dépôts</span>
-        </a>
-        <a href="reports.html" class="sidebar-item">
-            <i class="fas fa-chart-bar"></i>
-            <span>Rapports</span>
-        </a>
-        <a href="print.html" class="sidebar-item">
-            <i class="fas fa-print"></i>
-            <span>Impression</span>
-        </a>
-        <a href="settings.html" class="sidebar-item">
-            <i class="fas fa-cog"></i>
-            <span>Paramètres</span>
-        </a>
-        <div style="padding: 20px 25px; margin-top: 30px; border-top: 1px solid #eee;">
-            <a href="index.html" class="sidebar-item">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Déconnexion</span>
-            </a>
-        </div>
-    </nav>
-
     <main class="main-content">
-        <div class="page-header">
-            <h2><i class="fas fa-file-invoice"></i> Bon de Livraison</h2>
-            <div class="actions">
-                <button class="btn btn-outline" id="clearBtn">
-                    <i class="fas fa-redo"></i> Nouveau
-                </button>
-                <button class="btn btn-primary" id="saveBtn">
-                    <i class="fas fa-save"></i> Enregistrer
-                </button>
-                <button class="btn btn-success" id="printBtn">
-                    <i class="fas fa-print"></i> Imprimer
+        <div class="table-container">
+            <div class="controls">
+                <label><i class="fas fa-warehouse"></i> Sélectionner le Dépôt :</label>
+                <select id="depotSelector">
+                    <option value="">Chargement...</option>
+                </select>
+                
+                <button class="btn btn-primary" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Actualiser
                 </button>
             </div>
-        </div>
-        
-        <div class="form-container">
-            <!-- Section Informations du Bon -->
-            <div class="form-section">
-                <h3><i class="fas fa-info-circle"></i> Informations du Bon</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="bonNumber">Numéro du Bon *</label>
-                        <input type="text" id="bonNumber" class="form-control" value="BL-2024-001" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="bonDate">Date du Bon *</label>
-                        <input type="date" id="bonDate" class="form-control" value="<?php echo date('Y-m-d'); ?>">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="depotSelect">Dépôt *</label>
-                        <select id="depotSelect" class="form-control">
-                            <option value="">Sélectionner un dépôt</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="driverSelect">Livreur</label>
-                        <select id="driverSelect" class="form-control">
-                            <option value="">Sélectionner un livreur</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Section Client (Recherche Intelligente) -->
-            <div class="form-section">
-                <h3><i class="fas fa-user"></i> Informations Client</h3>
-                <div class="form-group smart-search-container">
-                    <label for="clientSearch">Rechercher Client *</label>
-                    <input type="text" id="clientSearch" class="form-control" placeholder="Tapez le nom, téléphone ou email du client...">
-                    <div class="search-results" id="clientResults"></div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="clientName">Nom Complet *</label>
-                        <input type="text" id="clientName" class="form-control" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="clientPhone">Téléphone *</label>
-                        <input type="tel" id="clientPhone" class="form-control" readonly>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="clientEmail">Email</label>
-                        <input type="email" id="clientEmail" class="form-control" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="clientAddress">Adresse *</label>
-                        <input type="text" id="clientAddress" class="form-control" placeholder="Adresse de livraison" required>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Section Articles (Recherche Intelligente) -->
-            <div class="form-section">
-                <h3><i class="fas fa-boxes"></i> Articles à Livrer</h3>
-                <div class="form-group smart-search-container">
-                    <label>Ajouter un article</label>
-                    <input type="text" id="productSearch" class="form-control" placeholder="Tapez le nom ou code du produit...">
-                    <div class="search-results" id="productResults"></div>
-                </div>
-                
-                <div class="items-container">
-                    <table class="items-table" id="itemsTable">
-                        <thead>
-                            <tr>
-                                <th style="width: 40%;">PRODUIT</th>
-                                <th style="width: 15%;">CODE</th>
-                                <th style="width: 15%;">QUANTITÉ</th>
-                                <th style="width: 15%;">PRIX UNITAIRE</th>
-                                <th style="width: 10%;">TOTAL</th>
-                                <th style="width: 5%;"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="itemsTableBody">
-                            <!-- Les articles seront ajoutés ici -->
-                        </tbody>
-                    </table>
-                    
-                    <div class="summary-section">
-                        <div class="summary-row">
-                            <span>Sous-total:</span>
-                            <span id="subtotal">0.00 DH</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>TVA (20%):</span>
-                            <span id="tax">0.00 DH</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Total:</span>
-                            <span id="total">0.00 DH</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Section Remarques -->
-            <div class="form-section">
-                <h3><i class="fas fa-sticky-note"></i> Remarques et Conditions</h3>
-                <div class="form-group">
-                    <label for="notes">Remarques</label>
-                    <textarea id="notes" class="form-control" rows="3" placeholder="Remarques supplémentaires..."></textarea>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="paymentMethod">Mode de Paiement</label>
-                        <select id="paymentMethod" class="form-control">
-                            <option value="cash">Espèces</option>
-                            <option value="check">Chèque</option>
-                            <option value="card">Carte Bancaire</option>
-                            <option value="transfer">Virement</option>
-                            <option value="credit">Crédit</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="paymentStatus">Statut Paiement</label>
-                        <select id="paymentStatus" class="form-control">
-                            <option value="pending">En attente</option>
-                            <option value="partial">Partiel</option>
-                            <option value="paid">Payé</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Aperçu du Bon -->
-        <div class="form-container bon-preview" id="bonPreview">
-            <div class="bon-header">
-                <h2>ETTIJARA ALAAMA SOUSS</h2>
-                <h3>BON DE LIVRAISON</h3>
-                <p>Numéro: <span id="previewBonNumber">BL-2024-001</span> | Date: <span id="previewBonDate"><?php echo date('d/m/Y'); ?></span></p>
-            </div>
-            
-            <div class="bon-info">
-                <div class="bon-info-section">
-                    <h4>INFORMATIONS CLIENT</h4>
-                    <p><strong>Nom:</strong> <span id="previewClientName">--</span></p>
-                    <p><strong>Téléphone:</strong> <span id="previewClientPhone">--</span></p>
-                    <p><strong>Email:</strong> <span id="previewClientEmail">--</span></p>
-                    <p><strong>Adresse:</strong> <span id="previewClientAddress">--</span></p>
-                </div>
-                
-                <div class="bon-info-section">
-                    <h4>INFORMATIONS LIVRAISON</h4>
-                    <p><strong>Dépôt:</strong> <span id="previewDepot">--</span></p>
-                    <p><strong>Livreur:</strong> <span id="previewDriver">--</span></p>
-                    <p><strong>Mode de paiement:</strong> <span id="previewPaymentMethod">--</span></p>
-                    <p><strong>Statut paiement:</strong> <span id="previewPaymentStatus">--</span></p>
-                </div>
-            </div>
-            
-            <div class="bon-items">
-                <h4>ARTICLES À LIVRER</h4>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                    <thead>
-                        <tr style="background-color: #f5f5f5;">
-                            <th style="padding: 10px; text-align: right; border-bottom: 2px solid #ddd;">Produit</th>
-                            <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">Code</th>
-                            <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">Quantité</th>
-                            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Prix Unitaire</th>
-                            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="previewItems">
-                        <tr>
-                            <td colspan="5" style="padding: 20px; text-align: center; color: #999;">Aucun article ajouté</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="bon-total">
-                <p><strong>Total: <span id="previewTotal">0.00 DH</span></strong></p>
-            </div>
-            
-            <div class="signature-section">
-                <div class="signature-box">
-                    <p>Signature du client</p>
-                </div>
-                <div class="signature-box">
-                    <p>Signature du livreur</p>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
-                <p>ETTIJARA ALAAMA SOUSS - Système de Gestion des Livraisons</p>
-                <p>Document généré le <?php echo date('d/m/Y à H:i'); ?></p>
-            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>N° Bon</th>
+                        <th>Client</th>
+                        <th>Téléphone</th>
+                        <th>Date</th>
+                        <th>Dépôt</th>
+                        <th>Total (DH)</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="deliveriesTableBody">
+                    <tr>
+                        <td colspan="8" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Chargement des données...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </main>
 
+    <!-- Modal d'impression -->
+    <div class="modal" id="printModal">
+        <div class="modal-content">
+            <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3><i class="fas fa-print"></i> Bon de Livraison A5</h3>
+                <div>
+                    <button class="btn btn-success" onclick="printDeliveryNote()">
+                        <i class="fas fa-print"></i> Imprimer
+                    </button>
+                    <button class="btn" onclick="closeModal()" style="background: var(--danger); color: white;">
+                        <i class="fas fa-times"></i> Fermer
+                    </button>
+                </div>
+            </div>
+            <div id="a5DeliveryNote">
+                <!-- Le contenu du bon sera injecté ici -->
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Configuration Firebase
+        // Configuration Firebase (identique au deuxième code)
         const firebaseConfig = {
             apiKey: "AIzaSyAV_c5Gt_f1h5nZF47FcPjW_h4P24LYADk",
             authDomain: "commerce22-610cc.firebaseapp.com",
@@ -764,30 +399,27 @@
         };
         
         // Initialiser Firebase
+        let database;
         try {
             firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
             console.log("Firebase initialisé avec succès");
         } catch (error) {
             console.error("Erreur d'initialisation Firebase:", error);
             showToast("Erreur de connexion à la base de données", "error");
         }
         
-        const database = firebase.database();
-        
         // Variables globales
-        let clients = [];
-        let products = [];
+        let deliveries = [];
         let depots = [];
-        let drivers = [];
-        let bonItems = [];
-        let selectedClient = null;
+        let currentDelivery = null;
         
         // Fonction pour afficher une notification
-        function showToast(message, type = "info") {
+        function showToast(message, type = "success") {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             toast.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
                 <span>${message}</span>
             `;
             
@@ -796,73 +428,6 @@
             setTimeout(() => {
                 toast.remove();
             }, 3000);
-        }
-        
-        // Charger les données initiales
-        function loadInitialData() {
-            loadClients();
-            loadProducts();
-            loadDepots();
-            loadDrivers();
-            generateBonNumber();
-        }
-        
-        // Charger les clients
-        function loadClients() {
-            try {
-                const clientsRef = database.ref('clients');
-                
-                clientsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    clients = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            clients.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        console.log(`${clients.length} clients chargés`);
-                    }
-                    
-                }, (error) => {
-                    console.error("Erreur de chargement des clients:", error);
-                });
-                
-            } catch (error) {
-                console.error("Erreur dans loadClients:", error);
-            }
-        }
-        
-        // Charger les produits
-        function loadProducts() {
-            try {
-                const productsRef = database.ref('products');
-                
-                productsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    products = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            products.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        console.log(`${products.length} produits chargés`);
-                    }
-                    
-                }, (error) => {
-                    console.error("Erreur de chargement des produits:", error);
-                });
-                
-            } catch (error) {
-                console.error("Erreur dans loadProducts:", error);
-            }
         }
         
         // Charger les dépôts
@@ -883,24 +448,22 @@
                         });
                         
                         // Remplir le sélecteur de dépôts
-                        const depotSelect = document.getElementById('depotSelect');
-                        let options = '<option value="">Sélectionner un dépôt</option>';
+                        const depotSelect = document.getElementById('depotSelector');
+                        let options = '<option value="">Tous les dépôts</option>';
                         
                         depots.forEach(depot => {
-                            options += `<option value="${depot.id}">${depot.name} - ${depot.city}</option>`;
+                            options += `<option value="${depot.id}">${depot.name} - ${depot.city || ''}</option>`;
                         });
                         
                         depotSelect.innerHTML = options;
                         
-                        // Sélectionner le premier dépôt par défaut
-                        if (depots.length > 0) {
-                            depotSelect.value = depots[0].id;
-                            updatePreview();
-                        }
+                        // Charger les livraisons après les dépôts
+                        loadDeliveries();
                     }
                     
                 }, (error) => {
                     console.error("Erreur de chargement des dépôts:", error);
+                    showToast("Erreur de chargement des dépôts", "error");
                 });
                 
             } catch (error) {
@@ -908,241 +471,66 @@
             }
         }
         
-        // Charger les livreurs
-        function loadDrivers() {
+        // Charger les livraisons
+        function loadDeliveries() {
             try {
-                const driversRef = database.ref('drivers');
+                const deliveriesRef = database.ref('deliveries');
                 
-                driversRef.on('value', (snapshot) => {
+                deliveriesRef.on('value', (snapshot) => {
                     const data = snapshot.val();
-                    drivers = [];
+                    deliveries = [];
                     
                     if (data) {
                         Object.keys(data).forEach(key => {
-                            drivers.push({
+                            deliveries.push({
                                 id: key,
                                 ...data[key]
                             });
                         });
                         
-                        // Remplir le sélecteur de livreurs
-                        const driverSelect = document.getElementById('driverSelect');
-                        let options = '<option value="">Sélectionner un livreur</option>';
+                        // Trier par date (plus récent d'abord)
+                        deliveries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                         
-                        drivers.forEach(driver => {
-                            options += `<option value="${driver.id}">${driver.name} - ${driver.vehicle || ''}</option>`;
-                        });
-                        
-                        driverSelect.innerHTML = options;
+                        console.log(`${deliveries.length} livraisons chargées`);
+                        updateDeliveriesTable();
+                    } else {
+                        document.getElementById('deliveriesTableBody').innerHTML = `
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
+                                    <i class="fas fa-box-open" style="font-size: 32px; margin-bottom: 10px;"></i>
+                                    <p>Aucune livraison trouvée</p>
+                                </td>
+                            </tr>
+                        `;
                     }
                     
                 }, (error) => {
-                    console.error("Erreur de chargement des livreurs:", error);
+                    console.error("Erreur de chargement des livraisons:", error);
+                    showToast("Erreur de chargement des livraisons", "error");
                 });
                 
             } catch (error) {
-                console.error("Erreur dans loadDrivers:", error);
+                console.error("Erreur dans loadDeliveries:", error);
             }
         }
         
-        // Générer un numéro de bon automatique
-        function generateBonNumber() {
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
+        // Mettre à jour le tableau des livraisons
+        function updateDeliveriesTable() {
+            const tableBody = document.getElementById('deliveriesTableBody');
+            const selectedDepotId = document.getElementById('depotSelector').value;
             
-            // Générer un numéro séquentiel (dans une vraie app, on le récupérerait de la base de données)
-            const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-            const bonNumber = `BL-${year}${month}-${randomNum}`;
-            
-            document.getElementById('bonNumber').value = bonNumber;
-            document.getElementById('previewBonNumber').textContent = bonNumber;
-        }
-        
-        // Recherche intelligente des clients
-        function searchClients(query) {
-            if (!query || query.length < 2) {
-                hideResults('clientResults');
-                return;
+            // Filtrer par dépôt si sélectionné
+            let filteredDeliveries = deliveries;
+            if (selectedDepotId) {
+                filteredDeliveries = deliveries.filter(delivery => delivery.depotId === selectedDepotId);
             }
             
-            query = query.toLowerCase();
-            const results = clients.filter(client => {
-                return (
-                    (client.name && client.name.toLowerCase().includes(query)) ||
-                    (client.phone && client.phone.includes(query)) ||
-                    (client.email && client.email.toLowerCase().includes(query)) ||
-                    (client.address && client.address.toLowerCase().includes(query))
-                );
-            });
-            
-            displayClientResults(results);
-        }
-        
-        // Afficher les résultats de recherche des clients
-        function displayClientResults(results) {
-            const resultsContainer = document.getElementById('clientResults');
-            
-            if (results.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="search-result-item">
-                        <div class="name">Aucun client trouvé</div>
-                        <div class="details">Essayez avec un autre terme de recherche</div>
-                    </div>
-                `;
-                resultsContainer.style.display = 'block';
-                return;
-            }
-            
-            let html = '';
-            results.slice(0, 10).forEach(client => {
-                html += `
-                    <div class="search-result-item" onclick="selectClient('${client.id}')">
-                        <div class="name">${client.name || 'Nom inconnu'}</div>
-                        <div class="details">
-                            ${client.phone ? '📱 ' + client.phone : ''}
-                            ${client.email ? ' | ✉️ ' + client.email : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            resultsContainer.innerHTML = html;
-            resultsContainer.style.display = 'block';
-        }
-        
-        // Sélectionner un client
-        function selectClient(clientId) {
-            const client = clients.find(c => c.id === clientId);
-            if (!client) return;
-            
-            selectedClient = client;
-            
-            // Remplir les champs du client
-            document.getElementById('clientName').value = client.name || '';
-            document.getElementById('clientPhone').value = client.phone || '';
-            document.getElementById('clientEmail').value = client.email || '';
-            document.getElementById('clientAddress').value = client.address || '';
-            
-            // Cacher les résultats de recherche
-            hideResults('clientResults');
-            
-            // Mettre à jour l'aperçu
-            updatePreview();
-            
-            showToast(`Client "${client.name}" sélectionné`, "success");
-        }
-        
-        // Recherche intelligente des produits
-        function searchProducts(query) {
-            if (!query || query.length < 2) {
-                hideResults('productResults');
-                return;
-            }
-            
-            query = query.toLowerCase();
-            const results = products.filter(product => {
-                return (
-                    (product.name && product.name.toLowerCase().includes(query)) ||
-                    (product.code && product.code.toLowerCase().includes(query)) ||
-                    (product.description && product.description.toLowerCase().includes(query))
-                );
-            });
-            
-            displayProductResults(results);
-        }
-        
-        // Afficher les résultats de recherche des produits
-        function displayProductResults(results) {
-            const resultsContainer = document.getElementById('productResults');
-            
-            if (results.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="search-result-item">
-                        <div class="name">Aucun produit trouvé</div>
-                        <div class="details">Essayez avec un autre terme de recherche</div>
-                    </div>
-                `;
-                resultsContainer.style.display = 'block';
-                return;
-            }
-            
-            let html = '';
-            results.slice(0, 10).forEach(product => {
-                const price = product.salePrice || product.price || 0;
-                html += `
-                    <div class="search-result-item" onclick="selectProduct('${product.id}')">
-                        <div class="name">${product.name || 'Produit inconnu'}</div>
-                        <div class="details">
-                            Code: ${product.code || 'N/A'} | 
-                            Prix: ${price.toFixed(2)} DH |
-                            Stock: ${product.stock || 0} ${product.unit || ''}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            resultsContainer.innerHTML = html;
-            resultsContainer.style.display = 'block';
-        }
-        
-        // Sélectionner un produit
-        function selectProduct(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            // Vérifier si le produit est déjà dans la liste
-            const existingItemIndex = bonItems.findIndex(item => item.productId === productId);
-            
-            if (existingItemIndex >= 0) {
-                // Augmenter la quantité si le produit existe déjà
-                bonItems[existingItemIndex].quantity += 1;
-                bonItems[existingItemIndex].total = bonItems[existingItemIndex].quantity * bonItems[existingItemIndex].price;
-            } else {
-                // Ajouter un nouvel article
-                const price = product.salePrice || product.price || 0;
-                const item = {
-                    productId: product.id,
-                    name: product.name,
-                    code: product.code,
-                    quantity: 1,
-                    price: price,
-                    total: price,
-                    unit: product.unit
-                };
-                
-                bonItems.push(item);
-            }
-            
-            // Cacher les résultats de recherche
-            hideResults('productResults');
-            
-            // Vider le champ de recherche
-            document.getElementById('productSearch').value = '';
-            
-            // Mettre à jour le tableau et les totaux
-            updateItemsTable();
-            updateTotals();
-            updatePreview();
-            
-            showToast(`Produit "${product.name}" ajouté`, "success");
-        }
-        
-        // Cacher les résultats de recherche
-        function hideResults(containerId) {
-            document.getElementById(containerId).style.display = 'none';
-        }
-        
-        // Mettre à jour le tableau des articles
-        function updateItemsTable() {
-            const tableBody = document.getElementById('itemsTableBody');
-            
-            if (bonItems.length === 0) {
+            if (filteredDeliveries.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 30px; color: #999;">
-                            <i class="fas fa-box-open" style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
-                            Aucun article ajouté. Recherchez et ajoutez des produits.
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-search" style="font-size: 32px; margin-bottom: 10px;"></i>
+                            <p>Aucune livraison pour ce dépôt</p>
                         </td>
                     </tr>
                 `;
@@ -1150,29 +538,35 @@
             }
             
             let html = '';
-            bonItems.forEach((item, index) => {
+            filteredDeliveries.forEach(delivery => {
+                const depot = depots.find(d => d.id === delivery.depotId);
+                const depotName = depot ? `${depot.name}` : 'Non spécifié';
+                const date = delivery.createdAt ? formatDate(delivery.createdAt) : '--';
+                const statusColor = getStatusColor(delivery.status);
+                
                 html += `
                     <tr>
-                        <td>${item.name || 'Produit inconnu'}</td>
-                        <td>${item.code || 'N/A'}</td>
+                        <td><strong>${delivery.deliveryNumber || delivery.bonNumber || 'N/A'}</strong></td>
+                        <td>${delivery.clientName || '--'}</td>
+                        <td>${delivery.clientPhone || '--'}</td>
+                        <td>${date}</td>
+                        <td>${depotName}</td>
+                        <td><strong>${(delivery.totalAmount || 0).toFixed(2)} DH</strong></td>
                         <td>
-                            <input type="number" 
-                                   value="${item.quantity}" 
-                                   min="1" 
-                                   style="width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;"
-                                   onchange="updateItemQuantity(${index}, this.value)">
+                            <span style="
+                                background: ${statusColor};
+                                color: white;
+                                padding: 4px 10px;
+                                border-radius: 20px;
+                                font-size: 12px;
+                                font-weight: 600;
+                            ">
+                                ${getStatusText(delivery.status)}
+                            </span>
                         </td>
                         <td>
-                            <input type="number" 
-                                   value="${item.price.toFixed(2)}" 
-                                   step="0.01" 
-                                   style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;"
-                                   onchange="updateItemPrice(${index}, this.value)">
-                        </td>
-                        <td>${item.total.toFixed(2)} DH</td>
-                        <td>
-                            <button class="remove-item" onclick="removeItem(${index})">
-                                <i class="fas fa-times"></i>
+                            <button class="btn btn-primary" onclick="showDeliveryPrint('${delivery.id}')" style="padding: 8px 15px;">
+                                <i class="fas fa-eye"></i> Voir
                             </button>
                         </td>
                     </tr>
@@ -1182,328 +576,213 @@
             tableBody.innerHTML = html;
         }
         
-        // Mettre à jour la quantité d'un article
-        function updateItemQuantity(index, quantity) {
-            quantity = parseInt(quantity);
-            if (isNaN(quantity) || quantity < 1) quantity = 1;
-            
-            bonItems[index].quantity = quantity;
-            bonItems[index].total = quantity * bonItems[index].price;
-            
-            updateItemsTable();
-            updateTotals();
-            updatePreview();
-        }
-        
-        // Mettre à jour le prix d'un article
-        function updateItemPrice(index, price) {
-            price = parseFloat(price);
-            if (isNaN(price) || price < 0) price = 0;
-            
-            bonItems[index].price = price;
-            bonItems[index].total = bonItems[index].quantity * price;
-            
-            updateItemsTable();
-            updateTotals();
-            updatePreview();
-        }
-        
-        // Supprimer un article
-        function removeItem(index) {
-            bonItems.splice(index, 1);
-            updateItemsTable();
-            updateTotals();
-            updatePreview();
-            
-            showToast("Article supprimé", "info");
-        }
-        
-        // Mettre à jour les totaux
-        function updateTotals() {
-            let subtotal = 0;
-            bonItems.forEach(item => {
-                subtotal += item.total;
-            });
-            
-            const tax = subtotal * 0.2; // TVA 20%
-            const total = subtotal + tax;
-            
-            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' DH';
-            document.getElementById('tax').textContent = tax.toFixed(2) + ' DH';
-            document.getElementById('total').textContent = total.toFixed(2) + ' DH';
-        }
-        
-        // Mettre à jour l'aperçu du bon
-        function updatePreview() {
-            // Informations du bon
-            document.getElementById('previewBonDate').textContent = 
-                formatDate(document.getElementById('bonDate').value);
-            
-            // Informations client
-            document.getElementById('previewClientName').textContent = 
-                document.getElementById('clientName').value || '--';
-            document.getElementById('previewClientPhone').textContent = 
-                document.getElementById('clientPhone').value || '--';
-            document.getElementById('previewClientEmail').textContent = 
-                document.getElementById('clientEmail').value || '--';
-            document.getElementById('previewClientAddress').textContent = 
-                document.getElementById('clientAddress').value || '--';
-            
-            // Informations livraison
-            const depotSelect = document.getElementById('depotSelect');
-            const selectedDepot = depots.find(d => d.id === depotSelect.value);
-            document.getElementById('previewDepot').textContent = 
-                selectedDepot ? `${selectedDepot.name} - ${selectedDepot.city}` : '--';
-            
-            const driverSelect = document.getElementById('driverSelect');
-            const selectedDriver = drivers.find(d => d.id === driverSelect.value);
-            document.getElementById('previewDriver').textContent = 
-                selectedDriver ? selectedDriver.name : '--';
-            
-            // Mode de paiement
-            const paymentMethod = document.getElementById('paymentMethod');
-            const paymentMethodText = paymentMethod.options[paymentMethod.selectedIndex].text;
-            document.getElementById('previewPaymentMethod').textContent = paymentMethodText;
-            
-            const paymentStatus = document.getElementById('paymentStatus');
-            const paymentStatusText = paymentStatus.options[paymentStatus.selectedIndex].text;
-            document.getElementById('previewPaymentStatus').textContent = paymentStatusText;
-            
-            // Articles
-            const previewItems = document.getElementById('previewItems');
-            
-            if (bonItems.length === 0) {
-                previewItems.innerHTML = `
-                    <tr>
-                        <td colspan="5" style="padding: 20px; text-align: center; color: #999;">
-                            Aucun article ajouté
-                        </td>
-                    </tr>
-                `;
-            } else {
-                let itemsHtml = '';
-                bonItems.forEach(item => {
-                    itemsHtml += `
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
-                            <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${item.code || 'N/A'}</td>
-                            <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${item.quantity}</td>
-                            <td style="padding: 10px; text-align: left; border-bottom: 1px solid #eee;">${item.price.toFixed(2)} DH</td>
-                            <td style="padding: 10px; text-align: left; border-bottom: 1px solid #eee;">${item.total.toFixed(2)} DH</td>
-                        </tr>
-                    `;
-                });
-                previewItems.innerHTML = itemsHtml;
+        // Obtenir la couleur du statut
+        function getStatusColor(status) {
+            switch(status) {
+                case 'pending': return '#f59e0b'; // orange
+                case 'processing': return '#3b82f6'; // bleu
+                case 'delivered': return '#10b981'; // vert
+                case 'cancelled': return '#ef4444'; // rouge
+                default: return '#6b7280'; // gris
             }
-            
-            // Total
-            const total = document.getElementById('total').textContent;
-            document.getElementById('previewTotal').textContent = total;
+        }
+        
+        // Obtenir le texte du statut
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'En attente';
+                case 'processing': return 'En cours';
+                case 'delivered': return 'Livré';
+                case 'cancelled': return 'Annulé';
+                default: return 'Inconnu';
+            }
         }
         
         // Formater la date
         function formatDate(dateString) {
             if (!dateString) return '--';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('fr-FR');
-        }
-        
-        // Enregistrer le bon
-        function saveBon() {
-            // Validation
-            if (!document.getElementById('clientName').value) {
-                showToast("Veuillez sélectionner un client", "error");
-                return;
-            }
-            
-            if (!document.getElementById('clientAddress').value) {
-                showToast("Veuillez entrer l'adresse de livraison", "error");
-                return;
-            }
-            
-            if (!document.getElementById('depotSelect').value) {
-                showToast("Veuillez sélectionner un dépôt", "error");
-                return;
-            }
-            
-            if (bonItems.length === 0) {
-                showToast("Veuillez ajouter au moins un article", "error");
-                return;
-            }
-            
-            // Préparer les données du bon
-            const bonData = {
-                bonNumber: document.getElementById('bonNumber').value,
-                bonDate: document.getElementById('bonDate').value,
-                clientId: selectedClient ? selectedClient.id : null,
-                clientName: document.getElementById('clientName').value,
-                clientPhone: document.getElementById('clientPhone').value,
-                clientEmail: document.getElementById('clientEmail').value,
-                clientAddress: document.getElementById('clientAddress').value,
-                depotId: document.getElementById('depotSelect').value,
-                driverId: document.getElementById('driverSelect').value,
-                items: bonItems,
-                subtotal: parseFloat(document.getElementById('subtotal').textContent),
-                tax: parseFloat(document.getElementById('tax').textContent),
-                total: parseFloat(document.getElementById('total').textContent),
-                notes: document.getElementById('notes').value,
-                paymentMethod: document.getElementById('paymentMethod').value,
-                paymentStatus: document.getElementById('paymentStatus').value,
-                status: 'pending', // pending, processing, delivered, cancelled
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-            
             try {
-                // Enregistrer dans Firebase
-                const bonsRef = database.ref('bons');
-                const newBonRef = bonsRef.push();
-                
-                newBonRef.set(bonData)
-                    .then(() => {
-                        // Enregistrer également dans les livraisons
-                        const deliveryData = {
-                            deliveryNumber: bonData.bonNumber,
-                            clientId: bonData.clientId,
-                            clientName: bonData.clientName,
-                            clientPhone: bonData.clientPhone,
-                            deliveryAddress: bonData.clientAddress,
-                            depotId: bonData.depotId,
-                            driverId: bonData.driverId,
-                            items: bonData.items,
-                            totalAmount: bonData.total,
-                            status: 'pending',
-                            paymentStatus: bonData.paymentStatus,
-                            notes: bonData.notes,
-                            createdAt: bonData.createdAt,
-                            updatedAt: bonData.updatedAt
-                        };
-                        
-                        const deliveriesRef = database.ref('deliveries');
-                        deliveriesRef.push(deliveryData)
-                            .then(() => {
-                                showToast("Bon de livraison enregistré avec succès!", "success");
-                                generateBonNumber(); // Générer un nouveau numéro pour le prochain bon
-                            })
-                            .catch(error => {
-                                console.error("Erreur d'enregistrement de la livraison:", error);
-                                showToast("Bon enregistré, mais erreur avec la livraison", "warning");
-                            });
-                    })
-                    .catch(error => {
-                        console.error("Erreur d'enregistrement:", error);
-                        showToast("Erreur lors de l'enregistrement du bon", "error");
-                    });
-                
-            } catch (error) {
-                console.error("Erreur dans saveBon:", error);
-                showToast("Erreur lors de l'enregistrement du bon", "error");
+                const date = new Date(dateString);
+                return date.toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+            } catch (e) {
+                return '--';
             }
         }
         
-        // Imprimer le bon
-        function printBon() {
+        // Afficher le bon de livraison pour impression
+        function showDeliveryPrint(deliveryId) {
+            const delivery = deliveries.find(d => d.id === deliveryId);
+            if (!delivery) {
+                showToast("Livraison non trouvée", "error");
+                return;
+            }
+            
+            currentDelivery = delivery;
+            
+            // Trouver le dépôt
+            const depot = depots.find(d => d.id === delivery.depotId);
+            const depotName = depot ? depot.name : 'Non spécifié';
+            const depotCity = depot ? depot.city : '';
+            
+            const container = document.getElementById('a5DeliveryNote');
+            let grandTotal = 0;
+            
+            // Calculer le total
+            let itemsHtml = '';
+            if (delivery.items && Array.isArray(delivery.items)) {
+                delivery.items.forEach(item => {
+                    const total = item.total || (item.quantity * item.price) || 0;
+                    grandTotal += total;
+                    
+                    itemsHtml += `
+                        <tr>
+                            <td>${item.code || 'N/A'}</td>
+                            <td style="text-align:left;">${item.name || 'Produit inconnu'}</td>
+                            <td>${item.quantity || 0}</td>
+                            <td>${(item.price || 0).toFixed(2)}</td>
+                            <td>${total.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            container.innerHTML = `
+                <div class="print-header">
+                    <div style="text-align:left;">
+                        <h3 style="margin:0; color: var(--primary);">ETTIJARA ALAAMA SOUSS</h3>
+                        <p style="font-size:9px;">Système de Gestion des Livraisons</p>
+                        <p style="font-size:9px;">Dépôt: <strong>${depotName} ${depotCity ? '- ' + depotCity : ''}</strong></p>
+                    </div>
+                    <div style="text-align:right; font-size:11px;">
+                        <p><strong>N°:</strong> ${delivery.deliveryNumber || delivery.bonNumber || 'N/A'}</p>
+                        <p><strong>Date:</strong> ${formatDate(delivery.createdAt)}</p>
+                        <p><strong>Statut:</strong> ${getStatusText(delivery.status)}</p>
+                    </div>
+                </div>
+
+                <div class="print-title"><h2>BON DE LIVRAISON</h2></div>
+
+                <div style="margin-bottom:12px; text-align:left;">
+                    <p style="font-size:10px; font-weight:bold;">INFORMATIONS CLIENT :</p>
+                    <p style="font-size:13px;"><strong>${delivery.clientName || '--'}</strong></p>
+                    <p style="font-size:11px;">📱 ${delivery.clientPhone || '--'}</p>
+                    <p style="font-size:11px;">📍 ${delivery.deliveryAddress || delivery.clientAddress || '--'}</p>
+                </div>
+
+                <table class="print-table">
+                    <thead>
+                        <tr>
+                            <th width="15%">Code</th>
+                            <th width="40%">Désignation</th>
+                            <th width="10%">Qté</th>
+                            <th width="15%">Prix Unitaire</th>
+                            <th width="15%">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>${itemsHtml || '<tr><td colspan="5" style="text-align:center;">Aucun article</td></tr>'}</tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" style="text-align:right; border:none; padding-top:12px;">
+                                <strong>TOTAL À PAYER (DH) :</strong>
+                            </td>
+                            <td style="border:2.5px solid #000; padding-top:12px; background:#f9f9f9;">
+                                <strong>${grandTotal.toFixed(2)}</strong>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                ${delivery.notes ? `
+                <div style="margin-top:20px; padding:10px; border:1px solid #ddd; font-size:10px;">
+                    <strong>Remarques:</strong> ${delivery.notes}
+                </div>
+                ` : ''}
+
+                <div class="print-footer">
+                    <div style="text-align:center;">
+                        <p>Signature du Client</p>
+                        <div class="sig-box"></div>
+                    </div>
+
+                    <div class="round-stamp">
+                        <div class="comp-name">ETTIJARA ALAAMA SOUSS</div>
+                        <div class="depo-label">DÉPÔT</div>
+                        <div class="depo-name">${depotName}</div>
+                    </div>
+
+                    <div style="text-align:center;">
+                        <p>Signature & Cachet</p>
+                        <div class="sig-box"></div>
+                    </div>
+                </div>
+                
+                <p style="font-size:8px; text-align:center; margin-top:25px; color:#555;">
+                    Document généré le ${new Date().toLocaleDateString('fr-FR')} 
+                    - ETTIJARA ALAAMA SOUSS © ${new Date().getFullYear()}
+                </p>
+            `;
+            
+            document.getElementById('printModal').style.display = 'flex';
+        }
+        
+        // Imprimer le bon de livraison
+        function printDeliveryNote() {
             window.print();
         }
         
-        // Nouveau bon
-        function newBon() {
-            // Confirmer avant de perdre les données
-            if (bonItems.length > 0 || document.getElementById('clientName').value) {
-                if (!confirm("Voulez-vous créer un nouveau bon ? Les données non enregistrées seront perdues.")) {
-                    return;
-                }
-            }
+        // Fermer la modal
+        function closeModal() {
+            document.getElementById('printModal').style.display = 'none';
+        }
+        
+        // Actualiser les données
+        function refreshData() {
+            document.getElementById('deliveriesTableBody').innerHTML = `
+                <tr>
+                    <td colspan="8" class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Actualisation des données...</p>
+                    </td>
+                </tr>
+            `;
             
-            // Réinitialiser le formulaire
-            document.getElementById('clientName').value = '';
-            document.getElementById('clientPhone').value = '';
-            document.getElementById('clientEmail').value = '';
-            document.getElementById('clientAddress').value = '';
-            document.getElementById('clientSearch').value = '';
-            document.getElementById('productSearch').value = '';
-            document.getElementById('notes').value = '';
-            document.getElementById('paymentMethod').value = 'cash';
-            document.getElementById('paymentStatus').value = 'pending';
-            
-            // Réinitialiser les articles
-            bonItems = [];
-            updateItemsTable();
-            updateTotals();
-            
-            // Générer un nouveau numéro
-            generateBonNumber();
-            
-            // Mettre à jour l'aperçu
-            updatePreview();
-            
-            showToast("Nouveau bon créé", "info");
+            loadDepots();
+            showToast("Données actualisées", "success");
         }
         
         // Initialiser l'application
         document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier la connexion Firebase et charger les données
-            const connectedRef = database.ref(".info/connected");
-            connectedRef.on("value", function(snap) {
-                if (snap.val() === true) {
-                    loadInitialData();
-                }
-            });
+            if (database) {
+                // Vérifier la connexion Firebase
+                const connectedRef = database.ref(".info/connected");
+                connectedRef.on("value", function(snap) {
+                    if (snap.val() === true) {
+                        console.log("Connecté à Firebase");
+                        loadDepots();
+                    } else {
+                        showToast("Non connecté à la base de données", "error");
+                    }
+                });
+            }
             
-            // Recherche des clients
-            document.getElementById('clientSearch').addEventListener('input', function(e) {
-                searchClients(e.target.value);
-            });
-            
-            // Recherche des produits
-            document.getElementById('productSearch').addEventListener('input', function(e) {
-                searchProducts(e.target.value);
-            });
-            
-            // Cacher les résultats quand on clique ailleurs
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.smart-search-container')) {
-                    hideResults('clientResults');
-                    hideResults('productResults');
-                }
-            });
-            
-            // Mettre à jour l'aperçu quand les champs changent
-            const fieldsToWatch = ['bonDate', 'depotSelect', 'driverSelect', 'clientAddress', 'paymentMethod', 'paymentStatus', 'notes'];
-            fieldsToWatch.forEach(fieldId => {
-                document.getElementById(fieldId).addEventListener('change', updatePreview);
-            });
-            
-            // Boutons
-            document.getElementById('saveBtn').addEventListener('click', saveBon);
-            document.getElementById('printBtn').addEventListener('click', printBon);
-            document.getElementById('clearBtn').addEventListener('click', newBon);
-            
-            // Mettre à jour la date du bon avec la date d'aujourd'hui par défaut
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('bonDate').value = today;
-            
-            // Initialiser l'aperçu
-            updatePreview();
+            // Filtrer les livraisons quand on change de dépôt
+            document.getElementById('depotSelector').addEventListener('change', updateDeliveriesTable);
             
             // Raccourcis clavier
             document.addEventListener('keydown', function(e) {
-                // Ctrl+S pour sauvegarder
-                if (e.ctrlKey && e.key === 's') {
-                    e.preventDefault();
-                    saveBon();
+                // Échap pour fermer la modal
+                if (e.key === 'Escape') {
+                    closeModal();
                 }
                 
-                // Ctrl+P pour imprimer
-                if (e.ctrlKey && e.key === 'p') {
+                // Ctrl+R pour actualiser
+                if (e.ctrlKey && e.key === 'r') {
                     e.preventDefault();
-                    printBon();
-                }
-                
-                // Ctrl+N pour nouveau
-                if (e.ctrlKey && e.key === 'n') {
-                    e.preventDefault();
-                    newBon();
+                    refreshData();
                 }
             });
         });
