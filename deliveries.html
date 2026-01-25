@@ -22,8 +22,18 @@
             --danger: #c62828;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg); direction: rtl; color: #333; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+        
+        body { 
+            background-color: var(--bg); 
+            direction: rtl; 
+            color: #333; 
+        }
 
         /* Header */
         .header { 
@@ -40,9 +50,21 @@
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .logo { display: flex; align-items: center; gap: 15px; }
-        .logo i { font-size: 28px; }
-        .logo h1 { font-size: 22px; font-weight: 700; }
+        
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+        }
+        
+        .logo i { 
+            font-size: 28px; 
+        }
+        
+        .logo h1 { 
+            font-size: 22px; 
+            font-weight: 700; 
+        }
         
         /* Main Content */
         .main-content { 
@@ -65,13 +87,18 @@
             transition: all 0.3s;
             font-size: 14px;
         }
+        
         .btn-primary {
             background-color: var(--primary);
             color: white;
         }
+        
         .btn-primary:hover {
             background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
+        
         .btn-success {
             background-color: var(--success);
             color: white;
@@ -95,17 +122,22 @@
             padding: 15px;
             border-radius: 8px;
             border: 1px solid #e2e8f0;
+            flex-wrap: wrap;
         }
         
-        select {
-            padding: 8px 15px;
+        select, input {
+            padding: 10px 15px;
             border-radius: 6px;
             border: 1px solid #cbd5e1;
             font-weight: 600;
             color: var(--primary);
             outline: none;
-            cursor: pointer;
             background: white;
+        }
+        
+        select {
+            min-width: 200px;
+            cursor: pointer;
         }
         
         table {
@@ -124,7 +156,7 @@
         }
         
         td {
-            padding: 15px;
+            padding: 12px 15px;
             border-bottom: 1px solid #f1f5f9;
             text-align: center;
             color: #1e293b;
@@ -132,7 +164,7 @@
         }
         
         tr:hover {
-            background-color: #f9f9f9;
+            background-color: #f8fafc;
         }
         
         /* Modal Overlay */
@@ -175,6 +207,7 @@
         .print-header {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
             border-bottom: 2.5px solid #000;
             padding-bottom: 10px;
         }
@@ -187,7 +220,7 @@
         .print-title h2 {
             border: 2px solid #000;
             display: inline-block;
-            padding: 5px 25px;
+            padding: 8px 25px;
             font-size: 18px;
         }
 
@@ -199,20 +232,21 @@
         
         .print-table th, .print-table td {
             border: 1.5px solid #000;
-            padding: 6px;
+            padding: 8px;
             font-size: 11px;
             text-align: center;
         }
         
         .print-table th {
             background: #f2f2f2 !important;
+            font-weight: bold;
         }
         
         .print-footer {
             margin-top: 40px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end;
         }
 
         /* الختم الدائري */
@@ -250,15 +284,22 @@
 
         .sig-box {
             border-top: 1px solid #000;
-            width: 130px;
+            width: 150px;
             margin-top: 40px;
             text-align: center;
             font-size: 11px;
+            padding-top: 5px;
         }
 
         @media print {
-            body * { visibility: hidden; }
-            #a5DeliveryNote, #a5DeliveryNote * { visibility: visible; }
+            body * { 
+                visibility: hidden; 
+            }
+            
+            #a5DeliveryNote, #a5DeliveryNote * { 
+                visibility: visible; 
+            }
+            
             #a5DeliveryNote {
                 display: block !important;
                 position: absolute;
@@ -267,9 +308,18 @@
                 width: 148mm;
                 height: 210mm;
                 border: none;
+                margin: 0;
+                padding: 10mm;
             }
-            .no-print { display: none !important; }
-            @page { size: A5 portrait; margin: 0; }
+            
+            .no-print { 
+                display: none !important; 
+            }
+            
+            @page { 
+                size: A5 portrait; 
+                margin: 0; 
+            }
         }
         
         /* Loading */
@@ -302,18 +352,276 @@
         }
         
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+            
+            to { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
         }
         
-        .toast.success { border-right: 4px solid var(--success); }
-        .toast.error { border-right: 4px solid var(--danger); }
+        .toast.success { 
+            border-right: 4px solid var(--success); 
+        }
+        
+        .toast.error { 
+            border-right: 4px solid var(--danger); 
+        }
+        
+        .toast.warning { 
+            border-right: 4px solid var(--warning); 
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-pending {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-processing {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .status-delivered {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+        
+        /* Formulaire création bon */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        /* Search Input avec bouton */
+        .search-input-container {
+            position: relative;
+        }
+        
+        .search-input-container .form-control {
+            padding-right: 50px;
+        }
+        
+        .search-btn {
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: var(--secondary);
+        }
+        
+        /* Modal de recherche */
+        .search-modal-content {
+            max-width: 600px;
+            max-height: 80vh;
+        }
+        
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .search-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input-group input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid var(--light);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .search-input-group i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+        
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        
+        .search-result-item {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .search-result-item:hover {
+            background-color: var(--light);
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .client-name {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .client-details {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .client-details span {
+            margin-right: 10px;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .product-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
         
         /* Responsive */
         @media (max-width: 768px) {
-            .controls { flex-direction: column; align-items: flex-start; }
-            .header { padding: 0 15px; }
-            .main-content { padding: 90px 15px 15px; }
+            .controls { 
+                flex-direction: column; 
+                align-items: stretch; 
+                gap: 15px;
+            }
+            
+            .header { 
+                padding: 0 15px; 
+                height: 60px;
+            }
+            
+            .main-content { 
+                padding: 80px 15px 15px; 
+            }
+            
+            .logo h1 {
+                font-size: 18px;
+            }
+            
+            select {
+                min-width: 100%;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .modal-content {
+                padding: 15px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .print-footer {
+                flex-direction: column;
+                gap: 20px;
+                align-items: center;
+            }
+            
+            .sig-box {
+                width: 120px;
+            }
         }
     </style>
 </head>
@@ -323,22 +631,31 @@
             <i class="fas fa-truck"></i>
             <h1>ETTIJARA ALAAMA SOUSS</h1>
         </div>
-        <div class="user-info">
-            <span>Gestion des Livraisons</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 14px;">Gestion des Livraisons</span>
+            <div id="connectionStatus" style="width: 12px; height: 12px; border-radius: 50%; background: #ccc;"></div>
         </div>
     </header>
 
     <main class="main-content">
         <div class="table-container">
             <div class="controls">
-                <label><i class="fas fa-warehouse"></i> Sélectionner le Dépôt :</label>
-                <select id="depotSelector">
-                    <option value="">Chargement...</option>
-                </select>
+                <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                    <label><i class="fas fa-warehouse"></i> Sélectionner le Dépôt :</label>
+                    <select id="depotSelector">
+                        <option value="">Chargement des dépôts...</option>
+                    </select>
+                </div>
                 
-                <button class="btn btn-primary" onclick="refreshData()">
-                    <i class="fas fa-sync-alt"></i> Actualiser
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> Actualiser
+                    </button>
+                    
+                    <button class="btn btn-success" onclick="openCreateDelivery()">
+                        <i class="fas fa-plus"></i> Nouveau Bon
+                    </button>
+                </div>
             </div>
 
             <table>
@@ -358,11 +675,18 @@
                     <tr>
                         <td colspan="8" class="loading">
                             <i class="fas fa-spinner fa-spin"></i>
-                            <p>Chargement des données...</p>
+                            <p>Connexion à la base de données...</p>
                         </td>
                     </tr>
                 </tbody>
             </table>
+            
+            <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; font-size: 12px; color: #64748b;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="statsInfo">Chargement des statistiques...</span>
+                    <span id="lastUpdate">Dernière mise à jour: --:--</span>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -370,8 +694,8 @@
     <div class="modal" id="printModal">
         <div class="modal-content">
             <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <h3><i class="fas fa-print"></i> Bon de Livraison A5</h3>
-                <div>
+                <h3 style="color: var(--primary);"><i class="fas fa-print"></i> Bon de Livraison A5</h3>
+                <div style="display: flex; gap: 10px;">
                     <button class="btn btn-success" onclick="printDeliveryNote()">
                         <i class="fas fa-print"></i> Imprimer
                     </button>
@@ -386,8 +710,221 @@
         </div>
     </div>
 
+    <!-- Modal de création de bon -->
+    <div class="modal" id="createModal" style="display: none;">
+        <div class="modal-content">
+            <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="color: var(--primary);"><i class="fas fa-plus-circle"></i> Créer un Nouveau Bon</h3>
+                <button class="btn" onclick="closeCreateModal()" style="background: var(--danger); color: white;">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+            </div>
+            
+            <div id="createForm" style="max-height: 70vh; overflow-y: auto;">
+                <div class="form-section">
+                    <h4 style="color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--light); padding-bottom: 8px;">
+                        <i class="fas fa-info-circle"></i> Informations du Bon
+                    </h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newBonNumber">Numéro du Bon *</label>
+                            <input type="text" id="newBonNumber" class="form-control" value="BL-2024-001" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="newBonDate">Date du Bon *</label>
+                            <input type="date" id="newBonDate" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newDepotSelect">Dépôt *</label>
+                            <select id="newDepotSelect" class="form-control">
+                                <option value="">Sélectionner un dépôt</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="newDriver">Livreur</label>
+                            <input type="text" id="newDriver" class="form-control" placeholder="Nom du livreur">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4 style="color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--light); padding-bottom: 8px;">
+                        <i class="fas fa-user"></i> Informations Client
+                    </h4>
+                    
+                    <div class="form-group search-input-container">
+                        <label for="clientSearch">Rechercher Client *</label>
+                        <input type="text" id="clientSearch" class="form-control" 
+                               placeholder="Cliquez pour rechercher un client..." readonly
+                               onclick="openClientSearch()">
+                        <button class="search-btn" onclick="openClientSearch()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newClientName">Nom Complet *</label>
+                            <input type="text" id="newClientName" class="form-control" readonly required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newClientPhone">Téléphone *</label>
+                            <input type="tel" id="newClientPhone" class="form-control" readonly required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newClientAddress">Adresse de Livraison *</label>
+                        <textarea id="newClientAddress" class="form-control" rows="2" required></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4 style="color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--light); padding-bottom: 8px;">
+                        <i class="fas fa-boxes"></i> Articles
+                    </h4>
+                    
+                    <div id="itemsContainer">
+                        <div class="form-row item-row">
+                            <div class="form-group" style="flex: 3; position: relative;">
+                                <label>Désignation *</label>
+                                <input type="text" class="form-control item-name" 
+                                       placeholder="Cliquez pour rechercher un produit..." 
+                                       onclick="openProductSearch(this)" readonly>
+                                <button class="search-btn" onclick="openProductSearch(this)" 
+                                        style="left: 5px; top: 35px; width: 35px; height: 35px;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Quantité *</label>
+                                <input type="number" class="form-control item-quantity" min="1" value="1" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Prix Unitaire (DH) *</label>
+                                <input type="number" class="form-control item-price" min="0" step="0.01" value="0" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Total (DH)</label>
+                                <input type="text" class="form-control item-total" value="0.00" readonly>
+                            </div>
+                            <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
+                                <button type="button" class="btn" onclick="removeItem(this)" style="background: var(--danger); color: white; padding: 12px;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <button type="button" class="btn btn-primary" onclick="addNewItem()">
+                            <i class="fas fa-plus"></i> Ajouter un article
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: bold;">Total Général:</span>
+                            <span id="totalAmount" style="font-size: 18px; font-weight: bold; color: var(--primary);">0.00 DH</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4 style="color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--light); padding-bottom: 8px;">
+                        <i class="fas fa-sticky-note"></i> Remarques et Paiement
+                    </h4>
+                    <div class="form-group">
+                        <label for="newNotes">Remarques</label>
+                        <textarea id="newNotes" class="form-control" rows="2" placeholder="Remarques supplémentaires..."></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newPaymentMethod">Mode de Paiement</label>
+                            <select id="newPaymentMethod" class="form-control">
+                                <option value="cash">Espèces</option>
+                                <option value="check">Chèque</option>
+                                <option value="card">Carte Bancaire</option>
+                                <option value="transfer">Virement</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPaymentStatus">Statut Paiement</label>
+                            <select id="newPaymentStatus" class="form-control">
+                                <option value="pending">En attente</option>
+                                <option value="partial">Partiel</option>
+                                <option value="paid">Payé</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid var(--light); display: flex; justify-content: flex-end; gap: 15px;">
+                    <button type="button" class="btn" onclick="closeCreateModal()" style="background: #e5e7eb; color: #374151;">
+                        Annuler
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="saveNewDelivery()">
+                        <i class="fas fa-save"></i> Enregistrer et Imprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de recherche clients -->
+    <div class="modal" id="clientSearchModal" style="display: none;">
+        <div class="modal-content search-modal-content">
+            <div class="search-header">
+                <h3 style="color: var(--primary); margin: 0;">
+                    <i class="fas fa-users"></i> Recherche de Clients
+                </h3>
+                <button class="btn" onclick="closeClientSearch()" style="background: var(--danger); color: white; padding: 8px 15px;">
+                    <i class="fas fa-times"></i> Fermer
+                </button>
+            </div>
+            
+            <div class="search-input-group">
+                <input type="text" id="clientSearchInput" placeholder="Tapez pour rechercher un client par nom ou téléphone..." 
+                       onkeyup="searchClients(this.value)">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <div class="search-results" id="clientSearchResults">
+                <!-- Les résultats de recherche seront affichés ici -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de recherche produits -->
+    <div class="modal" id="productSearchModal" style="display: none;">
+        <div class="modal-content search-modal-content">
+            <div class="search-header">
+                <h3 style="color: var(--primary); margin: 0;">
+                    <i class="fas fa-boxes"></i> Recherche de Produits
+                </h3>
+                <button class="btn" onclick="closeProductSearch()" style="background: var(--danger); color: white; padding: 8px 15px;">
+                    <i class="fas fa-times"></i> Fermer
+                </button>
+            </div>
+            
+            <div class="search-input-group">
+                <input type="text" id="productSearchInput" placeholder="Tapez pour rechercher un produit par nom..." 
+                       onkeyup="searchProducts(this.value)">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <div class="search-results" id="productSearchResults">
+                <!-- Les résultats de recherche seront affichés ici -->
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Configuration Firebase (identique au deuxième code)
+        // ==================== CONFIGURATION FIREBASE ====================
         const firebaseConfig = {
             apiKey: "AIzaSyAV_c5Gt_f1h5nZF47FcPjW_h4P24LYADk",
             authDomain: "commerce22-610cc.firebaseapp.com",
@@ -398,28 +935,39 @@
             appId: "1:458158894252:web:d1e640b2e16ef32d978309"
         };
         
-        // Initialiser Firebase
+        // ==================== INITIALISATION ====================
         let database;
+        let isConnected = false;
+        
         try {
-            firebase.initializeApp(firebaseConfig);
+            // Vérifier si Firebase est déjà initialisé
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
             database = firebase.database();
-            console.log("Firebase initialisé avec succès");
+            console.log("✅ Firebase initialisé avec succès");
         } catch (error) {
-            console.error("Erreur d'initialisation Firebase:", error);
+            console.error("❌ Erreur d'initialisation Firebase:", error);
             showToast("Erreur de connexion à la base de données", "error");
         }
         
-        // Variables globales
+        // ==================== VARIABLES GLOBALES ====================
         let deliveries = [];
         let depots = [];
+        let clients = [];
+        let products = [];
         let currentDelivery = null;
+        let currentSearchType = null; // 'client' ou 'product'
+        let currentProductInput = null; // Pour savoir quel input produit est en cours de modification
         
-        // Fonction pour afficher une notification
+        // ==================== FONCTIONS UTILITAIRES ====================
+        
+        // Afficher une notification
         function showToast(message, type = "success") {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             toast.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i>
                 <span>${message}</span>
             `;
             
@@ -430,171 +978,17 @@
             }, 3000);
         }
         
-        // Charger les dépôts
-        function loadDepots() {
-            try {
-                const depotsRef = database.ref('depots');
-                
-                depotsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    depots = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            depots.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        // Remplir le sélecteur de dépôts
-                        const depotSelect = document.getElementById('depotSelector');
-                        let options = '<option value="">Tous les dépôts</option>';
-                        
-                        depots.forEach(depot => {
-                            options += `<option value="${depot.id}">${depot.name} - ${depot.city || ''}</option>`;
-                        });
-                        
-                        depotSelect.innerHTML = options;
-                        
-                        // Charger les livraisons après les dépôts
-                        loadDeliveries();
-                    }
-                    
-                }, (error) => {
-                    console.error("Erreur de chargement des dépôts:", error);
-                    showToast("Erreur de chargement des dépôts", "error");
-                });
-                
-            } catch (error) {
-                console.error("Erreur dans loadDepots:", error);
-            }
-        }
-        
-        // Charger les livraisons
-        function loadDeliveries() {
-            try {
-                const deliveriesRef = database.ref('deliveries');
-                
-                deliveriesRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    deliveries = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            deliveries.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        // Trier par date (plus récent d'abord)
-                        deliveries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                        
-                        console.log(`${deliveries.length} livraisons chargées`);
-                        updateDeliveriesTable();
-                    } else {
-                        document.getElementById('deliveriesTableBody').innerHTML = `
-                            <tr>
-                                <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
-                                    <i class="fas fa-box-open" style="font-size: 32px; margin-bottom: 10px;"></i>
-                                    <p>Aucune livraison trouvée</p>
-                                </td>
-                            </tr>
-                        `;
-                    }
-                    
-                }, (error) => {
-                    console.error("Erreur de chargement des livraisons:", error);
-                    showToast("Erreur de chargement des livraisons", "error");
-                });
-                
-            } catch (error) {
-                console.error("Erreur dans loadDeliveries:", error);
-            }
-        }
-        
-        // Mettre à jour le tableau des livraisons
-        function updateDeliveriesTable() {
-            const tableBody = document.getElementById('deliveriesTableBody');
-            const selectedDepotId = document.getElementById('depotSelector').value;
+        // Mettre à jour le statut de connexion
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            isConnected = connected;
             
-            // Filtrer par dépôt si sélectionné
-            let filteredDeliveries = deliveries;
-            if (selectedDepotId) {
-                filteredDeliveries = deliveries.filter(delivery => delivery.depotId === selectedDepotId);
-            }
-            
-            if (filteredDeliveries.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
-                            <i class="fas fa-search" style="font-size: 32px; margin-bottom: 10px;"></i>
-                            <p>Aucune livraison pour ce dépôt</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            let html = '';
-            filteredDeliveries.forEach(delivery => {
-                const depot = depots.find(d => d.id === delivery.depotId);
-                const depotName = depot ? `${depot.name}` : 'Non spécifié';
-                const date = delivery.createdAt ? formatDate(delivery.createdAt) : '--';
-                const statusColor = getStatusColor(delivery.status);
-                
-                html += `
-                    <tr>
-                        <td><strong>${delivery.deliveryNumber || delivery.bonNumber || 'N/A'}</strong></td>
-                        <td>${delivery.clientName || '--'}</td>
-                        <td>${delivery.clientPhone || '--'}</td>
-                        <td>${date}</td>
-                        <td>${depotName}</td>
-                        <td><strong>${(delivery.totalAmount || 0).toFixed(2)} DH</strong></td>
-                        <td>
-                            <span style="
-                                background: ${statusColor};
-                                color: white;
-                                padding: 4px 10px;
-                                border-radius: 20px;
-                                font-size: 12px;
-                                font-weight: 600;
-                            ">
-                                ${getStatusText(delivery.status)}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-primary" onclick="showDeliveryPrint('${delivery.id}')" style="padding: 8px 15px;">
-                                <i class="fas fa-eye"></i> Voir
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tableBody.innerHTML = html;
-        }
-        
-        // Obtenir la couleur du statut
-        function getStatusColor(status) {
-            switch(status) {
-                case 'pending': return '#f59e0b'; // orange
-                case 'processing': return '#3b82f6'; // bleu
-                case 'delivered': return '#10b981'; // vert
-                case 'cancelled': return '#ef4444'; // rouge
-                default: return '#6b7280'; // gris
-            }
-        }
-        
-        // Obtenir le texte du statut
-        function getStatusText(status) {
-            switch(status) {
-                case 'pending': return 'En attente';
-                case 'processing': return 'En cours';
-                case 'delivered': return 'Livré';
-                case 'cancelled': return 'Annulé';
-                default: return 'Inconnu';
+            if (connected) {
+                statusElement.style.background = "#10b981";
+                statusElement.title = "Connecté à Firebase";
+            } else {
+                statusElement.style.background = "#ef4444";
+                statusElement.title = "Non connecté";
             }
         }
         
@@ -613,9 +1007,822 @@
             }
         }
         
-        // Afficher le bon de livraison pour impression
+        // Mettre à jour l'heure de la dernière mise à jour
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('lastUpdate').textContent = `Dernière mise à jour: ${timeString}`;
+        }
+        
+        // Générer un numéro de bon automatique
+        function generateBonNumber() {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            
+            // Compter les livraisons d'aujourd'hui
+            const todayDeliveries = deliveries.filter(d => {
+                const deliveryDate = new Date(d.createdAt || d.date);
+                return deliveryDate.toDateString() === date.toDateString();
+            });
+            
+            const sequence = (todayDeliveries.length + 1).toString().padStart(3, '0');
+            return `BL-${year}${month}${day}-${sequence}`;
+        }
+        
+        // ==================== CHARGEMENT DES DONNÉES ====================
+        
+        function loadDepots() {
+            try {
+                const depotsRef = database.ref('depots');
+                
+                depotsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    depots = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            depots.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        console.log(`✅ ${depots.length} dépôts chargés`);
+                        
+                        // Mettre à jour les sélecteurs de dépôts
+                        updateDepotSelectors();
+                        
+                        // Charger les autres données
+                        loadClients();
+                    } else {
+                        showNoDataState('depots');
+                    }
+                    
+                }, (error) => {
+                    console.error("❌ Erreur de chargement des dépôts:", error);
+                    showToast("Erreur de chargement des dépôts", "error");
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur dans loadDepots:", error);
+            }
+        }
+        
+        function loadClients() {
+            try {
+                const clientsRef = database.ref('clients');
+                
+                clientsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    clients = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            clients.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        console.log(`✅ ${clients.length} clients chargés`);
+                        
+                        // Charger les produits
+                        loadProducts();
+                    } else {
+                        console.log("ℹ️ Aucun client trouvé");
+                        clients = [];
+                        loadProducts();
+                    }
+                    
+                }, (error) => {
+                    console.error("❌ Erreur de chargement des clients:", error);
+                    clients = [];
+                    loadProducts();
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur dans loadClients:", error);
+                clients = [];
+                loadProducts();
+            }
+        }
+        
+        function loadProducts() {
+            try {
+                const productsRef = database.ref('products');
+                
+                productsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    products = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            products.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        console.log(`✅ ${products.length} produits chargés`);
+                        
+                        // Charger les livraisons
+                        loadDeliveries();
+                    } else {
+                        console.log("ℹ️ Aucun produit trouvé");
+                        products = [];
+                        loadDeliveries();
+                    }
+                    
+                }, (error) => {
+                    console.error("❌ Erreur de chargement des produits:", error);
+                    products = [];
+                    loadDeliveries();
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur dans loadProducts:", error);
+                products = [];
+                loadDeliveries();
+            }
+        }
+        
+        function loadDeliveries() {
+            try {
+                const deliveriesRef = database.ref('deliveries');
+                
+                deliveriesRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    deliveries = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            deliveries.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        // Trier par date (plus récent d'abord)
+                        deliveries.sort((a, b) => {
+                            const dateA = new Date(a.createdAt || a.date || 0);
+                            const dateB = new Date(b.createdAt || b.date || 0);
+                            return dateB - dateA;
+                        });
+                        
+                        console.log(`✅ ${deliveries.length} livraisons chargées`);
+                        updateDeliveriesTable();
+                        updateStats();
+                        updateLastUpdateTime();
+                        
+                    } else {
+                        showEmptyState();
+                    }
+                    
+                }, (error) => {
+                    console.error("❌ Erreur de chargement des livraisons:", error);
+                    showToast("Erreur de chargement des livraisons", "error");
+                    showEmptyState();
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur dans loadDeliveries:", error);
+                showEmptyState();
+            }
+        }
+        
+        function updateDepotSelectors() {
+            // Mettre à jour le sélecteur de dépôts principal
+            const depotSelect = document.getElementById('depotSelector');
+            let options = '<option value="">Tous les dépôts</option>';
+            
+            depots.forEach(depot => {
+                const depotName = depot.name || 'Dépôt sans nom';
+                const depotCity = depot.city ? ` - ${depot.city}` : '';
+                options += `<option value="${depot.id}">${depotName}${depotCity}</option>`;
+            });
+            
+            depotSelect.innerHTML = options;
+            
+            // Mettre à jour le sélecteur de dépôts dans le formulaire
+            const newDepotSelect = document.getElementById('newDepotSelect');
+            let newOptions = '<option value="">Sélectionner un dépôt</option>';
+            
+            depots.forEach(depot => {
+                const depotName = depot.name || 'Dépôt sans nom';
+                const depotCity = depot.city ? ` - ${depot.city}` : '';
+                newOptions += `<option value="${depot.id}">${depotName}${depotCity}</option>`;
+            });
+            
+            newDepotSelect.innerHTML = newOptions;
+        }
+        
+        function showNoDataState(type) {
+            const message = {
+                'depots': 'Aucun dépôt disponible',
+                'clients': 'Aucun client disponible',
+                'products': 'Aucun produit disponible'
+            }[type] || 'Aucune donnée disponible';
+            
+            showToast(message, "warning");
+        }
+        
+        // Afficher l'état vide
+        function showEmptyState() {
+            const tableBody = document.getElementById('deliveriesTableBody');
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
+                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <h3 style="color: #64748b; margin-bottom: 10px;">Aucune livraison trouvée</h3>
+                        <p style="color: #94a3b8;">Commencez par créer un nouveau bon de livraison</p>
+                        <button class="btn btn-primary" onclick="openCreateDelivery()" style="margin-top: 15px;">
+                            <i class="fas fa-plus"></i> Créer un bon
+                        </button>
+                    </td>
+                </tr>
+            `;
+            updateStats();
+        }
+        
+        // ==================== GESTION DES LIVRAISONS ====================
+        
+        function updateDeliveriesTable() {
+            const tableBody = document.getElementById('deliveriesTableBody');
+            const selectedDepotId = document.getElementById('depotSelector').value;
+            
+            // Filtrer par dépôt si sélectionné
+            let filteredDeliveries = deliveries;
+            if (selectedDepotId) {
+                filteredDeliveries = deliveries.filter(delivery => delivery.depotId === selectedDepotId);
+            }
+            
+            if (filteredDeliveries.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            let html = '';
+            filteredDeliveries.forEach(delivery => {
+                // Trouver le dépôt
+                const depot = depots.find(d => d.id === delivery.depotId);
+                const depotName = depot ? depot.name : 'Non spécifié';
+                
+                // Formater la date
+                const date = formatDate(delivery.createdAt || delivery.date);
+                
+                // Calculer le total
+                let totalAmount = delivery.totalAmount || 0;
+                if (!totalAmount && delivery.items && Array.isArray(delivery.items)) {
+                    totalAmount = delivery.items.reduce((sum, item) => {
+                        return sum + (item.total || (item.quantity * item.price) || 0);
+                    }, 0);
+                }
+                
+                // Déterminer le statut
+                const status = delivery.status || 'pending';
+                const statusClass = `status-${status}`;
+                const statusText = getStatusText(status);
+                
+                // Numéro du bon
+                const bonNumber = delivery.deliveryNumber || delivery.bonNumber || delivery.id.substring(0, 8);
+                
+                html += `
+                    <tr>
+                        <td><strong style="color: var(--primary);">${bonNumber}</strong></td>
+                        <td>${delivery.clientName || '--'}</td>
+                        <td>${delivery.clientPhone || '--'}</td>
+                        <td>${date}</td>
+                        <td>${depotName}</td>
+                        <td><strong>${totalAmount.toFixed(2)} DH</strong></td>
+                        <td>
+                            <span class="status-badge ${statusClass}">
+                                ${statusText}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" onclick="showDeliveryPrint('${delivery.id}')" style="padding: 6px 12px; font-size: 12px;">
+                                <i class="fas fa-eye"></i> Voir
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        }
+        
+        // Obtenir le texte du statut
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'En attente';
+                case 'processing': return 'En cours';
+                case 'delivered': return 'Livré';
+                case 'cancelled': return 'Annulé';
+                default: return 'Inconnu';
+            }
+        }
+        
+        // Mettre à jour les statistiques
+        function updateStats() {
+            const selectedDepotId = document.getElementById('depotSelector').value;
+            let filteredDeliveries = deliveries;
+            
+            if (selectedDepotId) {
+                filteredDeliveries = deliveries.filter(delivery => delivery.depotId === selectedDepotId);
+            }
+            
+            const totalDeliveries = filteredDeliveries.length;
+            const totalAmount = filteredDeliveries.reduce((sum, delivery) => {
+                return sum + (delivery.totalAmount || 0);
+            }, 0);
+            
+            const pendingCount = filteredDeliveries.filter(d => d.status === 'pending').length;
+            const deliveredCount = filteredDeliveries.filter(d => d.status === 'delivered').length;
+            
+            document.getElementById('statsInfo').innerHTML = `
+                <span><i class="fas fa-box"></i> ${totalDeliveries} livraisons</span> |
+                <span><i class="fas fa-money-bill-wave"></i> ${totalAmount.toFixed(2)} DH</span> |
+                <span><i class="fas fa-clock"></i> ${pendingCount} en attente</span> |
+                <span><i class="fas fa-check-circle"></i> ${deliveredCount} livrées</span>
+            `;
+        }
+        
+        // ==================== RECHERCHE CLIENTS ====================
+        
+        function openClientSearch() {
+            currentSearchType = 'client';
+            document.getElementById('clientSearchModal').style.display = 'flex';
+            document.getElementById('clientSearchInput').value = '';
+            document.getElementById('clientSearchInput').focus();
+            displayAllClients();
+        }
+        
+        function closeClientSearch() {
+            document.getElementById('clientSearchModal').style.display = 'none';
+            currentSearchType = null;
+        }
+        
+        function searchClients(query) {
+            const resultsContainer = document.getElementById('clientSearchResults');
+            
+            if (!query || query.trim() === '') {
+                displayAllClients();
+                return;
+            }
+            
+            query = query.toLowerCase().trim();
+            const filteredClients = clients.filter(client => {
+                const name = (client.name || '').toLowerCase();
+                const phone = (client.phone || '').toLowerCase();
+                const address = (client.address || '').toLowerCase();
+                
+                return name.includes(query) || phone.includes(query) || address.includes(query);
+            });
+            
+            displayClientResults(filteredClients);
+        }
+        
+        function displayAllClients() {
+            displayClientResults(clients);
+        }
+        
+        function displayClientResults(clientsList) {
+            const resultsContainer = document.getElementById('clientSearchResults');
+            
+            if (clientsList.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-user-slash" style="font-size: 48px; margin-bottom: 15px; color: #cbd5e1;"></i>
+                        <p>Aucun client trouvé</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            clientsList.forEach(client => {
+                html += `
+                    <div class="search-result-item" onclick="selectClient('${client.id}')">
+                        <div class="client-name">${client.name || 'Nom non spécifié'}</div>
+                        <div class="client-details">
+                            <span><i class="fas fa-phone"></i> ${client.phone || 'Non spécifié'}</span>
+                            ${client.address ? `<span><i class="fas fa-map-marker-alt"></i> ${client.address}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsContainer.innerHTML = html;
+        }
+        
+        function selectClient(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (!client) {
+                showToast("Client non trouvé", "error");
+                return;
+            }
+            
+            // Remplir les champs du formulaire
+            document.getElementById('newClientName').value = client.name || '';
+            document.getElementById('newClientPhone').value = client.phone || '';
+            document.getElementById('newClientAddress').value = client.address || '';
+            document.getElementById('clientSearch').value = client.name || '';
+            
+            // Fermer la modal de recherche
+            closeClientSearch();
+            
+            showToast(`Client "${client.name}" sélectionné`, "success");
+        }
+        
+        // ==================== RECHERCHE PRODUITS ====================
+        
+        function openProductSearch(inputElement) {
+            currentSearchType = 'product';
+            currentProductInput = inputElement;
+            document.getElementById('productSearchModal').style.display = 'flex';
+            document.getElementById('productSearchInput').value = '';
+            document.getElementById('productSearchInput').focus();
+            displayAllProducts();
+        }
+        
+        function closeProductSearch() {
+            document.getElementById('productSearchModal').style.display = 'none';
+            currentSearchType = null;
+            currentProductInput = null;
+        }
+        
+        function searchProducts(query) {
+            const resultsContainer = document.getElementById('productSearchResults');
+            
+            if (!query || query.trim() === '') {
+                displayAllProducts();
+                return;
+            }
+            
+            query = query.toLowerCase().trim();
+            const filteredProducts = products.filter(product => {
+                const name = (product.name || '').toLowerCase();
+                const description = (product.description || '').toLowerCase();
+                const code = (product.code || '').toLowerCase();
+                
+                return name.includes(query) || description.includes(query) || code.includes(query);
+            });
+            
+            displayProductResults(filteredProducts);
+        }
+        
+        function displayAllProducts() {
+            displayProductResults(products);
+        }
+        
+        function displayProductResults(productsList) {
+            const resultsContainer = document.getElementById('productSearchResults');
+            
+            if (productsList.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 15px; color: #cbd5e1;"></i>
+                        <p>Aucun produit trouvé</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            productsList.forEach(product => {
+                const price = product.price || product.salePrice || 0;
+                const stock = product.stock || 0;
+                const unit = product.unit || '';
+                
+                html += `
+                    <div class="search-result-item" onclick="selectProduct('${product.id}')">
+                        <div class="product-name">${product.name || 'Produit sans nom'}</div>
+                        <div class="product-details">
+                            <div>
+                                ${product.code ? `<span><i class="fas fa-barcode"></i> ${product.code}</span>` : ''}
+                                ${stock > 0 ? `<span><i class="fas fa-cubes"></i> ${stock} ${unit}</span>` : ''}
+                            </div>
+                            <div class="product-price">${price.toFixed(2)} DH</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsContainer.innerHTML = html;
+        }
+        
+        function selectProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) {
+                showToast("Produit non trouvé", "error");
+                return;
+            }
+            
+            if (!currentProductInput) {
+                showToast("Erreur: aucun champ produit sélectionné", "error");
+                return;
+            }
+            
+            // Trouver la ligne de l'article
+            const itemRow = currentProductInput.closest('.item-row');
+            if (!itemRow) {
+                showToast("Erreur: ligne d'article non trouvée", "error");
+                return;
+            }
+            
+            // Remplir les champs de l'article
+            itemRow.querySelector('.item-name').value = product.name || '';
+            itemRow.querySelector('.item-price').value = product.price || product.salePrice || 0;
+            
+            // Calculer le total
+            calculateItemTotalForRow(itemRow);
+            
+            // Fermer la modal de recherche
+            closeProductSearch();
+            
+            showToast(`Produit "${product.name}" sélectionné`, "success");
+        }
+        
+        // ==================== CRÉATION DE BON ====================
+        
+        function openCreateDelivery() {
+            // Générer un nouveau numéro de bon
+            document.getElementById('newBonNumber').value = generateBonNumber();
+            
+            // Définir la date d'aujourd'hui
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('newBonDate').value = today;
+            
+            // Réinitialiser le formulaire
+            document.getElementById('clientSearch').value = '';
+            document.getElementById('newClientName').value = '';
+            document.getElementById('newClientPhone').value = '';
+            document.getElementById('newClientAddress').value = '';
+            document.getElementById('newDriver').value = '';
+            document.getElementById('newNotes').value = '';
+            document.getElementById('newPaymentMethod').value = 'cash';
+            document.getElementById('newPaymentStatus').value = 'pending';
+            document.getElementById('newDepotSelect').value = '';
+            
+            // Réinitialiser les articles
+            const itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.innerHTML = `
+                <div class="form-row item-row">
+                    <div class="form-group" style="flex: 3; position: relative;">
+                        <label>Désignation *</label>
+                        <input type="text" class="form-control item-name" 
+                               placeholder="Cliquez pour rechercher un produit..." 
+                               onclick="openProductSearch(this)" readonly>
+                        <button class="search-btn" onclick="openProductSearch(this)" 
+                                style="left: 5px; top: 35px; width: 35px; height: 35px;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Quantité *</label>
+                        <input type="number" class="form-control item-quantity" min="1" value="1" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Prix Unitaire (DH) *</label>
+                        <input type="number" class="form-control item-price" min="0" step="0.01" value="0" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Total (DH)</label>
+                        <input type="text" class="form-control item-total" value="0.00" readonly>
+                    </div>
+                    <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
+                        <button type="button" class="btn" onclick="removeItem(this)" style="background: var(--danger); color: white; padding: 12px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Réinitialiser le total
+            document.getElementById('totalAmount').textContent = '0.00 DH';
+            
+            // Ajouter les événements de calcul
+            attachItemCalculations();
+            
+            // Ouvrir la modal
+            document.getElementById('createModal').style.display = 'flex';
+        }
+        
+        function closeCreateModal() {
+            document.getElementById('createModal').style.display = 'none';
+        }
+        
+        function addNewItem() {
+            const itemsContainer = document.getElementById('itemsContainer');
+            const newItem = document.createElement('div');
+            newItem.className = 'form-row item-row';
+            newItem.innerHTML = `
+                <div class="form-group" style="flex: 3; position: relative;">
+                    <label>Désignation *</label>
+                    <input type="text" class="form-control item-name" 
+                           placeholder="Cliquez pour rechercher un produit..." 
+                           onclick="openProductSearch(this)" readonly>
+                    <button class="search-btn" onclick="openProductSearch(this)" 
+                            style="left: 5px; top: 35px; width: 35px; height: 35px;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Quantité *</label>
+                    <input type="number" class="form-control item-quantity" min="1" value="1" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Prix Unitaire (DH) *</label>
+                    <input type="number" class="form-control item-price" min="0" step="0.01" value="0" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Total (DH)</label>
+                    <input type="text" class="form-control item-total" value="0.00" readonly>
+                </div>
+                <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
+                    <button type="button" class="btn" onclick="removeItem(this)" style="background: var(--danger); color: white; padding: 12px;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            itemsContainer.appendChild(newItem);
+            attachItemCalculations();
+        }
+        
+        function removeItem(button) {
+            const itemRow = button.closest('.item-row');
+            if (itemRow && document.querySelectorAll('.item-row').length > 1) {
+                itemRow.remove();
+                calculateTotal();
+            } else {
+                showToast("Au moins un article est requis", "warning");
+            }
+        }
+        
+        function attachItemCalculations() {
+            const quantityInputs = document.querySelectorAll('.item-quantity');
+            const priceInputs = document.querySelectorAll('.item-price');
+            
+            quantityInputs.forEach(input => {
+                input.removeEventListener('input', calculateItemTotalHandler);
+                input.addEventListener('input', calculateItemTotalHandler);
+            });
+            
+            priceInputs.forEach(input => {
+                input.removeEventListener('input', calculateItemTotalHandler);
+                input.addEventListener('input', calculateItemTotalHandler);
+            });
+        }
+        
+        function calculateItemTotalHandler(event) {
+            const itemRow = event.target.closest('.item-row');
+            calculateItemTotalForRow(itemRow);
+        }
+        
+        function calculateItemTotalForRow(itemRow) {
+            if (!itemRow) return;
+            
+            const quantity = parseFloat(itemRow.querySelector('.item-quantity').value) || 0;
+            const price = parseFloat(itemRow.querySelector('.item-price').value) || 0;
+            const total = (quantity * price).toFixed(2);
+            
+            itemRow.querySelector('.item-total').value = total;
+            calculateTotal();
+        }
+        
+        function calculateTotal() {
+            let grandTotal = 0;
+            const itemRows = document.querySelectorAll('.item-row');
+            
+            itemRows.forEach(row => {
+                const totalInput = row.querySelector('.item-total');
+                const itemTotal = parseFloat(totalInput.value) || 0;
+                grandTotal += itemTotal;
+            });
+            
+            document.getElementById('totalAmount').textContent = `${grandTotal.toFixed(2)} DH`;
+        }
+        
+        function saveNewDelivery() {
+            // Validation des champs obligatoires
+            const depotId = document.getElementById('newDepotSelect').value;
+            const clientName = document.getElementById('newClientName').value.trim();
+            const clientPhone = document.getElementById('newClientPhone').value.trim();
+            const clientAddress = document.getElementById('newClientAddress').value.trim();
+            
+            if (!depotId) {
+                showToast("Veuillez sélectionner un dépôt", "error");
+                return;
+            }
+            
+            if (!clientName) {
+                showToast("Veuillez saisir le nom du client", "error");
+                return;
+            }
+            
+            if (!clientPhone) {
+                showToast("Veuillez saisir le téléphone du client", "error");
+                return;
+            }
+            
+            if (!clientAddress) {
+                showToast("Veuillez saisir l'adresse de livraison", "error");
+                return;
+            }
+            
+            // Récupérer les articles
+            const items = [];
+            const itemRows = document.querySelectorAll('.item-row');
+            let hasValidItems = false;
+            
+            itemRows.forEach(row => {
+                const name = row.querySelector('.item-name').value.trim();
+                const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const total = parseFloat(row.querySelector('.item-total').value) || 0;
+                
+                if (name && quantity > 0 && price > 0) {
+                    items.push({
+                        name: name,
+                        quantity: quantity,
+                        price: price,
+                        total: total
+                    });
+                    hasValidItems = true;
+                }
+            });
+            
+            if (!hasValidItems) {
+                showToast("Veuillez ajouter au moins un article valide", "error");
+                return;
+            }
+            
+            // Calculer le total général
+            const totalAmount = items.reduce((sum, item) => sum + item.total, 0);
+            
+            // Préparer les données du bon
+            const bonData = {
+                bonNumber: document.getElementById('newBonNumber').value,
+                bonDate: document.getElementById('newBonDate').value,
+                clientName: clientName,
+                clientPhone: clientPhone,
+                clientAddress: clientAddress,
+                depotId: depotId,
+                driver: document.getElementById('newDriver').value.trim(),
+                items: items,
+                totalAmount: totalAmount,
+                notes: document.getElementById('newNotes').value.trim(),
+                paymentMethod: document.getElementById('newPaymentMethod').value,
+                paymentStatus: document.getElementById('newPaymentStatus').value,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            try {
+                // Enregistrer dans Firebase
+                const deliveriesRef = database.ref('deliveries');
+                const newDeliveryRef = deliveriesRef.push();
+                
+                newDeliveryRef.set(bonData)
+                    .then(() => {
+                        showToast("Bon de livraison créé avec succès!", "success");
+                        closeCreateModal();
+                        refreshData();
+                        
+                        // Afficher le bon pour impression
+                        currentDelivery = { ...bonData, id: newDeliveryRef.key };
+                        setTimeout(() => {
+                            showDeliveryPrint(newDeliveryRef.key);
+                        }, 500);
+                    })
+                    .catch(error => {
+                        console.error("❌ Erreur d'enregistrement:", error);
+                        showToast("Erreur lors de l'enregistrement du bon", "error");
+                    });
+                
+            } catch (error) {
+                console.error("❌ Erreur dans saveNewDelivery:", error);
+                showToast("Erreur lors de l'enregistrement du bon", "error");
+            }
+        }
+        
+        // ==================== AFFICHAGE ET IMPRESSION ====================
+        
         function showDeliveryPrint(deliveryId) {
-            const delivery = deliveries.find(d => d.id === deliveryId);
+            let delivery;
+            
+            if (typeof deliveryId === 'string') {
+                delivery = deliveries.find(d => d.id === deliveryId);
+            } else {
+                delivery = currentDelivery;
+            }
+            
             if (!delivery) {
                 showToast("Livraison non trouvée", "error");
                 return;
@@ -631,81 +1838,123 @@
             const container = document.getElementById('a5DeliveryNote');
             let grandTotal = 0;
             
-            // Calculer le total
+            // Générer les lignes des articles
             let itemsHtml = '';
-            if (delivery.items && Array.isArray(delivery.items)) {
-                delivery.items.forEach(item => {
-                    const total = item.total || (item.quantity * item.price) || 0;
+            if (delivery.items && Array.isArray(delivery.items) && delivery.items.length > 0) {
+                delivery.items.forEach((item, index) => {
+                    const quantity = item.quantity || 0;
+                    const price = item.price || 0;
+                    const total = item.total || (quantity * price);
                     grandTotal += total;
                     
                     itemsHtml += `
                         <tr>
-                            <td>${item.code || 'N/A'}</td>
-                            <td style="text-align:left;">${item.name || 'Produit inconnu'}</td>
-                            <td>${item.quantity || 0}</td>
-                            <td>${(item.price || 0).toFixed(2)}</td>
+                            <td>${index + 1}</td>
+                            <td style="text-align:left;">${item.name || 'Produit sans nom'}</td>
+                            <td>${quantity}</td>
+                            <td>${price.toFixed(2)}</td>
                             <td>${total.toFixed(2)}</td>
                         </tr>
                     `;
                 });
+            } else {
+                itemsHtml = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px;">
+                            Aucun article dans cette livraison
+                        </td>
+                    </tr>
+                `;
+                grandTotal = delivery.totalAmount || 0;
             }
+            
+            // Numéro du bon
+            const bonNumber = delivery.deliveryNumber || delivery.bonNumber || delivery.id.substring(0, 8).toUpperCase();
+            
+            // Date de création
+            const creationDate = delivery.createdAt ? new Date(delivery.createdAt) : new Date();
+            const formattedDate = creationDate.toLocaleDateString('fr-FR');
+            const formattedTime = creationDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             
             container.innerHTML = `
                 <div class="print-header">
-                    <div style="text-align:left;">
-                        <h3 style="margin:0; color: var(--primary);">ETTIJARA ALAAMA SOUSS</h3>
-                        <p style="font-size:9px;">Système de Gestion des Livraisons</p>
-                        <p style="font-size:9px;">Dépôt: <strong>${depotName} ${depotCity ? '- ' + depotCity : ''}</strong></p>
+                    <div style="text-align:left; flex: 1;">
+                        <h3 style="margin:0; color: var(--primary); font-size: 20px;">ETTIJARA ALAAMA SOUSS</h3>
+                        <p style="font-size:10px; margin: 3px 0;">Système de Gestion des Livraisons</p>
+                        <p style="font-size:10px; margin-top: 8px;">
+                            <strong>Dépôt:</strong> ${depotName} ${depotCity ? '- ' + depotCity : ''}
+                        </p>
                     </div>
                     <div style="text-align:right; font-size:11px;">
-                        <p><strong>N°:</strong> ${delivery.deliveryNumber || delivery.bonNumber || 'N/A'}</p>
-                        <p><strong>Date:</strong> ${formatDate(delivery.createdAt)}</p>
-                        <p><strong>Statut:</strong> ${getStatusText(delivery.status)}</p>
+                        <div style="border: 1px solid #000; padding: 8px; border-radius: 4px;">
+                            <p style="margin: 2px 0;"><strong>N° BON:</strong> ${bonNumber}</p>
+                            <p style="margin: 2px 0;"><strong>DATE:</strong> ${formattedDate}</p>
+                            <p style="margin: 2px 0;"><strong>HEURE:</strong> ${formattedTime}</p>
+                            <p style="margin: 2px 0;"><strong>STATUT:</strong> ${getStatusText(delivery.status || 'pending')}</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="print-title"><h2>BON DE LIVRAISON</h2></div>
+                <div class="print-title">
+                    <h2>BON DE LIVRAISON</h2>
+                </div>
 
-                <div style="margin-bottom:12px; text-align:left;">
-                    <p style="font-size:10px; font-weight:bold;">INFORMATIONS CLIENT :</p>
-                    <p style="font-size:13px;"><strong>${delivery.clientName || '--'}</strong></p>
-                    <p style="font-size:11px;">📱 ${delivery.clientPhone || '--'}</p>
-                    <p style="font-size:11px;">📍 ${delivery.deliveryAddress || delivery.clientAddress || '--'}</p>
+                <div style="margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                    <p style="font-size: 11px; font-weight: bold; margin-bottom: 5px;">INFORMATIONS CLIENT:</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+                        <div>
+                            <p style="margin: 3px 0;"><strong>Nom:</strong> ${delivery.clientName || 'Non spécifié'}</p>
+                            <p style="margin: 3px 0;"><strong>Téléphone:</strong> ${delivery.clientPhone || '--'}</p>
+                        </div>
+                        <div>
+                            <p style="margin: 3px 0;"><strong>Adresse:</strong> ${delivery.clientAddress || 'Non spécifiée'}</p>
+                            ${delivery.driver ? `<p style="margin: 3px 0;"><strong>Livreur:</strong> ${delivery.driver}</p>` : ''}
+                        </div>
+                    </div>
                 </div>
 
                 <table class="print-table">
                     <thead>
                         <tr>
-                            <th width="15%">Code</th>
-                            <th width="40%">Désignation</th>
+                            <th width="5%">N°</th>
+                            <th width="45%">Désignation</th>
                             <th width="10%">Qté</th>
                             <th width="15%">Prix Unitaire</th>
-                            <th width="15%">Total</th>
+                            <th width="15%">Total (DH)</th>
                         </tr>
                     </thead>
-                    <tbody>${itemsHtml || '<tr><td colspan="5" style="text-align:center;">Aucun article</td></tr>'}</tbody>
+                    <tbody>${itemsHtml}</tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="4" style="text-align:right; border:none; padding-top:12px;">
-                                <strong>TOTAL À PAYER (DH) :</strong>
+                            <td colspan="4" style="text-align: right; border: none; padding-top: 12px; font-weight: bold;">
+                                TOTAL À PAYER (DH) :
                             </td>
-                            <td style="border:2.5px solid #000; padding-top:12px; background:#f9f9f9;">
-                                <strong>${grandTotal.toFixed(2)}</strong>
+                            <td style="border: 2.5px solid #000; padding-top: 12px; background: #f9f9f9; font-weight: bold; font-size: 12px;">
+                                ${grandTotal.toFixed(2)}
                             </td>
                         </tr>
                     </tfoot>
                 </table>
                 
                 ${delivery.notes ? `
-                <div style="margin-top:20px; padding:10px; border:1px solid #ddd; font-size:10px;">
+                <div style="margin-top: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 10px;">
                     <strong>Remarques:</strong> ${delivery.notes}
+                </div>
+                ` : ''}
+                
+                ${delivery.paymentMethod ? `
+                <div style="margin-top: 10px; font-size: 11px;">
+                    <strong>Mode de paiement:</strong> ${delivery.paymentMethod}
+                    ${delivery.paymentStatus ? ` | <strong>Statut:</strong> ${delivery.paymentStatus}` : ''}
                 </div>
                 ` : ''}
 
                 <div class="print-footer">
-                    <div style="text-align:center;">
-                        <p>Signature du Client</p>
-                        <div class="sig-box"></div>
+                    <div style="text-align: center;">
+                        <p style="font-size: 11px; margin-bottom: 5px;">Le client</p>
+                        <div class="sig-box">
+                            Signature
+                        </div>
                     </div>
 
                     <div class="round-stamp">
@@ -714,16 +1963,20 @@
                         <div class="depo-name">${depotName}</div>
                     </div>
 
-                    <div style="text-align:center;">
-                        <p>Signature & Cachet</p>
-                        <div class="sig-box"></div>
+                    <div style="text-align: center;">
+                        <p style="font-size: 11px; margin-bottom: 5px;">La société</p>
+                        <div class="sig-box">
+                            Signature & Cachet
+                        </div>
                     </div>
                 </div>
                 
-                <p style="font-size:8px; text-align:center; margin-top:25px; color:#555;">
-                    Document généré le ${new Date().toLocaleDateString('fr-FR')} 
-                    - ETTIJARA ALAAMA SOUSS © ${new Date().getFullYear()}
-                </p>
+                <div style="margin-top: 30px; font-size: 8px; text-align: center; color: #666; border-top: 1px dashed #ddd; padding-top: 10px;">
+                    <p>
+                        Document généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} 
+                        | ETTIJARA ALAAMA SOUSS © ${new Date().getFullYear()} | Ce document est émis par ordinateur, signature non requise.
+                    </p>
+                </div>
             `;
             
             document.getElementById('printModal').style.display = 'flex';
@@ -731,52 +1984,85 @@
         
         // Imprimer le bon de livraison
         function printDeliveryNote() {
+            if (!currentDelivery) {
+                showToast("Aucun bon à imprimer", "error");
+                return;
+            }
+            
             window.print();
         }
         
         // Fermer la modal
         function closeModal() {
             document.getElementById('printModal').style.display = 'none';
+            currentDelivery = null;
         }
         
-        // Actualiser les données
+        // ==================== UTILITAIRES ====================
+        
         function refreshData() {
             document.getElementById('deliveriesTableBody').innerHTML = `
                 <tr>
                     <td colspan="8" class="loading">
                         <i class="fas fa-spinner fa-spin"></i>
-                        <p>Actualisation des données...</p>
+                        <p>Actualisation des données en cours...</p>
                     </td>
                 </tr>
             `;
             
             loadDepots();
-            showToast("Données actualisées", "success");
+            showToast("Données actualisées avec succès", "success");
         }
         
-        // Initialiser l'application
+        // ==================== INITIALISATION ====================
+        
         document.addEventListener('DOMContentLoaded', function() {
             if (database) {
-                // Vérifier la connexion Firebase
+                // Surveiller la connexion Firebase
                 const connectedRef = database.ref(".info/connected");
+                
                 connectedRef.on("value", function(snap) {
-                    if (snap.val() === true) {
-                        console.log("Connecté à Firebase");
+                    const connected = snap.val() === true;
+                    updateConnectionStatus(connected);
+                    
+                    if (connected) {
+                        console.log("✅ Connecté à Firebase Realtime Database");
                         loadDepots();
                     } else {
-                        showToast("Non connecté à la base de données", "error");
+                        console.log("❌ Déconnecté de Firebase");
+                        document.getElementById('deliveriesTableBody').innerHTML = `
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 40px; color: #ef4444;">
+                                    <i class="fas fa-wifi-slash" style="font-size: 48px; margin-bottom: 15px;"></i>
+                                    <h3 style="color: #dc2626; margin-bottom: 10px;">Connexion perdue</h3>
+                                    <p style="color: #f87171;">Impossible de se connecter à la base de données</p>
+                                    <button class="btn btn-primary" onclick="refreshData()" style="margin-top: 15px;">
+                                        <i class="fas fa-sync-alt"></i> Réessayer
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
                     }
                 });
+                
+            } else {
+                showToast("Erreur d'initialisation de Firebase", "error");
             }
             
-            // Filtrer les livraisons quand on change de dépôt
-            document.getElementById('depotSelector').addEventListener('change', updateDeliveriesTable);
+            // Écouter les changements de sélection de dépôt
+            document.getElementById('depotSelector').addEventListener('change', function() {
+                updateDeliveriesTable();
+                updateStats();
+            });
             
             // Raccourcis clavier
             document.addEventListener('keydown', function(e) {
-                // Échap pour fermer la modal
+                // Échap pour fermer les modals
                 if (e.key === 'Escape') {
                     closeModal();
+                    closeCreateModal();
+                    closeClientSearch();
+                    closeProductSearch();
                 }
                 
                 // Ctrl+R pour actualiser
@@ -784,6 +2070,27 @@
                     e.preventDefault();
                     refreshData();
                 }
+                
+                // Ctrl+N pour nouveau bon
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    openCreateDelivery();
+                }
+            });
+            
+            // Fermer les modals en cliquant en dehors
+            window.addEventListener('click', function(event) {
+                const modals = ['printModal', 'createModal', 'clientSearchModal', 'productSearchModal'];
+                
+                modals.forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    if (event.target === modal) {
+                        if (modalId === 'printModal') closeModal();
+                        if (modalId === 'createModal') closeCreateModal();
+                        if (modalId === 'clientSearchModal') closeClientSearch();
+                        if (modalId === 'productSearchModal') closeProductSearch();
+                    }
+                });
             });
         });
     </script>
