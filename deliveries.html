@@ -1765,6 +1765,11 @@
             // Calculer le total général
             const totalAmount = items.reduce((sum, item) => sum + item.total, 0);
             
+            // Récupérer les valeurs de statut
+            const paymentMethod = document.getElementById('newPaymentMethod').value;
+            const paymentStatus = document.getElementById('newPaymentStatus').value;
+            const status = 'pending'; // Statut par défaut pour les nouveaux bons
+            
             // Préparer les données du bon
             const bonData = {
                 bonNumber: document.getElementById('newBonNumber').value,
@@ -1777,9 +1782,9 @@
                 items: items,
                 totalAmount: totalAmount,
                 notes: document.getElementById('newNotes').value.trim(),
-                paymentMethod: document.getElementById('newPaymentMethod').value,
-                paymentStatus: document.getElementById('newPaymentStatus').value,
-                status: 'pending',
+                paymentMethod: paymentMethod,
+                paymentStatus: paymentStatus,
+                status: status,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
@@ -1890,7 +1895,6 @@
                             <p style="margin: 2px 0;"><strong>N° BON:</strong> ${bonNumber}</p>
                             <p style="margin: 2px 0;"><strong>DATE:</strong> ${formattedDate}</p>
                             <p style="margin: 2px 0;"><strong>HEURE:</strong> ${formattedTime}</p>
-                            <p style="margin: 2px 0;"><strong>STATUT:</strong> ${getStatusText(delivery.status || 'pending')}</p>
                         </div>
                     </div>
                 </div>
@@ -1904,7 +1908,6 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
                         <div>
                             <p style="margin: 3px 0;"><strong>Nom:</strong> ${delivery.clientName || 'Non spécifié'}</p>
-                            <p style="margin: 3px 0;"><strong>Téléphone:</strong> ${delivery.clientPhone || '--'}</p>
                         </div>
                         <div>
                             <p style="margin: 3px 0;"><strong>Adresse:</strong> ${delivery.clientAddress || 'Non spécifiée'}</p>
@@ -1944,8 +1947,10 @@
                 
                 ${delivery.paymentMethod ? `
                 <div style="margin-top: 10px; font-size: 11px;">
-                    <strong>Mode de paiement:</strong> ${delivery.paymentMethod}
-                    ${delivery.paymentStatus ? ` | <strong>Statut:</strong> ${delivery.paymentStatus}` : ''}
+                    <strong>Mode de paiement:</strong> ${delivery.paymentMethod === 'cash' ? 'Espèces' : 
+                                                       delivery.paymentMethod === 'check' ? 'Chèque' : 
+                                                       delivery.paymentMethod === 'card' ? 'Carte Bancaire' : 
+                                                       delivery.paymentMethod === 'transfer' ? 'Virement' : delivery.paymentMethod}
                 </div>
                 ` : ''}
 
