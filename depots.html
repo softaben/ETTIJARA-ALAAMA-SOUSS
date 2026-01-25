@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETTIJARA ALAAMA SOUSS - Inventaire des Dépôts</title>
+    <title>ETTIJARA ALAAMA SOUSS - Gestion des Produits par Dépôt</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase SDK -->
@@ -20,7 +20,6 @@
             --success: #2e7d32;
             --warning: #f57c00;
             --danger: #c62828;
-            --info: #0277bd;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -85,6 +84,68 @@
             min-height: calc(100vh - 70px);
         }
         
+        /* Depot Selector */
+        .depot-selector-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+        .depot-selector {
+            flex: 1;
+            min-width: 300px;
+        }
+        .depot-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .depot-selector select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--light);
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s;
+        }
+        .depot-selector select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .selected-depot-info {
+            flex: 2;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 8px;
+            border-right: 4px solid var(--primary);
+        }
+        .depot-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .depot-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+        
         /* Page Header */
         .page-header {
             display: flex;
@@ -136,10 +197,6 @@
             background-color: var(--warning);
             color: white;
         }
-        .btn-info {
-            background-color: var(--info);
-            color: white;
-        }
         .btn-outline {
             background-color: transparent;
             border: 2px solid var(--primary);
@@ -178,125 +235,68 @@
             justify-content: center;
             font-size: 24px;
         }
-        .stat-icon.depots { background-color: #e3f2fd; color: var(--primary); }
-        .stat-icon.products { background-color: #e8f5e8; color: var(--success); }
-        .stat-icon.value { background-color: #fff3e0; color: var(--warning); }
+        .stat-icon.total { background-color: #e3f2fd; color: var(--primary); }
         .stat-icon.low { background-color: #ffebee; color: var(--danger); }
+        .stat-icon.value { background-color: #e8f5e8; color: var(--success); }
+        .stat-icon.categories { background-color: #fff3e0; color: var(--warning); }
         .stat-details h3 { font-size: 12px; color: #666; margin-bottom: 5px; }
         .stat-details .value { font-size: 24px; font-weight: 700; }
         
-        /* Tabs */
-        .tabs {
-            display: flex;
-            background: white;
-            border-radius: 10px 10px 0 0;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            margin-bottom: 0;
-        }
-        .tab {
-            padding: 15px 25px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            font-weight: 600;
-        }
-        .tab:hover {
-            background-color: #f9f9f9;
-        }
-        .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background-color: var(--light);
-        }
-        
-        /* Depots Grid */
-        .depots-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .depot-card {
+        /* Search and Filter */
+        .search-filter {
             background: white;
             border-radius: 10px;
-            overflow: hidden;
+            padding: 20px;
+            margin-bottom: 25px;
             box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            transition: transform 0.3s;
-        }
-        .depot-card:hover {
-            transform: translateY(-5px);
-        }
-        .depot-header {
-            padding: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
             align-items: center;
         }
-        .depot-header h3 {
-            font-size: 18px;
-            margin-bottom: 5px;
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
         }
-        .depot-status {
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .status-active { background: rgba(255,255,255,0.2); }
-        .status-inactive { background: rgba(255,255,255,0.1); }
-        
-        .depot-body {
-            padding: 20px;
-        }
-        .depot-info {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        .info-item:last-child {
-            border-bottom: none;
-        }
-        .info-label {
-            color: #666;
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
             font-size: 14px;
         }
-        .info-value {
-            font-weight: 600;
-            color: var(--primary);
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
         }
-        
-        .depot-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        
-        /* Inventory Table */
-        .inventory-container {
+        .filter-select {
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
             background: white;
-            border-radius: 0 0 10px 10px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        
+        /* Products Table */
+        .products-container {
+            background: white;
+            border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 3px 10px rgba(0,0,0,0.08);
         }
         .table-responsive {
             overflow-x: auto;
         }
-        .inventory-table {
+        .products-table {
             width: 100%;
             border-collapse: collapse;
         }
-        .inventory-table th {
+        .products-table th {
             background-color: var(--light);
             color: var(--primary);
             padding: 15px;
@@ -304,11 +304,11 @@
             font-weight: 600;
             border-bottom: 2px solid #ddd;
         }
-        .inventory-table td {
+        .products-table td {
             padding: 15px;
             border-bottom: 1px solid #eee;
         }
-        .inventory-table tr:hover {
+        .products-table tr:hover {
             background-color: #f9f9f9;
         }
         .product-info {
@@ -338,6 +338,11 @@
         .stock-low { background-color: #ffebee; color: var(--danger); }
         .stock-out { background-color: #f5f5f5; color: #666; }
         
+        .price {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
         .action-buttons {
             display: flex;
             gap: 8px;
@@ -356,7 +361,7 @@
         .action-btn.edit { background-color: #e3f2fd; color: var(--primary); }
         .action-btn.delete { background-color: #ffebee; color: var(--danger); }
         .action-btn.view { background-color: #e8f5e8; color: var(--success); }
-        .action-btn.move { background-color: #e3f2fd; color: var(--info); }
+        .action-btn.move { background-color: #fff3e0; color: var(--warning); }
         .action-btn:hover { opacity: 0.8; }
         
         /* Pagination */
@@ -517,6 +522,17 @@
         .toast.error { border-right: 4px solid var(--danger); }
         .toast.info { border-right: 4px solid var(--primary); }
         
+        /* Category Tags */
+        .category-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #e3f2fd;
+            color: var(--primary);
+            border-radius: 15px;
+            font-size: 12px;
+            margin: 2px;
+        }
+        
         /* Quick Actions */
         .quick-actions {
             display: flex;
@@ -525,85 +541,21 @@
             flex-wrap: wrap;
         }
         
-        /* Search and Filter */
-        .search-filter {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        /* Depot Warning */
+        .depot-warning {
+            background: #fff3e0;
+            border: 1px solid #ffb74d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
             display: flex;
-            flex-wrap: wrap;
+            align-items: center;
             gap: 15px;
-            align-items: center;
         }
-        .search-box {
-            flex: 1;
-            min-width: 300px;
-            position: relative;
+        .depot-warning i {
+            color: var(--warning);
+            font-size: 24px;
         }
-        .search-box input {
-            width: 100%;
-            padding: 12px 20px 12px 45px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        .search-box i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #777;
-        }
-        .filter-select {
-            padding: 12px 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            font-size: 14px;
-            min-width: 150px;
-        }
-        
-        /* Inventory Charts */
-        .charts-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .chart-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        }
-        .chart-card h3 {
-            margin-bottom: 15px;
-            color: var(--primary);
-            font-size: 16px;
-        }
-        .chart-placeholder {
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f9f9f9;
-            border-radius: 8px;
-            color: #666;
-        }
-        
-        /* Depot Status */
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-left: 5px;
-        }
-        .status-online { background-color: var(--success); }
-        .status-offline { background-color: var(--danger); }
-        .status-warning { background-color: var(--warning); }
         
         /* Responsive */
         @media (max-width: 992px) {
@@ -611,14 +563,15 @@
             .sidebar-item span { display: none; }
             .main-content { margin-right: 70px; }
             .search-box { min-width: 100%; }
-            .depots-grid { grid-template-columns: 1fr; }
+            .depot-selector { min-width: 100%; }
+            .depot-selector-container { flex-direction: column; }
         }
         @media (max-width: 768px) {
             .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
             .form-row { flex-direction: column; }
-            .inventory-table th, .inventory-table td { padding: 10px; }
-            .tabs { flex-direction: column; }
-            .tab { width: 100%; text-align: center; }
+            .products-table th, .products-table td { padding: 10px; }
+            .action-buttons { flex-direction: column; }
+            .action-btn { width: 100%; }
         }
     </style>
 </head>
@@ -650,11 +603,11 @@
             <i class="fas fa-users"></i>
             <span>Clients</span>
         </a>
-        <a href="products.html" class="sidebar-item">
+        <a href="products.html" class="sidebar-item active">
             <i class="fas fa-boxes"></i>
             <span>Produits</span>
         </a>
-        <a href="depots.html" class="sidebar-item active">
+        <a href="depots.html" class="sidebar-item">
             <i class="fas fa-warehouse"></i>
             <span>Dépôts</span>
         </a>
@@ -679,333 +632,361 @@
     </nav>
 
     <main class="main-content">
-        <div class="page-header">
-            <h2><i class="fas fa-warehouse"></i> Inventaire des Dépôts</h2>
-            <div class="actions">
-                <button class="btn btn-outline" id="exportBtn">
-                    <i class="fas fa-download"></i> Exporter
-                </button>
-                <button class="btn btn-primary" id="addDepotBtn">
-                    <i class="fas fa-plus"></i> Nouveau Dépôt
-                </button>
-            </div>
-        </div>
-        
-        <div class="quick-actions">
-            <button class="btn btn-outline btn-sm" onclick="startInventory()">
-                <i class="fas fa-clipboard-check"></i> Démarrer Inventaire
-            </button>
-            <button class="btn btn-outline btn-sm" onclick="transferStock()">
-                <i class="fas fa-exchange-alt"></i> Transfert de Stock
-            </button>
-            <button class="btn btn-outline btn-sm" onclick="showLowStock()">
-                <i class="fas fa-exclamation-triangle"></i> Stock Faible
-            </button>
-            <button class="btn btn-outline btn-sm" onclick="createSampleData()">
-                <i class="fas fa-vial"></i> Données Test
-            </button>
-        </div>
-        
-        <div class="stats-cards">
-            <div class="stat-card">
-                <div class="stat-icon depots">
-                    <i class="fas fa-warehouse"></i>
-                </div>
-                <div class="stat-details">
-                    <h3>TOTAL DÉPÔTS</h3>
-                    <div class="value" id="totalDepots">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon products">
-                    <i class="fas fa-boxes"></i>
-                </div>
-                <div class="stat-details">
-                    <h3>PRODUITS EN STOCK</h3>
-                    <div class="value" id="totalProducts">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon value">
-                    <i class="fas fa-money-bill-wave"></i>
-                </div>
-                <div class="stat-details">
-                    <h3>VALEUR TOTALE</h3>
-                    <div class="value" id="totalValue">0 DH</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon low">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <div class="stat-details">
-                    <h3>STOCK FAIBLE</h3>
-                    <div class="value" id="lowStock">0</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="tabs" id="tabs">
-            <div class="tab active" onclick="switchTab('depots')">
-                <i class="fas fa-warehouse"></i> Vue Dépôts
-            </div>
-            <div class="tab" onclick="switchTab('inventory')">
-                <i class="fas fa-clipboard-list"></i> Inventaire Complet
-            </div>
-            <div class="tab" onclick="switchTab('reports')">
-                <i class="fas fa-chart-bar"></i> Rapports
-            </div>
-        </div>
-        
-        <!-- Vue Dépôts -->
-        <div id="depotsView" class="tab-content">
-            <div class="search-filter">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchDepot" placeholder="Rechercher dépôt par nom, ville, responsable...">
-                </div>
-                <select class="filter-select" id="statusFilter">
-                    <option value="">Tous statuts</option>
-                    <option value="active">Actif</option>
-                    <option value="inactive">Inactif</option>
-                    <option value="maintenance">Maintenance</option>
+        <!-- Sélecteur de Dépôt -->
+        <div class="depot-selector-container">
+            <div class="depot-selector">
+                <label for="depotSelect"><i class="fas fa-warehouse"></i> Sélectionner un Dépôt</label>
+                <select id="depotSelect" onchange="changeDepot()">
+                    <option value="">-- Choisir un dépôt --</option>
                 </select>
-                <button class="btn btn-outline" id="resetDepotFiltersBtn">
-                    <i class="fas fa-redo"></i> Réinitialiser
+            </div>
+            <div class="selected-depot-info" id="depotInfo" style="display: none;">
+                <div class="depot-name" id="depotName">Nom du Dépôt</div>
+                <div class="depot-details">
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="depotLocation">Agadir</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-user"></i>
+                        <span id="depotManager">Responsable</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-phone"></i>
+                        <span id="depotPhone">0528 88 99 99</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-boxes"></i>
+                        <span id="depotProducts">0 produits</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Message d'avertissement si aucun dépôt n'est sélectionné -->
+        <div class="depot-warning" id="depotWarning" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Attention : Aucun dépôt sélectionné</strong>
+                <p>Veuillez sélectionner un dépôt pour afficher et gérer les produits.</p>
+            </div>
+        </div>
+
+        <!-- Contenu principal (caché si aucun dépôt) -->
+        <div id="mainContent" style="display: none;">
+            <div class="page-header">
+                <h2><i class="fas fa-boxes"></i> Gestion des Produits</h2>
+                <div class="actions">
+                    <button class="btn btn-outline" id="exportBtn">
+                        <i class="fas fa-download"></i> Exporter
+                    </button>
+                    <button class="btn btn-primary" id="addProductBtn">
+                        <i class="fas fa-plus"></i> Ajouter Produit
+                    </button>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="btn btn-outline btn-sm" onclick="adjustStock('increase')">
+                    <i class="fas fa-plus-circle"></i> Augmenter Stock
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="adjustStock('decrease')">
+                    <i class="fas fa-minus-circle"></i> Diminuer Stock
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="transferToOtherDepot()">
+                    <i class="fas fa-exchange-alt"></i> Transférer vers autre dépôt
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="checkLowStock()">
+                    <i class="fas fa-exclamation-triangle"></i> Stock Faible
                 </button>
             </div>
             
-            <div class="depots-grid" id="depotsGrid">
-                <!-- Les cartes de dépôts seront chargées ici -->
-                <div class="loading" style="grid-column: 1/-1;">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <div>Chargement des dépôts...</div>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon total">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>TOTAL PRODUITS</h3>
+                        <div class="value" id="totalProducts">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon low">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>STOCK FAIBLE</h3>
+                        <div class="value" id="lowStock">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon value">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>VALEUR STOCK</h3>
+                        <div class="value" id="stockValue">0 DH</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon categories">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>CATÉGORIES</h3>
+                        <div class="value" id="totalCategories">0</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Vue Inventaire Complet -->
-        <div id="inventoryView" class="tab-content" style="display: none;">
+            
             <div class="search-filter">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInventory" placeholder="Rechercher produit par nom, code, catégorie...">
+                    <input type="text" id="searchInput" placeholder="Rechercher produit par nom, code, référence...">
                 </div>
-                <select class="filter-select" id="depotFilter">
-                    <option value="">Tous dépôts</option>
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">Toutes catégories</option>
+                    <!-- Les catégories seront chargées dynamiquement -->
                 </select>
                 <select class="filter-select" id="stockFilter">
-                    <option value="">Tous stocks</option>
-                    <option value="high">Élevé</option>
-                    <option value="medium">Moyen</option>
-                    <option value="low">Faible</option>
+                    <option value="">Tous les stocks</option>
+                    <option value="high">Stock élevé</option>
+                    <option value="medium">Stock moyen</option>
+                    <option value="low">Stock faible</option>
                     <option value="out">Rupture</option>
                 </select>
-                <button class="btn btn-outline" id="resetInventoryFiltersBtn">
+                <button class="btn btn-outline" id="resetFiltersBtn">
                     <i class="fas fa-redo"></i> Réinitialiser
                 </button>
             </div>
             
-            <div class="inventory-container">
+            <div class="products-container">
                 <div class="table-responsive">
-                    <table class="inventory-table">
+                    <table class="products-table">
                         <thead>
                             <tr>
                                 <th>PRODUIT</th>
-                                <th>DÉPÔT</th>
+                                <th>CODE</th>
                                 <th>CATÉGORIE</th>
-                                <th>STOCK ACTUEL</th>
-                                <th>STOCK MIN</th>
+                                <th>PRIX</th>
+                                <th>STOCK</th>
                                 <th>VALEUR</th>
-                                <th>STATUT</th>
                                 <th>ACTIONS</th>
                             </tr>
                         </thead>
-                        <tbody id="inventoryTableBody">
+                        <tbody id="productsTableBody">
                             <tr>
-                                <td colspan="8" class="loading">
+                                <td colspan="7" class="loading">
                                     <i class="fas fa-spinner fa-spin"></i>
-                                    <div>Chargement de l'inventaire...</div>
+                                    <div>Chargement des produits...</div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 
-                <div class="pagination" id="inventoryPagination">
+                <div class="pagination" id="pagination">
                     <!-- Pagination sera générée ici -->
-                </div>
-            </div>
-        </div>
-        
-        <!-- Vue Rapports -->
-        <div id="reportsView" class="tab-content" style="display: none;">
-            <div class="charts-container">
-                <div class="chart-card">
-                    <h3><i class="fas fa-chart-pie"></i> Répartition par Dépôt</h3>
-                    <div class="chart-placeholder" id="depotChart">
-                        <i class="fas fa-chart-pie fa-2x"></i>
-                        <div style="margin-right: 10px;">Graphique de répartition</div>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <h3><i class="fas fa-chart-bar"></i> Top Produits</h3>
-                    <div class="chart-placeholder" id="productsChart">
-                        <i class="fas fa-chart-bar fa-2x"></i>
-                        <div style="margin-right: 10px;">Graphique des produits</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="inventory-container">
-                <div class="table-responsive">
-                    <table class="inventory-table">
-                        <thead>
-                            <tr>
-                                <th>DÉPÔT</th>
-                                <th>PRODUITS</th>
-                                <th>VALEUR STOCK</th>
-                                <th>STOCK FAIBLE</th>
-                                <th>CAPACITÉ</th>
-                                <th>TAUX REMPLISSAGE</th>
-                                <th>STATUS</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reportsTableBody">
-                            <tr>
-                                <td colspan="7" class="loading">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                    <div>Chargement des rapports...</div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
     </main>
     
-    <!-- Modal Ajouter/Modifier Dépôt -->
-    <div class="modal" id="depotModal">
+    <!-- Modal Ajouter/Modifier Produit -->
+    <div class="modal" id="productModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitle">Ajouter un Nouveau Dépôt</h3>
+                <h3 id="modalTitle">Ajouter un Nouveau Produit</h3>
                 <button class="close-modal" id="closeModal">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="depotForm">
+                <form id="productForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="depotName">Nom du Dépôt *</label>
-                            <input type="text" id="depotName" class="form-control" required>
+                            <label for="productName">Nom du Produit *</label>
+                            <input type="text" id="productName" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="depotCode">Code Dépôt *</label>
-                            <input type="text" id="depotCode" class="form-control" required>
+                            <label for="productCode">Code Produit *</label>
+                            <input type="text" id="productCode" class="form-control" required>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="depotType">Type de Dépôt *</label>
-                            <select id="depotType" class="form-control" required>
+                            <label for="productCategory">Catégorie *</label>
+                            <select id="productCategory" class="form-control" required>
                                 <option value="">Sélectionner</option>
-                                <option value="principal">Principal</option>
-                                <option value="regional">Régional</option>
-                                <option value="distribution">Centre de Distribution</option>
-                                <option value="temporary">Temporaire</option>
-                                <option value="cold">Chambre Froide</option>
+                                <option value="farine">Farine</option>
+                                <option value="huile">Huile</option>
+                                <option value="sucre">Sucre</option>
+                                <option value="lait">Produits Laitiers</option>
+                                <option value="boisson">Boissons</option>
+                                <option value="conserves">Conserves</option>
+                                <option value="nettoyage">Produits Nettoyage</option>
+                                <option value="autres">Autres</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="depotStatus">Statut *</label>
-                            <select id="depotStatus" class="form-control" required>
+                            <label for="productUnit">Unité de Mesure *</label>
+                            <select id="productUnit" class="form-control" required>
+                                <option value="">Sélectionner</option>
+                                <option value="kg">Kilogramme (kg)</option>
+                                <option value="g">Gramme (g)</option>
+                                <option value="l">Litre (L)</option>
+                                <option value="ml">Millilitre (ml)</option>
+                                <option value="unite">Unité</option>
+                                <option value="carton">Carton</option>
+                                <option value="sac">Sac</option>
+                                <option value="boite">Boîte</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productPrice">Prix d'Achat (DH) *</label>
+                            <input type="number" id="productPrice" class="form-control" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productSalePrice">Prix de Vente (DH) *</label>
+                            <input type="number" id="productSalePrice" class="form-control" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productStock">Stock Actuel *</label>
+                            <input type="number" id="productStock" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productMinStock">Stock Minimum *</label>
+                            <input type="number" id="productMinStock" class="form-control" value="10" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productLocation">Emplacement dans le dépôt</label>
+                            <input type="text" id="productLocation" class="form-control" placeholder="Ex: Rayon A, Étagère 3">
+                        </div>
+                        <div class="form-group">
+                            <label for="productStatus">Statut</label>
+                            <select id="productStatus" class="form-control">
                                 <option value="active">Actif</option>
                                 <option value="inactive">Inactif</option>
-                                <option value="maintenance">Maintenance</option>
+                                <option value="discontinued">Discontinué</option>
                             </select>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="depotAddress">Adresse Complète *</label>
-                        <textarea id="depotAddress" class="form-control" rows="3" required></textarea>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="depotCity">Ville *</label>
-                            <input type="text" id="depotCity" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="depotPhone">Téléphone</label>
-                            <input type="tel" id="depotPhone" class="form-control">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="depotManager">Responsable *</label>
-                            <input type="text" id="depotManager" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="depotEmail">Email Responsable</label>
-                            <input type="email" id="depotEmail" class="form-control">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="depotCapacity">Capacité (m²) *</label>
-                            <input type="number" id="depotCapacity" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="depotUsed">Espace Utilisé (m²)</label>
-                            <input type="number" id="depotUsed" class="form-control" value="0">
-                        </div>
+                        <label for="productDescription">Description</label>
+                        <textarea id="productDescription" class="form-control" rows="3"></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label for="depotDescription">Description</label>
-                        <textarea id="depotDescription" class="form-control" rows="2"></textarea>
+                        <label for="productSupplier">Fournisseur</label>
+                        <input type="text" id="productSupplier" class="form-control" placeholder="Nom du fournisseur">
                     </div>
                     
-                    <input type="hidden" id="depotId">
+                    <input type="hidden" id="productId">
+                    <input type="hidden" id="currentDepotId">
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" id="cancelBtn">Annuler</button>
-                <button class="btn btn-primary" id="saveDepotBtn">Enregistrer</button>
+                <button class="btn btn-primary" id="saveProductBtn">Enregistrer</button>
             </div>
         </div>
     </div>
     
-    <!-- Modal Transfert de Stock -->
-    <div class="modal" id="transferModal">
-        <div class="modal-content">
+    <!-- Modal Ajustement Stock -->
+    <div class="modal" id="stockModal">
+        <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h3><i class="fas fa-exchange-alt"></i> Transfert de Stock</h3>
-                <button class="close-modal" id="closeTransferModal">&times;</button>
+                <h3 id="stockModalTitle">Ajuster le Stock</h3>
+                <button class="close-modal" id="closeStockModal">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="transferForm">
+                <form id="stockForm">
+                    <div class="form-group">
+                        <label for="adjustProduct">Produit</label>
+                        <select id="adjustProduct" class="form-control" required>
+                            <option value="">Sélectionner un produit</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label id="currentStockLabel">Stock actuel: <span id="currentStockValue">0</span></label>
+                    </div>
+                    
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="fromDepot">Depuis Dépôt *</label>
-                            <select id="fromDepot" class="form-control" required>
-                                <option value="">Sélectionner</option>
+                            <label for="adjustType">Type d'ajustement</label>
+                            <select id="adjustType" class="form-control" required>
+                                <option value="increase">Augmentation</option>
+                                <option value="decrease">Diminution</option>
+                                <option value="set">Définir à</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="toDepot">Vers Dépôt *</label>
-                            <select id="toDepot" class="form-control" required>
-                                <option value="">Sélectionner</option>
-                            </select>
+                            <label for="adjustQuantity">Quantité</label>
+                            <input type="number" id="adjustQuantity" class="form-control" value="1" required>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="transferProduct">Produit *</label>
+                        <label for="adjustReason">Raison</label>
+                        <select id="adjustReason" class="form-control">
+                            <option value="inventory">Inventaire</option>
+                            <option value="purchase">Nouvel achat</option>
+                            <option value="sale">Vente</option>
+                            <option value="damage">Produit endommagé</option>
+                            <option value="expired">Produit expiré</option>
+                            <option value="adjustment">Ajustement manuel</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adjustNotes">Notes</label>
+                        <textarea id="adjustNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelStockBtn">Annuler</button>
+                <button class="btn btn-primary" id="saveStockBtn">Ajuster Stock</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Transfert vers autre dépôt -->
+    <div class="modal" id="transferModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> Transfert de Stock vers autre Dépôt</h3>
+                <button class="close-modal" id="closeTransferModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="transferForm">
+                    <div class="form-group">
+                        <label>Depuis le dépôt:</label>
+                        <div class="form-control" style="background: #f5f5f5;">
+                            <strong id="fromDepotName">--</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="toDepotSelect">Vers le dépôt *</label>
+                        <select id="toDepotSelect" class="form-control" required>
+                            <option value="">Sélectionner un dépôt</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transferProduct">Produit à transférer *</label>
                         <select id="transferProduct" class="form-control" required>
                             <option value="">Sélectionner un produit</option>
                         </select>
@@ -1013,7 +994,7 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Stock disponible: <span id="availableStock">0</span></label>
+                            <label>Stock disponible: <span id="availableStockForTransfer">0</span></label>
                         </div>
                         <div class="form-group">
                             <label for="transferQuantity">Quantité à transférer *</label>
@@ -1045,67 +1026,6 @@
         </div>
     </div>
     
-    <!-- Modal Démarrer Inventaire -->
-    <div class="modal" id="inventoryModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-clipboard-check"></i> Nouvel Inventaire</h3>
-                <button class="close-modal" id="closeInventoryModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="inventoryForm">
-                    <div class="form-group">
-                        <label for="inventoryDepot">Dépôt à inventorier *</label>
-                        <select id="inventoryDepot" class="form-control" required>
-                            <option value="">Sélectionner</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="inventoryType">Type d'inventaire *</label>
-                            <select id="inventoryType" class="form-control" required>
-                                <option value="complete">Complet</option>
-                                <option value="partial">Partiel</option>
-                                <option value="cyclic">Cyclique</option>
-                                <option value="random">Aléatoire</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="inventoryDate">Date prévue</label>
-                            <input type="date" id="inventoryDate" class="form-control">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="inventoryTeam">Équipe responsable</label>
-                        <input type="text" id="inventoryTeam" class="form-control" placeholder="Noms des membres de l'équipe">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="inventoryNotes">Notes / Instructions</label>
-                        <textarea id="inventoryNotes" class="form-control" rows="3" placeholder="Instructions spéciales, zones à vérifier..."></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <div class="info-item">
-                            <span class="info-label">Produits à inventorier:</span>
-                            <span class="info-value" id="productsCount">0</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Valeur estimée:</span>
-                            <span class="info-value" id="estimatedValue">0 DH</span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" id="cancelInventoryBtn">Annuler</button>
-                <button class="btn btn-success" id="startInventoryBtn">Démarrer l'Inventaire</button>
-            </div>
-        </div>
-    </div>
-    
     <!-- Modal Confirmation Suppression -->
     <div class="modal" id="deleteModal">
         <div class="modal-content" style="max-width: 400px;">
@@ -1114,8 +1034,8 @@
                 <button class="close-modal" id="closeDeleteModal">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer ce dépôt ? Cette action est irréversible.</p>
-                <p><strong id="deleteDepotName"></strong></p>
+                <p>Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.</p>
+                <p><strong id="deleteProductName"></strong></p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" id="cancelDeleteBtn">Annuler</button>
@@ -1148,15 +1068,16 @@
         const database = firebase.database();
         
         // Variables globales
+        let currentDepot = null;
         let depots = [];
         let products = [];
         let inventory = [];
-        let currentTab = 'depots';
-        let depotToDelete = null;
+        let currentPage = 1;
+        const productsPerPage = 10;
+        let productToDelete = null;
         let isEditMode = false;
-        let inventoryPage = 1;
-        const inventoryPerPage = 15;
-        let filteredInventory = [];
+        let categories = new Set();
+        let filteredProducts = [];
         
         // Fonction pour afficher une notification
         function showToast(message, type = "info") {
@@ -1174,8 +1095,8 @@
             }, 3000);
         }
         
-        // Charger les données depuis Firebase
-        function loadData() {
+        // Charger les données initiales
+        function loadInitialData() {
             loadDepots();
             loadProducts();
             loadInventory();
@@ -1198,29 +1119,27 @@
                             });
                         });
                         
-                        // Mettre à jour les statistiques
-                        updateStats();
+                        // Remplir le sélecteur de dépôts
+                        updateDepotSelector();
                         
-                        // Mettre à jour les filtres
-                        updateDepotFilters();
-                        
-                        // Afficher les dépôts
-                        displayDepots();
-                        
-                        // Mettre à jour les sélecteurs de dépôts dans les modals
-                        updateDepotSelectors();
-                    } else {
-                        showEmptyDepotsState();
+                        // Si un dépôt est déjà sélectionné (sauvegardé dans localStorage)
+                        const savedDepotId = localStorage.getItem('selectedDepotId');
+                        if (savedDepotId) {
+                            const savedDepot = depots.find(d => d.id === savedDepotId);
+                            if (savedDepot) {
+                                document.getElementById('depotSelect').value = savedDepotId;
+                                changeDepot();
+                            }
+                        }
                     }
                     
                 }, (error) => {
                     console.error("Erreur de chargement des dépôts:", error);
-                    showErrorState("Erreur de chargement des dépôts", 'depotsGrid');
+                    showToast("Erreur de chargement des dépôts", "error");
                 });
                 
             } catch (error) {
                 console.error("Erreur dans loadDepots:", error);
-                showErrorState("Erreur de connexion", 'depotsGrid');
             }
         }
         
@@ -1241,8 +1160,10 @@
                             });
                         });
                         
-                        // Mettre à jour les sélecteurs de produits
-                        updateProductSelectors();
+                        // Mettre à jour les sélecteurs de produits si un dépôt est sélectionné
+                        if (currentDepot) {
+                            updateProductSelectors();
+                        }
                     }
                     
                 }, (error) => {
@@ -1271,19 +1192,14 @@
                             });
                         });
                         
-                        // Afficher l'inventaire si on est sur l'onglet inventaire
-                        if (currentTab === 'inventory') {
-                            applyInventoryFilters();
-                            displayInventory();
-                            updateInventoryPagination();
+                        // Si un dépôt est sélectionné, afficher ses produits
+                        if (currentDepot) {
+                            loadDepotProducts();
                         }
                     }
                     
                 }, (error) => {
                     console.error("Erreur de chargement de l'inventaire:", error);
-                    if (currentTab === 'inventory') {
-                        showErrorState("Erreur de chargement de l'inventaire", 'inventoryTableBody');
-                    }
                 });
                 
             } catch (error) {
@@ -1291,318 +1207,195 @@
             }
         }
         
+        // Mettre à jour le sélecteur de dépôts
+        function updateDepotSelector() {
+            const depotSelect = document.getElementById('depotSelect');
+            let options = '<option value="">-- Choisir un dépôt --</option>';
+            
+            depots.forEach(depot => {
+                options += `<option value="${depot.id}">${depot.name} - ${depot.city} (${depot.code})</option>`;
+            });
+            
+            depotSelect.innerHTML = options;
+        }
+        
+        // Changer de dépôt sélectionné
+        function changeDepot() {
+            const depotId = document.getElementById('depotSelect').value;
+            
+            if (!depotId) {
+                // Cacher le contenu principal et afficher l'avertissement
+                document.getElementById('mainContent').style.display = 'none';
+                document.getElementById('depotWarning').style.display = 'flex';
+                document.getElementById('depotInfo').style.display = 'none';
+                currentDepot = null;
+                localStorage.removeItem('selectedDepotId');
+                return;
+            }
+            
+            // Trouver le dépôt sélectionné
+            currentDepot = depots.find(d => d.id === depotId);
+            
+            if (currentDepot) {
+                // Sauvegarder dans localStorage
+                localStorage.setItem('selectedDepotId', depotId);
+                
+                // Afficher les informations du dépôt
+                displayDepotInfo();
+                
+                // Cacher l'avertissement et afficher le contenu principal
+                document.getElementById('depotWarning').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('depotInfo').style.display = 'block';
+                
+                // Charger les produits du dépôt
+                loadDepotProducts();
+                
+                // Mettre à jour les sélecteurs de produits
+                updateProductSelectors();
+                
+                // Mettre à jour le nom du dépôt dans le modal de transfert
+                document.getElementById('fromDepotName').textContent = currentDepot.name;
+                
+                showToast(`Dépôt "${currentDepot.name}" sélectionné`, "success");
+            }
+        }
+        
+        // Afficher les informations du dépôt
+        function displayDepotInfo() {
+            if (!currentDepot) return;
+            
+            document.getElementById('depotName').textContent = currentDepot.name;
+            document.getElementById('depotLocation').textContent = currentDepot.city;
+            document.getElementById('depotManager').textContent = currentDepot.manager || 'Non spécifié';
+            document.getElementById('depotPhone').textContent = currentDepot.phone || 'Non spécifié';
+            
+            // Compter les produits dans ce dépôt
+            const depotProducts = inventory.filter(item => item.depotId === currentDepot.id);
+            document.getElementById('depotProducts').textContent = `${depotProducts.length} produits`;
+        }
+        
+        // Charger les produits du dépôt sélectionné
+        function loadDepotProducts() {
+            if (!currentDepot) return;
+            
+            // Filtrer l'inventaire pour ce dépôt
+            const depotInventory = inventory.filter(item => item.depotId === currentDepot.id);
+            
+            // Associer les produits avec leur stock
+            let depotProducts = [];
+            categories.clear();
+            
+            depotInventory.forEach(invItem => {
+                const product = products.find(p => p.id === invItem.productId);
+                if (product) {
+                    const productWithStock = {
+                        ...product,
+                        inventoryId: invItem.id,
+                        stock: invItem.quantity || 0,
+                        minStock: invItem.minStock || product.minStock || 10,
+                        location: invItem.location || product.location
+                    };
+                    
+                    depotProducts.push(productWithStock);
+                    
+                    // Ajouter la catégorie à l'ensemble
+                    if (product.category) {
+                        categories.add(product.category);
+                    }
+                }
+            });
+            
+            products = depotProducts;
+            
+            // Mettre à jour les statistiques
+            updateStats();
+            
+            // Mettre à jour les filtres de catégorie
+            updateCategoryFilter();
+            
+            // Appliquer les filtres
+            applyFilters();
+            
+            // Mettre à jour la pagination
+            updatePagination();
+            
+            // Afficher les produits
+            displayProducts();
+        }
+        
         // Mettre à jour les statistiques
         function updateStats() {
-            const totalDepots = depots.length;
+            if (!currentDepot) return;
             
-            // Calculer le nombre total de produits (basé sur l'inventaire)
-            const totalProducts = inventory.reduce((total, item) => {
-                return total + (parseInt(item.quantity) || 0);
-            }, 0);
-            
-            // Calculer la valeur totale
-            const totalValue = inventory.reduce((total, item) => {
-                const product = products.find(p => p.id === item.productId);
-                if (product) {
-                    const price = parseFloat(product.price) || 0;
-                    const quantity = parseInt(item.quantity) || 0;
-                    return total + (price * quantity);
-                }
-                return total;
-            }, 0);
+            const total = products.length;
             
             // Calculer le stock faible
-            const lowStock = inventory.filter(item => {
-                const product = products.find(p => p.id === item.productId);
-                if (product) {
-                    const quantity = parseInt(item.quantity) || 0;
-                    const minStock = parseInt(product.minStock) || 10;
-                    return quantity > 0 && quantity <= minStock;
-                }
-                return false;
+            const lowStock = products.filter(p => {
+                const stock = parseInt(p.stock) || 0;
+                const minStock = parseInt(p.minStock) || 10;
+                return stock > 0 && stock <= minStock;
             }).length;
             
-            document.getElementById('totalDepots').textContent = totalDepots;
-            document.getElementById('totalProducts').textContent = totalProducts;
-            document.getElementById('totalValue').textContent = totalValue.toFixed(2) + ' DH';
+            // Calculer la valeur totale du stock
+            const stockValue = products.reduce((total, product) => {
+                const stock = parseInt(product.stock) || 0;
+                const price = parseFloat(product.price) || 0;
+                return total + (stock * price);
+            }, 0);
+            
+            // Nombre de catégories uniques
+            const totalCategories = categories.size;
+            
+            document.getElementById('totalProducts').textContent = total;
             document.getElementById('lowStock').textContent = lowStock;
+            document.getElementById('stockValue').textContent = stockValue.toFixed(2) + ' DH';
+            document.getElementById('totalCategories').textContent = totalCategories;
         }
         
-        // Mettre à jour les filtres de dépôts
-        function updateDepotFilters() {
-            const depotFilter = document.getElementById('depotFilter');
-            let options = '<option value="">Tous dépôts</option>';
+        // Mettre à jour le filtre de catégorie
+        function updateCategoryFilter() {
+            const categoryFilter = document.getElementById('categoryFilter');
+            let options = '<option value="">Toutes catégories</option>';
             
-            depots.forEach(depot => {
-                options += `<option value="${depot.id}">${depot.name}</option>`;
+            categories.forEach(category => {
+                const categoryName = getCategoryName(category);
+                options += `<option value="${category}">${categoryName}</option>`;
             });
             
-            depotFilter.innerHTML = options;
-        }
-        
-        // Mettre à jour les sélecteurs de dépôts
-        function updateDepotSelectors() {
-            const fromDepot = document.getElementById('fromDepot');
-            const toDepot = document.getElementById('toDepot');
-            const inventoryDepot = document.getElementById('inventoryDepot');
-            
-            let options = '<option value="">Sélectionner</option>';
-            
-            depots.forEach(depot => {
-                options += `<option value="${depot.id}">${depot.name}</option>`;
-            });
-            
-            fromDepot.innerHTML = options;
-            toDepot.innerHTML = options;
-            inventoryDepot.innerHTML = options;
+            categoryFilter.innerHTML = options;
         }
         
         // Mettre à jour les sélecteurs de produits
         function updateProductSelectors() {
+            const adjustProduct = document.getElementById('adjustProduct');
             const transferProduct = document.getElementById('transferProduct');
+            
             let options = '<option value="">Sélectionner un produit</option>';
             
             products.forEach(product => {
                 options += `<option value="${product.id}">${product.name} (${product.code})</option>`;
             });
             
+            adjustProduct.innerHTML = options;
             transferProduct.innerHTML = options;
         }
         
-        // Afficher les dépôts
-        function displayDepots() {
-            const depotsGrid = document.getElementById('depotsGrid');
+        // Mettre à jour le sélecteur de dépôts de destination
+        function updateToDepotSelector() {
+            const toDepotSelect = document.getElementById('toDepotSelect');
+            let options = '<option value="">Sélectionner un dépôt</option>';
             
-            if (depots.length === 0) {
-                showEmptyDepotsState();
-                return;
-            }
-            
-            // Filtrer les dépôts
-            const searchTerm = document.getElementById('searchDepot').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
-            
-            const filteredDepots = depots.filter(depot => {
-                const matchesSearch = !searchTerm || 
-                    (depot.name && depot.name.toLowerCase().includes(searchTerm)) ||
-                    (depot.city && depot.city.toLowerCase().includes(searchTerm)) ||
-                    (depot.manager && depot.manager.toLowerCase().includes(searchTerm));
-                
-                const matchesStatus = !statusFilter || depot.status === statusFilter;
-                
-                return matchesSearch && matchesStatus;
-            });
-            
-            if (filteredDepots.length === 0) {
-                depotsGrid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1;">
-                        <i class="fas fa-search"></i>
-                        <h3>Aucun dépôt trouvé</h3>
-                        <p>Aucun dépôt ne correspond à vos critères de recherche</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            
-            filteredDepots.forEach(depot => {
-                // Calculer les statistiques du dépôt
-                const depotInventory = inventory.filter(item => item.depotId === depot.id);
-                const productCount = depotInventory.length;
-                const totalValue = depotInventory.reduce((total, item) => {
-                    const product = products.find(p => p.id === item.productId);
-                    if (product) {
-                        const price = parseFloat(product.price) || 0;
-                        const quantity = parseInt(item.quantity) || 0;
-                        return total + (price * quantity);
-                    }
-                    return total;
-                }, 0);
-                
-                const capacity = parseFloat(depot.capacity) || 0;
-                const used = parseFloat(depot.used) || 0;
-                const usageRate = capacity > 0 ? Math.round((used / capacity) * 100) : 0;
-                
-                // Obtenir l'icône selon le type
-                let depotIcon = 'fas fa-warehouse';
-                switch(depot.type) {
-                    case 'principal': depotIcon = 'fas fa-warehouse'; break;
-                    case 'regional': depotIcon = 'fas fa-map-marker-alt'; break;
-                    case 'distribution': depotIcon = 'fas fa-truck-loading'; break;
-                    case 'temporary': depotIcon = 'fas fa-clock'; break;
-                    case 'cold': depotIcon = 'fas fa-snowflake'; break;
+            depots.forEach(depot => {
+                if (depot.id !== currentDepot.id) {
+                    options += `<option value="${depot.id}">${depot.name} - ${depot.city}</option>`;
                 }
-                
-                html += `
-                    <div class="depot-card">
-                        <div class="depot-header">
-                            <div>
-                                <h3><i class="${depotIcon}"></i> ${depot.name}</h3>
-                                <small>${depot.code} | ${depot.city}</small>
-                            </div>
-                            <span class="depot-status status-${depot.status || 'active'}">
-                                ${depot.status === 'active' ? 'Actif' : 
-                                  depot.status === 'inactive' ? 'Inactif' : 
-                                  depot.status === 'maintenance' ? 'Maintenance' : 'Actif'}
-                            </span>
-                        </div>
-                        <div class="depot-body">
-                            <div class="depot-info">
-                                <div class="info-item">
-                                    <span class="info-label">Responsable:</span>
-                                    <span class="info-value">${depot.manager || 'N/A'}</span>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">Téléphone:</span>
-                                    <span class="info-value">${depot.phone || 'N/A'}</span>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">Produits:</span>
-                                    <span class="info-value">${productCount}</span>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">Valeur:</span>
-                                    <span class="info-value">${totalValue.toFixed(2)} DH</span>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">Capacité:</span>
-                                    <span class="info-value">${used}m² / ${capacity}m² (${usageRate}%)</span>
-                                </div>
-                            </div>
-                            <div class="depot-actions">
-                                <button class="btn btn-outline btn-sm" onclick="viewDepotInventory('${depot.id}')">
-                                    <i class="fas fa-eye"></i> Voir
-                                </button>
-                                <button class="btn btn-outline btn-sm" onclick="editDepot('${depot.id}')">
-                                    <i class="fas fa-edit"></i> Modifier
-                                </button>
-                                <button class="btn btn-outline btn-sm" onclick="confirmDeleteDepot('${depot.id}', '${depot.name}')">
-                                    <i class="fas fa-trash"></i> Supprimer
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
             });
             
-            depotsGrid.innerHTML = html;
+            toDepotSelect.innerHTML = options;
         }
         
-        // Afficher l'inventaire
-        function displayInventory() {
-            const tableBody = document.getElementById('inventoryTableBody');
-            
-            if (filteredInventory.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="empty-state">
-                            <i class="fas fa-box-open"></i>
-                            <h3>Aucun produit en inventaire</h3>
-                            <p>Commencez par ajouter des produits aux dépôts</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            // Calculer les indices pour la pagination
-            const startIndex = (inventoryPage - 1) * inventoryPerPage;
-            const endIndex = startIndex + inventoryPerPage;
-            const pageInventory = filteredInventory.slice(startIndex, endIndex);
-            
-            let html = '';
-            
-            pageInventory.forEach(item => {
-                const product = products.find(p => p.id === item.productId);
-                const depot = depots.find(d => d.id === item.depotId);
-                
-                if (!product || !depot) return;
-                
-                const quantity = parseInt(item.quantity) || 0;
-                const minStock = parseInt(product.minStock) || 10;
-                const value = quantity * (parseFloat(product.price) || 0);
-                
-                // Déterminer le statut du stock
-                let stockClass = 'stock-high';
-                let stockText = 'Élevé';
-                
-                if (quantity === 0) {
-                    stockClass = 'stock-out';
-                    stockText = 'Rupture';
-                } else if (quantity <= minStock) {
-                    stockClass = 'stock-low';
-                    stockText = 'Faible';
-                } else if (quantity <= minStock * 3) {
-                    stockClass = 'stock-medium';
-                    stockText = 'Moyen';
-                }
-                
-                // Obtenir l'icône de catégorie
-                let categoryIcon = 'fas fa-box';
-                switch(product.category) {
-                    case 'farine': categoryIcon = 'fas fa-wheat'; break;
-                    case 'huile': categoryIcon = 'fas fa-oil-can'; break;
-                    case 'sucre': categoryIcon = 'fas fa-candy-cane'; break;
-                    case 'lait': categoryIcon = 'fas fa-wine-bottle'; break;
-                    case 'boisson': categoryIcon = 'fas fa-wine-glass-alt'; break;
-                    case 'conserves': categoryIcon = 'fas fa-can'; break;
-                    case 'nettoyage': categoryIcon = 'fas fa-soap'; break;
-                }
-                
-                html += `
-                    <tr>
-                        <td>
-                            <div class="product-info">
-                                <div class="product-icon">
-                                    <i class="${categoryIcon}"></i>
-                                </div>
-                                <div>
-                                    <strong>${product.name}</strong><br>
-                                    <small>${product.code}</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <strong>${depot.name}</strong><br>
-                            <small>${depot.city}</small>
-                        </td>
-                        <td>
-                            ${getCategoryName(product.category)}
-                        </td>
-                        <td>
-                            <strong>${quantity}</strong> ${product.unit}<br>
-                            <span class="stock-badge ${stockClass}">${stockText}</span>
-                        </td>
-                        <td>${minStock} ${product.unit}</td>
-                        <td>
-                            <strong>${value.toFixed(2)} DH</strong>
-                        </td>
-                        <td>
-                            <span class="status-indicator status-${depot.status === 'active' ? 'online' : 'offline'}"></span>
-                            ${depot.status === 'active' ? 'Actif' : 'Inactif'}
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn move" onclick="adjustDepotStock('${item.id}')" title="Ajuster stock">
-                                    <i class="fas fa-exchange-alt"></i>
-                                </button>
-                                <button class="action-btn edit" onclick="editInventoryItem('${item.id}')" title="Modifier">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn delete" onclick="deleteInventoryItem('${item.id}')" title="Supprimer">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tableBody.innerHTML = html;
-        }
-        
-        // Obtenir le nom de la catégorie
+        // Obtenir le nom d'affichage de la catégorie
         function getCategoryName(categoryKey) {
             const categoryNames = {
                 'farine': 'Farine',
@@ -1618,59 +1411,187 @@
             return categoryNames[categoryKey] || categoryKey;
         }
         
-        // Appliquer les filtres d'inventaire
-        function applyInventoryFilters() {
-            const searchTerm = document.getElementById('searchInventory').value.toLowerCase();
-            const depotFilter = document.getElementById('depotFilter').value;
+        // Obtenir l'icône de catégorie
+        function getCategoryIcon(category) {
+            const icons = {
+                'farine': 'fas fa-wheat',
+                'huile': 'fas fa-oil-can',
+                'sucre': 'fas fa-candy-cane',
+                'lait': 'fas fa-wine-bottle',
+                'boisson': 'fas fa-wine-glass-alt',
+                'conserves': 'fas fa-can',
+                'nettoyage': 'fas fa-soap',
+                'autres': 'fas fa-box'
+            };
+            
+            return icons[category] || 'fas fa-box';
+        }
+        
+        // Obtenir la classe CSS pour le statut du stock
+        function getStockClass(stock, minStock) {
+            stock = parseInt(stock) || 0;
+            minStock = parseInt(minStock) || 10;
+            
+            if (stock === 0) return 'stock-out';
+            if (stock <= minStock) return 'stock-low';
+            if (stock <= minStock * 3) return 'stock-medium';
+            return 'stock-high';
+        }
+        
+        // Obtenir le texte du statut du stock
+        function getStockText(stock, minStock) {
+            stock = parseInt(stock) || 0;
+            minStock = parseInt(minStock) || 10;
+            
+            if (stock === 0) return 'Rupture';
+            if (stock <= minStock) return 'Faible';
+            if (stock <= minStock * 3) return 'Moyen';
+            return 'Élevé';
+        }
+        
+        // Afficher les produits dans le tableau
+        function displayProducts() {
+            const tableBody = document.getElementById('productsTableBody');
+            
+            if (filteredProducts.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            // Calculer les indices pour la pagination
+            const startIndex = (currentPage - 1) * productsPerPage;
+            const endIndex = startIndex + productsPerPage;
+            const pageProducts = filteredProducts.slice(startIndex, endIndex);
+            
+            let html = '';
+            
+            pageProducts.forEach(product => {
+                // Calculer la valeur du stock
+                const stockValue = (parseInt(product.stock) || 0) * (parseFloat(product.price) || 0);
+                const stockClass = getStockClass(product.stock, product.minStock);
+                const stockText = getStockText(product.stock, product.minStock);
+                const categoryIcon = getCategoryIcon(product.category);
+                const categoryName = getCategoryName(product.category);
+                
+                html += `
+                    <tr>
+                        <td>
+                            <div class="product-info">
+                                <div class="product-icon">
+                                    <i class="${categoryIcon}"></i>
+                                </div>
+                                <div>
+                                    <strong>${product.name || 'N/A'}</strong><br>
+                                    <small>${product.description ? product.description.substring(0, 30) + '...' : ''}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <strong>${product.code || 'N/A'}</strong><br>
+                            <small class="category-tag">${product.unit || 'unité'}</small>
+                        </td>
+                        <td>
+                            <span class="category-tag">${categoryName}</span>
+                        </td>
+                        <td>
+                            <div class="price">${parseFloat(product.salePrice || 0).toFixed(2)} DH</div>
+                            <small>Achat: ${parseFloat(product.price || 0).toFixed(2)} DH</small>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>${product.stock || 0}</strong> ${product.unit || ''}<br>
+                                <span class="stock-badge ${stockClass}">${stockText}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="price">${stockValue.toFixed(2)} DH</div>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit" onclick="editProduct('${product.id}')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete" onclick="confirmDelete('${product.id}', '${product.name || 'Produit'}')" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        }
+        
+        // Afficher l'état vide
+        function showEmptyState() {
+            const tableBody = document.getElementById('productsTableBody');
+            
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3>Aucun produit trouvé</h3>
+                        <p>Ce dépôt ne contient aucun produit pour le moment</p>
+                        <button class="btn btn-primary" onclick="openAddModal()" style="margin-top: 15px;">
+                            <i class="fas fa-plus"></i> Ajouter un produit
+                        </button>
+                    </td>
+                </tr>
+            `;
+            
+            // Cacher la pagination
+            document.getElementById('pagination').innerHTML = '';
+        }
+        
+        // Appliquer les filtres de recherche
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
             const stockFilter = document.getElementById('stockFilter').value;
             
-            filteredInventory = inventory.filter(item => {
-                const product = products.find(p => p.id === item.productId);
-                const depot = depots.find(d => d.id === item.depotId);
-                
-                if (!product || !depot) return false;
-                
+            filteredProducts = products.filter(product => {
                 // Filtre de recherche
                 const matchesSearch = !searchTerm || 
                     (product.name && product.name.toLowerCase().includes(searchTerm)) ||
                     (product.code && product.code.toLowerCase().includes(searchTerm)) ||
-                    (product.category && product.category.toLowerCase().includes(searchTerm));
+                    (product.description && product.description.toLowerCase().includes(searchTerm));
                 
-                // Filtre par dépôt
-                const matchesDepot = !depotFilter || item.depotId === depotFilter;
+                // Filtre par catégorie
+                const matchesCategory = !categoryFilter || product.category === categoryFilter;
                 
                 // Filtre par stock
                 let matchesStock = true;
-                if (stockFilter && product) {
-                    const quantity = parseInt(item.quantity) || 0;
+                if (stockFilter) {
+                    const stock = parseInt(product.stock) || 0;
                     const minStock = parseInt(product.minStock) || 10;
                     
                     switch(stockFilter) {
                         case 'high':
-                            matchesStock = quantity > minStock * 3;
+                            matchesStock = stock > minStock * 3;
                             break;
                         case 'medium':
-                            matchesStock = quantity > minStock && quantity <= minStock * 3;
+                            matchesStock = stock > minStock && stock <= minStock * 3;
                             break;
                         case 'low':
-                            matchesStock = quantity > 0 && quantity <= minStock;
+                            matchesStock = stock > 0 && stock <= minStock;
                             break;
                         case 'out':
-                            matchesStock = quantity === 0;
+                            matchesStock = stock === 0;
                             break;
                     }
                 }
                 
-                return matchesSearch && matchesDepot && matchesStock;
+                return matchesSearch && matchesCategory && matchesStock;
             });
             
-            inventoryPage = 1;
+            currentPage = 1; // Retour à la première page
         }
         
-        // Mettre à jour la pagination de l'inventaire
-        function updateInventoryPagination() {
-            const totalPages = Math.ceil(filteredInventory.length / inventoryPerPage);
-            const paginationDiv = document.getElementById('inventoryPagination');
+        // Mettre à jour la pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+            const paginationDiv = document.getElementById('pagination');
             
             if (totalPages <= 1) {
                 paginationDiv.innerHTML = '';
@@ -1681,30 +1602,30 @@
             
             // Bouton Précédent
             html += `
-                <button class="pagination-btn ${inventoryPage === 1 ? 'disabled' : ''}" 
-                        onclick="changeInventoryPage(${inventoryPage - 1})" ${inventoryPage === 1 ? 'disabled' : ''}>
+                <button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                        onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
                     <i class="fas fa-chevron-right"></i>
                 </button>
             `;
             
             // Pages
             for (let i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= inventoryPage - 1 && i <= inventoryPage + 1)) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
                     html += `
-                        <button class="pagination-btn ${i === inventoryPage ? 'active' : ''}" 
-                                onclick="changeInventoryPage(${i})">
+                        <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                                onclick="changePage(${i})">
                             ${i}
                         </button>
                     `;
-                } else if (i === inventoryPage - 2 || i === inventoryPage + 2) {
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
                     html += `<span class="pagination-btn">...</span>`;
                 }
             }
             
             // Bouton Suivant
             html += `
-                <button class="pagination-btn ${inventoryPage === totalPages ? 'disabled' : ''}" 
-                        onclick="changeInventoryPage(${inventoryPage + 1})" ${inventoryPage === totalPages ? 'disabled' : ''}>
+                <button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                        onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
                     <i class="fas fa-chevron-left"></i>
                 </button>
             `;
@@ -1712,347 +1633,550 @@
             paginationDiv.innerHTML = html;
         }
         
-        // Changer de page d'inventaire
-        function changeInventoryPage(page) {
-            const totalPages = Math.ceil(filteredInventory.length / inventoryPerPage);
+        // Changer de page
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
             
             if (page < 1 || page > totalPages) return;
             
-            inventoryPage = page;
-            displayInventory();
-            updateInventoryPagination();
+            currentPage = page;
+            displayProducts();
+            updatePagination();
         }
         
-        // Changer d'onglet
-        function switchTab(tabName) {
-            currentTab = tabName;
-            
-            // Mettre à jour les onglets actifs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Cacher tous les contenus d'onglets
-            document.getElementById('depotsView').style.display = 'none';
-            document.getElementById('inventoryView').style.display = 'none';
-            document.getElementById('reportsView').style.display = 'none';
-            
-            // Afficher l'onglet sélectionné
-            document.getElementById(tabName + 'View').style.display = 'block';
-            
-            // Charger les données si nécessaire
-            if (tabName === 'inventory') {
-                applyInventoryFilters();
-                displayInventory();
-                updateInventoryPagination();
-            } else if (tabName === 'reports') {
-                displayReports();
-            }
-        }
-        
-        // Afficher les rapports
-        function displayReports() {
-            const reportsTableBody = document.getElementById('reportsTableBody');
-            
-            if (depots.length === 0) {
-                reportsTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="empty-state">
-                            <i class="fas fa-chart-bar"></i>
-                            <h3>Aucun rapport disponible</h3>
-                            <p>Aucun dépôt trouvé pour générer des rapports</p>
-                        </td>
-                    </tr>
-                `;
+        // Ouvrir modal d'ajout
+        function openAddModal() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
                 return;
             }
             
-            let html = '';
-            
-            depots.forEach(depot => {
-                // Calculer les statistiques du dépôt
-                const depotInventory = inventory.filter(item => item.depotId === depot.id);
-                const productCount = depotInventory.reduce((total, item) => {
-                    return total + (parseInt(item.quantity) || 0);
-                }, 0);
-                
-                const totalValue = depotInventory.reduce((total, item) => {
-                    const product = products.find(p => p.id === item.productId);
-                    if (product) {
-                        const price = parseFloat(product.price) || 0;
-                        const quantity = parseInt(item.quantity) || 0;
-                        return total + (price * quantity);
-                    }
-                    return total;
-                }, 0);
-                
-                const lowStockCount = depotInventory.filter(item => {
-                    const product = products.find(p => p.id === item.productId);
-                    if (product) {
-                        const quantity = parseInt(item.quantity) || 0;
-                        const minStock = parseInt(product.minStock) || 10;
-                        return quantity > 0 && quantity <= minStock;
-                    }
-                    return false;
-                }).length;
-                
-                const capacity = parseFloat(depot.capacity) || 0;
-                const used = parseFloat(depot.used) || 0;
-                const usageRate = capacity > 0 ? Math.round((used / capacity) * 100) : 0;
-                
-                // Déterminer la couleur du taux de remplissage
-                let usageClass = 'stock-high';
-                if (usageRate >= 90) {
-                    usageClass = 'stock-low';
-                } else if (usageRate >= 70) {
-                    usageClass = 'stock-medium';
-                }
-                
-                html += `
-                    <tr>
-                        <td>
-                            <strong>${depot.name}</strong><br>
-                            <small>${depot.city} (${depot.code})</small>
-                        </td>
-                        <td>${productCount}</td>
-                        <td><strong>${totalValue.toFixed(2)} DH</strong></td>
-                        <td><span class="stock-badge stock-low">${lowStockCount}</span></td>
-                        <td>${used}m² / ${capacity}m²</td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="flex-grow: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
-                                    <div style="width: ${usageRate}%; height: 100%; background-color: ${
-                                        usageRate >= 90 ? 'var(--danger)' : 
-                                        usageRate >= 70 ? 'var(--warning)' : 
-                                        'var(--success)'
-                                    };"></div>
-                                </div>
-                                <span class="stock-badge ${usageClass}">${usageRate}%</span>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="status-indicator status-${depot.status === 'active' ? 'online' : 'offline'}"></span>
-                            ${depot.status === 'active' ? 'Actif' : 'Inactif'}
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            reportsTableBody.innerHTML = html;
-        }
-        
-        // Afficher l'état vide des dépôts
-        function showEmptyDepotsState() {
-            const depotsGrid = document.getElementById('depotsGrid');
-            
-            depotsGrid.innerHTML = `
-                <div class="empty-state" style="grid-column: 1/-1;">
-                    <i class="fas fa-warehouse"></i>
-                    <h3>Aucun dépôt trouvé</h3>
-                    <p>Commencez par créer votre premier dépôt</p>
-                    <button class="btn btn-primary" onclick="openAddDepotModal()" style="margin-top: 15px;">
-                        <i class="fas fa-plus"></i> Créer un dépôt
-                    </button>
-                </div>
-            `;
-        }
-        
-        // Afficher l'état d'erreur
-        function showErrorState(message, elementId) {
-            const element = document.getElementById(elementId);
-            
-            element.innerHTML = `
-                <div class="empty-state" style="grid-column: 1/-1;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Erreur de connexion</h3>
-                    <p>${message}</p>
-                </div>
-            `;
-        }
-        
-        // Ouvrir modal d'ajout de dépôt
-        function openAddDepotModal() {
             isEditMode = false;
-            document.getElementById('modalTitle').textContent = 'Ajouter un Nouveau Dépôt';
-            document.getElementById('depotForm').reset();
-            document.getElementById('depotId').value = '';
-            document.getElementById('depotStatus').value = 'active';
-            document.getElementById('depotUsed').value = '0';
-            document.getElementById('depotModal').style.display = 'flex';
+            document.getElementById('modalTitle').textContent = 'Ajouter un Nouveau Produit';
+            document.getElementById('productForm').reset();
+            document.getElementById('productId').value = '';
+            document.getElementById('currentDepotId').value = currentDepot.id;
+            document.getElementById('productMinStock').value = '10';
+            document.getElementById('productStatus').value = 'active';
+            document.getElementById('productModal').style.display = 'flex';
         }
         
-        // Ouvrir modal d'édition de dépôt
-        function editDepot(depotId) {
+        // Ouvrir modal d'édition
+        function editProduct(productId) {
             isEditMode = true;
             
-            try {
-                const depotRef = database.ref(`depots/${depotId}`);
-                
-                depotRef.once('value').then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const depot = snapshot.val();
-                        
-                        document.getElementById('modalTitle').textContent = 'Modifier Dépôt';
-                        document.getElementById('depotId').value = depotId;
-                        document.getElementById('depotName').value = depot.name || '';
-                        document.getElementById('depotCode').value = depot.code || '';
-                        document.getElementById('depotType').value = depot.type || '';
-                        document.getElementById('depotStatus').value = depot.status || 'active';
-                        document.getElementById('depotAddress').value = depot.address || '';
-                        document.getElementById('depotCity').value = depot.city || '';
-                        document.getElementById('depotPhone').value = depot.phone || '';
-                        document.getElementById('depotManager').value = depot.manager || '';
-                        document.getElementById('depotEmail').value = depot.email || '';
-                        document.getElementById('depotCapacity').value = depot.capacity || 0;
-                        document.getElementById('depotUsed').value = depot.used || 0;
-                        document.getElementById('depotDescription').value = depot.description || '';
-                        
-                        document.getElementById('depotModal').style.display = 'flex';
-                    }
-                }).catch(error => {
-                    console.error("Erreur de chargement du dépôt:", error);
-                    showToast("Erreur lors du chargement du dépôt", "error");
-                });
-                
-            } catch (error) {
-                console.error("Erreur dans editDepot:", error);
-                showToast("Erreur lors du chargement du dépôt", "error");
-            }
-        }
-        
-        // Confirmer la suppression d'un dépôt
-        function confirmDeleteDepot(depotId, depotName) {
-            depotToDelete = depotId;
-            document.getElementById('deleteDepotName').textContent = depotName;
-            document.getElementById('deleteModal').style.display = 'flex';
-        }
-        
-        // Enregistrer dépôt (ajout ou modification)
-        function saveDepot() {
-            const depotData = {
-                name: document.getElementById('depotName').value.trim(),
-                code: document.getElementById('depotCode').value.trim(),
-                type: document.getElementById('depotType').value,
-                status: document.getElementById('depotStatus').value,
-                address: document.getElementById('depotAddress').value.trim(),
-                city: document.getElementById('depotCity').value.trim(),
-                phone: document.getElementById('depotPhone').value.trim(),
-                manager: document.getElementById('depotManager').value.trim(),
-                email: document.getElementById('depotEmail').value.trim(),
-                capacity: parseFloat(document.getElementById('depotCapacity').value) || 0,
-                used: parseFloat(document.getElementById('depotUsed').value) || 0,
-                description: document.getElementById('depotDescription').value.trim(),
-                updatedAt: new Date().toISOString()
-            };
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
             
-            // Validation simple
-            if (!depotData.name || !depotData.code || !depotData.type || !depotData.city) {
-                showToast("Veuillez remplir les champs obligatoires (*)", "error");
+            document.getElementById('modalTitle').textContent = 'Modifier Produit';
+            document.getElementById('productId').value = productId;
+            document.getElementById('currentDepotId').value = currentDepot.id;
+            document.getElementById('productName').value = product.name || '';
+            document.getElementById('productCode').value = product.code || '';
+            document.getElementById('productCategory').value = product.category || '';
+            document.getElementById('productUnit').value = product.unit || '';
+            document.getElementById('productPrice').value = parseFloat(product.price || 0).toFixed(2);
+            document.getElementById('productSalePrice').value = parseFloat(product.salePrice || 0).toFixed(2);
+            document.getElementById('productStock').value = product.stock || 0;
+            document.getElementById('productMinStock').value = product.minStock || 10;
+            document.getElementById('productLocation').value = product.location || '';
+            document.getElementById('productStatus').value = product.status || 'active';
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productSupplier').value = product.supplier || '';
+            
+            document.getElementById('productModal').style.display = 'flex';
+        }
+        
+        // Ouvrir modal d'ajustement de stock
+        function adjustStock(type = 'increase') {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
                 return;
             }
             
-            if (depotData.used > depotData.capacity) {
-                showToast("L'espace utilisé ne peut pas dépasser la capacité totale", "error");
-                return;
-            }
+            const stockModal = document.getElementById('stockModal');
+            document.getElementById('stockModalTitle').textContent = 
+                type === 'increase' ? 'Augmenter le Stock' : 
+                type === 'decrease' ? 'Diminuer le Stock' : 
+                'Ajuster le Stock';
             
-            try {
-                if (isEditMode) {
-                    // Mise à jour du dépôt existant
-                    const depotId = document.getElementById('depotId').value;
-                    const depotRef = database.ref(`depots/${depotId}`);
-                    
-                    depotRef.update(depotData)
-                        .then(() => {
-                            showToast("Dépôt modifié avec succès!", "success");
-                            closeModal();
-                        })
-                        .catch(error => {
-                            console.error("Erreur de mise à jour:", error);
-                            showToast("Erreur lors de la modification du dépôt", "error");
-                        });
-                    
-                } else {
-                    // Ajout d'un nouveau dépôt
-                    depotData.createdAt = new Date().toISOString();
-                    const newDepotRef = database.ref('depots').push();
-                    
-                    newDepotRef.set(depotData)
-                        .then(() => {
-                            showToast("Dépôt ajouté avec succès!", "success");
-                            closeModal();
-                        })
-                        .catch(error => {
-                            console.error("Erreur d'ajout:", error);
-                            showToast("Erreur lors de l'ajout du dépôt", "error");
-                        });
+            document.getElementById('adjustType').value = type;
+            stockModal.style.display = 'flex';
+        }
+        
+        // Mettre à jour l'affichage du stock actuel
+        function updateCurrentStockDisplay() {
+            const productId = document.getElementById('adjustProduct').value;
+            const currentStockSpan = document.getElementById('currentStockValue');
+            
+            if (productId) {
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    currentStockSpan.textContent = `${product.stock || 0} ${product.unit || ''}`;
                 }
-                
-            } catch (error) {
-                console.error("Erreur dans saveDepot:", error);
-                showToast("Erreur lors de l'enregistrement du dépôt", "error");
+            } else {
+                currentStockSpan.textContent = '0';
             }
         }
         
-        // Voir l'inventaire d'un dépôt
-        function viewDepotInventory(depotId) {
-            // Filtrer pour afficher uniquement ce dépôt
-            document.getElementById('depotFilter').value = depotId;
-            switchTab('inventory');
-            applyInventoryFilters();
-            displayInventory();
-            updateInventoryPagination();
+        // Mettre à jour l'affichage du stock disponible pour transfert
+        function updateAvailableStockForTransfer() {
+            const productId = document.getElementById('transferProduct').value;
+            const availableStockSpan = document.getElementById('availableStockForTransfer');
+            
+            if (productId) {
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    availableStockSpan.textContent = `${product.stock || 0} ${product.unit || ''}`;
+                    // Définir la quantité max pour le transfert
+                    document.getElementById('transferQuantity').max = product.stock || 0;
+                }
+            } else {
+                availableStockSpan.textContent = '0';
+            }
         }
         
-        // Démarrer un inventaire
-        function startInventory() {
-            const inventoryModal = document.getElementById('inventoryModal');
-            inventoryModal.style.display = 'flex';
-        }
-        
-        // Effectuer un transfert de stock
-        function transferStock() {
+        // Ouvrir modal de transfert vers autre dépôt
+        function transferToOtherDepot() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
+            if (products.length === 0) {
+                showToast("Ce dépôt ne contient aucun produit à transférer", "error");
+                return;
+            }
+            
+            // Mettre à jour le sélecteur de dépôts de destination
+            updateToDepotSelector();
+            
+            // Mettre à jour le sélecteur de produits
+            updateProductSelectors();
+            
             const transferModal = document.getElementById('transferModal');
             transferModal.style.display = 'flex';
         }
         
-        // Afficher le stock faible
-        function showLowStock() {
-            document.getElementById('stockFilter').value = 'low';
-            switchTab('inventory');
-            applyInventoryFilters();
-            displayInventory();
-            updateInventoryPagination();
-            showToast("Affichage des produits en stock faible", "warning");
+        // Vérifier le stock faible
+        function checkLowStock() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
+            const lowStockProducts = products.filter(p => {
+                const stock = parseInt(p.stock) || 0;
+                const minStock = parseInt(p.minStock) || 10;
+                return stock > 0 && stock <= minStock;
+            });
+            
+            if (lowStockProducts.length === 0) {
+                showToast("Aucun produit en stock faible dans ce dépôt", "info");
+            } else {
+                // Filtrer pour afficher uniquement les produits en stock faible
+                document.getElementById('stockFilter').value = 'low';
+                applyFilters();
+                displayProducts();
+                updatePagination();
+                showToast(`${lowStockProducts.length} produits en stock faible`, "warning");
+            }
         }
         
-        // Supprimer un dépôt
-        function deleteDepot() {
-            if (!depotToDelete) return;
+        // Confirmer la suppression
+        function confirmDelete(productId, productName) {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
+            productToDelete = productId;
+            document.getElementById('deleteProductName').textContent = productName;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+        
+        // Enregistrer produit (ajout ou modification)
+        function saveProduct() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
+            const productData = {
+                name: document.getElementById('productName').value.trim(),
+                code: document.getElementById('productCode').value.trim(),
+                category: document.getElementById('productCategory').value,
+                unit: document.getElementById('productUnit').value,
+                price: parseFloat(document.getElementById('productPrice').value) || 0,
+                salePrice: parseFloat(document.getElementById('productSalePrice').value) || 0,
+                stock: parseInt(document.getElementById('productStock').value) || 0,
+                minStock: parseInt(document.getElementById('productMinStock').value) || 10,
+                location: document.getElementById('productLocation').value.trim(),
+                status: document.getElementById('productStatus').value,
+                description: document.getElementById('productDescription').value.trim(),
+                supplier: document.getElementById('productSupplier').value.trim(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            // Validation simple
+            if (!productData.name || !productData.code || !productData.category || !productData.unit) {
+                showToast("Veuillez remplir les champs obligatoires (*)", "error");
+                return;
+            }
+            
+            if (productData.price <= 0 || productData.salePrice <= 0) {
+                showToast("Les prix doivent être supérieurs à zéro", "error");
+                return;
+            }
+            
+            if (productData.salePrice < productData.price) {
+                showToast("Le prix de vente doit être supérieur ou égal au prix d'achat", "error");
+                return;
+            }
+            
+            const productId = document.getElementById('productId').value;
+            const depotId = document.getElementById('currentDepotId').value;
             
             try {
-                const depotRef = database.ref(`depots/${depotToDelete}`);
+                if (isEditMode) {
+                    // Mise à jour du produit existant
+                    const productRef = database.ref(`products/${productId}`);
+                    
+                    productRef.update(productData)
+                        .then(() => {
+                            // Mettre à jour l'entrée d'inventaire
+                            const inventoryItem = inventory.find(item => 
+                                item.productId === productId && item.depotId === depotId
+                            );
+                            
+                            if (inventoryItem) {
+                                const inventoryRef = database.ref(`inventory/${inventoryItem.id}`);
+                                inventoryRef.update({
+                                    quantity: productData.stock,
+                                    minStock: productData.minStock,
+                                    location: productData.location,
+                                    updatedAt: new Date().toISOString()
+                                })
+                                .then(() => {
+                                    showToast("Produit modifié avec succès!", "success");
+                                    closeModal();
+                                });
+                            } else {
+                                showToast("Produit modifié avec succès!", "success");
+                                closeModal();
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Erreur de mise à jour:", error);
+                            showToast("Erreur lors de la modification du produit", "error");
+                        });
+                    
+                } else {
+                    // Ajout d'un nouveau produit
+                    productData.createdAt = new Date().toISOString();
+                    const newProductRef = database.ref('products').push();
+                    const newProductId = newProductRef.key;
+                    
+                    newProductRef.set(productData)
+                        .then(() => {
+                            // Créer une entrée d'inventaire pour ce dépôt
+                            const inventoryRef = database.ref('inventory').push();
+                            const inventoryData = {
+                                productId: newProductId,
+                                depotId: depotId,
+                                quantity: productData.stock,
+                                minStock: productData.minStock,
+                                location: productData.location,
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString()
+                            };
+                            
+                            inventoryRef.set(inventoryData)
+                                .then(() => {
+                                    showToast("Produit ajouté avec succès!", "success");
+                                    closeModal();
+                                });
+                        })
+                        .catch(error => {
+                            console.error("Erreur d'ajout:", error);
+                            showToast("Erreur lors de l'ajout du produit", "error");
+                        });
+                }
                 
-                depotRef.remove()
+            } catch (error) {
+                console.error("Erreur dans saveProduct:", error);
+                showToast("Erreur lors de l'enregistrement du produit", "error");
+            }
+        }
+        
+        // Ajuster le stock d'un produit
+        function adjustProductStock() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
+            const productId = document.getElementById('adjustProduct').value;
+            const adjustType = document.getElementById('adjustType').value;
+            const quantity = parseInt(document.getElementById('adjustQuantity').value) || 0;
+            const reason = document.getElementById('adjustReason').value;
+            const notes = document.getElementById('adjustNotes').value.trim();
+            
+            if (!productId) {
+                showToast("Veuillez sélectionner un produit", "error");
+                return;
+            }
+            
+            if (quantity <= 0) {
+                showToast("La quantité doit être supérieure à zéro", "error");
+                return;
+            }
+            
+            try {
+                // Trouver le produit et son entrée d'inventaire
+                const product = products.find(p => p.id === productId);
+                const inventoryItem = inventory.find(item => 
+                    item.productId === productId && item.depotId === currentDepot.id
+                );
+                
+                if (!product || !inventoryItem) {
+                    showToast("Produit non trouvé dans l'inventaire", "error");
+                    return;
+                }
+                
+                let newStock = parseInt(inventoryItem.quantity) || 0;
+                
+                // Calculer le nouveau stock selon le type d'ajustement
+                switch(adjustType) {
+                    case 'increase':
+                        newStock += quantity;
+                        break;
+                    case 'decrease':
+                        if (newStock < quantity) {
+                            showToast("Stock insuffisant pour cette diminution", "error");
+                            return;
+                        }
+                        newStock -= quantity;
+                        break;
+                    case 'set':
+                        newStock = quantity;
+                        break;
+                }
+                
+                // Mettre à jour le stock dans l'inventaire
+                const inventoryRef = database.ref(`inventory/${inventoryItem.id}`);
+                const updateData = {
+                    quantity: newStock,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                inventoryRef.update(updateData)
                     .then(() => {
-                        showToast("Dépôt supprimé avec succès!", "success");
-                        closeDeleteModal();
+                        // Enregistrer l'historique de l'ajustement
+                        const historyRef = database.ref('stockHistory').push();
+                        const historyData = {
+                            productId: productId,
+                            productName: product.name,
+                            depotId: currentDepot.id,
+                            depotName: currentDepot.name,
+                            adjustType: adjustType,
+                            quantity: quantity,
+                            oldStock: inventoryItem.quantity || 0,
+                            newStock: newStock,
+                            reason: reason,
+                            notes: notes,
+                            user: 'Admin',
+                            createdAt: new Date().toISOString()
+                        };
+                        
+                        historyRef.set(historyData)
+                            .then(() => {
+                                showToast(`Stock ajusté avec succès! Nouveau stock: ${newStock}`, "success");
+                                closeStockModal();
+                            })
+                            .catch(error => {
+                                console.error("Erreur d'enregistrement de l'historique:", error);
+                                showToast("Stock ajusté, mais erreur d'enregistrement de l'historique", "warning");
+                                closeStockModal();
+                            });
                     })
                     .catch(error => {
-                        console.error("Erreur de suppression:", error);
-                        showToast("Erreur lors de la suppression du dépôt", "error");
+                        console.error("Erreur d'ajustement du stock:", error);
+                        showToast("Erreur lors de l'ajustement du stock", "error");
                     });
                 
             } catch (error) {
-                console.error("Erreur dans deleteDepot:", error);
-                showToast("Erreur lors de la suppression du dépôt", "error");
+                console.error("Erreur dans adjustProductStock:", error);
+                showToast("Erreur lors de l'ajustement du stock", "error");
+            }
+        }
+        
+        // Effectuer un transfert de stock vers un autre dépôt
+        function performStockTransfer() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
+            }
+            
+            const toDepotId = document.getElementById('toDepotSelect').value;
+            const productId = document.getElementById('transferProduct').value;
+            const quantity = parseInt(document.getElementById('transferQuantity').value) || 0;
+            const reason = document.getElementById('transferReason').value;
+            const notes = document.getElementById('transferNotes').value.trim();
+            
+            if (!toDepotId) {
+                showToast("Veuillez sélectionner un dépôt de destination", "error");
+                return;
+            }
+            
+            if (!productId) {
+                showToast("Veuillez sélectionner un produit", "error");
+                return;
+            }
+            
+            if (quantity <= 0) {
+                showToast("La quantité doit être supérieure à zéro", "error");
+                return;
+            }
+            
+            try {
+                // Trouver le dépôt de destination
+                const toDepot = depots.find(d => d.id === toDepotId);
+                if (!toDepot) {
+                    showToast("Dépôt de destination non trouvé", "error");
+                    return;
+                }
+                
+                // Trouver le produit dans le dépôt source
+                const product = products.find(p => p.id === productId);
+                const sourceInventoryItem = inventory.find(item => 
+                    item.productId === productId && item.depotId === currentDepot.id
+                );
+                
+                if (!product || !sourceInventoryItem) {
+                    showToast("Produit non trouvé dans le dépôt source", "error");
+                    return;
+                }
+                
+                const currentStock = parseInt(sourceInventoryItem.quantity) || 0;
+                if (currentStock < quantity) {
+                    showToast(`Stock insuffisant. Disponible: ${currentStock}`, "error");
+                    return;
+                }
+                
+                // Trouver ou créer l'entrée d'inventaire dans le dépôt destination
+                const targetInventoryItem = inventory.find(item => 
+                    item.productId === productId && item.depotId === toDepotId
+                );
+                
+                // Mettre à jour le stock source
+                const newSourceStock = currentStock - quantity;
+                const sourceRef = database.ref(`inventory/${sourceInventoryItem.id}`);
+                
+                // Mettre à jour ou créer le stock destination
+                let targetPromise;
+                if (targetInventoryItem) {
+                    const targetRef = database.ref(`inventory/${targetInventoryItem.id}`);
+                    const newTargetStock = (parseInt(targetInventoryItem.quantity) || 0) + quantity;
+                    targetPromise = targetRef.update({
+                        quantity: newTargetStock,
+                        updatedAt: new Date().toISOString()
+                    });
+                } else {
+                    const targetRef = database.ref('inventory').push();
+                    targetPromise = targetRef.set({
+                        productId: productId,
+                        depotId: toDepotId,
+                        quantity: quantity,
+                        minStock: product.minStock || 10,
+                        location: '',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    });
+                }
+                
+                // Exécuter les deux opérations
+                Promise.all([
+                    sourceRef.update({
+                        quantity: newSourceStock,
+                        updatedAt: new Date().toISOString()
+                    }),
+                    targetPromise
+                ])
+                .then(() => {
+                    // Enregistrer l'historique du transfert
+                    const historyRef = database.ref('transferHistory').push();
+                    const historyData = {
+                        productId: productId,
+                        productName: product.name,
+                        fromDepotId: currentDepot.id,
+                        fromDepotName: currentDepot.name,
+                        toDepotId: toDepotId,
+                        toDepotName: toDepot.name,
+                        quantity: quantity,
+                        reason: reason,
+                        notes: notes,
+                        user: 'Admin',
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    historyRef.set(historyData)
+                        .then(() => {
+                            showToast(`Transfert de ${quantity} unités effectué avec succès vers ${toDepot.name}`, "success");
+                            closeTransferModal();
+                        });
+                })
+                .catch(error => {
+                    console.error("Erreur de transfert:", error);
+                    showToast("Erreur lors du transfert de stock", "error");
+                });
+                
+            } catch (error) {
+                console.error("Erreur dans performStockTransfer:", error);
+                showToast("Erreur lors du transfert de stock", "error");
+            }
+        }
+        
+        // Supprimer produit
+        function deleteProduct() {
+            if (!productToDelete) return;
+            
+            try {
+                // Trouver l'entrée d'inventaire pour ce produit dans ce dépôt
+                const inventoryItem = inventory.find(item => 
+                    item.productId === productToDelete && item.depotId === currentDepot.id
+                );
+                
+                if (inventoryItem) {
+                    const inventoryRef = database.ref(`inventory/${inventoryItem.id}`);
+                    inventoryRef.remove()
+                        .then(() => {
+                            showToast("Produit supprimé avec succès!", "success");
+                            closeDeleteModal();
+                        })
+                        .catch(error => {
+                            console.error("Erreur de suppression:", error);
+                            showToast("Erreur lors de la suppression du produit", "error");
+                        });
+                } else {
+                    showToast("Produit non trouvé dans l'inventaire", "error");
+                    closeDeleteModal();
+                }
+                
+            } catch (error) {
+                console.error("Erreur dans deleteProduct:", error);
+                showToast("Erreur lors de la suppression du produit", "error");
             }
         }
         
         // Fermer modals
         function closeModal() {
-            document.getElementById('depotModal').style.display = 'none';
+            document.getElementById('productModal').style.display = 'none';
+        }
+        
+        function closeStockModal() {
+            document.getElementById('stockModal').style.display = 'none';
+            document.getElementById('stockForm').reset();
         }
         
         function closeTransferModal() {
@@ -2060,191 +2184,54 @@
             document.getElementById('transferForm').reset();
         }
         
-        function closeInventoryModal() {
-            document.getElementById('inventoryModal').style.display = 'none';
-            document.getElementById('inventoryForm').reset();
-        }
-        
         function closeDeleteModal() {
             document.getElementById('deleteModal').style.display = 'none';
-            depotToDelete = null;
+            productToDelete = null;
         }
         
-        // Exporter les données
-        function exportData() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            
-            if (currentTab === 'depots') {
-                csvContent += "Nom,Code,Type,Ville,Responsable,Téléphone,Capacité,Espace Utilisé,Statut\n";
-                
-                depots.forEach(depot => {
-                    const row = [
-                        depot.name,
-                        depot.code,
-                        depot.type,
-                        depot.city,
-                        depot.manager,
-                        depot.phone,
-                        depot.capacity,
-                        depot.used,
-                        depot.status
-                    ].map(field => `"${field}"`).join(',');
-                    
-                    csvContent += row + "\n";
-                });
-                
-                showToast(`${depots.length} dépôts exportés`, "success");
-            } else if (currentTab === 'inventory') {
-                csvContent += "Produit,Code,Catégorie,Dépôt,Ville,Stock,Unité,Valeur,Statut Stock\n";
-                
-                filteredInventory.forEach(item => {
-                    const product = products.find(p => p.id === item.productId);
-                    const depot = depots.find(d => d.id === item.depotId);
-                    
-                    if (product && depot) {
-                        const quantity = parseInt(item.quantity) || 0;
-                        const value = quantity * (parseFloat(product.price) || 0);
-                        const minStock = parseInt(product.minStock) || 10;
-                        
-                        let stockStatus = 'Élevé';
-                        if (quantity === 0) stockStatus = 'Rupture';
-                        else if (quantity <= minStock) stockStatus = 'Faible';
-                        else if (quantity <= minStock * 3) stockStatus = 'Moyen';
-                        
-                        const row = [
-                            product.name,
-                            product.code,
-                            getCategoryName(product.category),
-                            depot.name,
-                            depot.city,
-                            quantity,
-                            product.unit,
-                            value.toFixed(2),
-                            stockStatus
-                        ].map(field => `"${field}"`).join(',');
-                        
-                        csvContent += row + "\n";
-                    }
-                });
-                
-                showToast(`${filteredInventory.length} produits exportés`, "success");
+        // Exporter les produits
+        function exportProducts() {
+            if (!currentDepot) {
+                showToast("Veuillez sélectionner un dépôt d'abord", "error");
+                return;
             }
+            
+            if (products.length === 0) {
+                showToast("Aucun produit à exporter", "error");
+                return;
+            }
+            
+            // Simple export CSV
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Nom,Code,Catégorie,Prix Achat,Prix Vente,Stock,Unité,Stock Min,Valeur,Statut\n";
+            
+            products.forEach(product => {
+                const stockValue = (parseInt(product.stock) || 0) * (parseFloat(product.price) || 0);
+                const row = [
+                    product.name,
+                    product.code,
+                    getCategoryName(product.category),
+                    parseFloat(product.price || 0).toFixed(2),
+                    parseFloat(product.salePrice || 0).toFixed(2),
+                    product.stock || 0,
+                    product.unit || '',
+                    product.minStock || 10,
+                    stockValue.toFixed(2),
+                    product.status || 'active'
+                ].map(field => `"${field}"`).join(',');
+                
+                csvContent += row + "\n";
+            });
             
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `inventaire_depots_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute("download", `produits_${currentDepot.name}_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
-        
-        // Créer des données de test
-        function createSampleData() {
-            if (!confirm("Créer des données de test ? Cela ajoutera 3 dépôts et des produits d'exemple.")) {
-                return;
-            }
             
-            try {
-                // Créer des dépôts de test
-                const sampleDepots = [
-                    {
-                        name: 'Dépôt Principal Agadir',
-                        code: 'DPT001',
-                        type: 'principal',
-                        status: 'active',
-                        address: 'Zone Industrielle Aït Melloul',
-                        city: 'Agadir',
-                        phone: '0528889999',
-                        manager: 'Ahmed El Mansouri',
-                        email: 'ahmed@ettijara.com',
-                        capacity: 1000,
-                        used: 750,
-                        description: 'Dépôt principal pour la région Souss',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        name: 'Centre Distribution Inezgane',
-                        code: 'DPT002',
-                        type: 'distribution',
-                        status: 'active',
-                        address: 'Route Nationale 10',
-                        city: 'Inezgane',
-                        phone: '0528776666',
-                        manager: 'Fatima Zahra',
-                        email: 'fatima@ettijara.com',
-                        capacity: 500,
-                        used: 320,
-                        description: 'Centre de distribution pour Inezgane et Ait Melloul',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        name: 'Dépôt Régional Taroudant',
-                        code: 'DPT003',
-                        type: 'regional',
-                        status: 'active',
-                        address: 'Quartier Industriel',
-                        city: 'Taroudant',
-                        phone: '0528665555',
-                        manager: 'Karim Benjelloun',
-                        email: 'karim@ettijara.com',
-                        capacity: 300,
-                        used: 180,
-                        description: 'Dépôt régional pour Taroudant et sa région',
-                        createdAt: new Date().toISOString()
-                    }
-                ];
-                
-                let depotPromises = [];
-                let createdDepotIds = [];
-                
-                // Créer les dépôts et récupérer leurs IDs
-                sampleDepots.forEach(depot => {
-                    const newDepotRef = database.ref('depots').push();
-                    createdDepotIds.push(newDepotRef.key);
-                    depotPromises.push(newDepotRef.set(depot));
-                });
-                
-                Promise.all(depotPromises)
-                    .then(() => {
-                        // Ajouter des produits d'exemple à l'inventaire
-                        const sampleProducts = [
-                            { name: 'Farine Spéciale 1kg', code: 'FAR001', category: 'farine', unit: 'sac', price: 15.50 },
-                            { name: 'Huile d\'Olive 1L', code: 'HUI001', category: 'huile', unit: 'bouteille', price: 45.00 },
-                            { name: 'Sucre Blanc 1kg', code: 'SUG001', category: 'sucre', unit: 'sac', price: 12.00 }
-                        ];
-                        
-                        let inventoryPromises = [];
-                        
-                        // Pour chaque produit, créer des entrées d'inventaire dans chaque dépôt
-                        sampleProducts.forEach((product, productIndex) => {
-                            createdDepotIds.forEach((depotId, depotIndex) => {
-                                const inventoryRef = database.ref('inventory').push();
-                                const inventoryItem = {
-                                    productId: product.code + productIndex, // ID temporaire
-                                    depotId: depotId,
-                                    quantity: (depotIndex + 1) * 10, // Quantités différentes par dépôt
-                                    minStock: 10,
-                                    updatedAt: new Date().toISOString()
-                                };
-                                inventoryPromises.push(inventoryRef.set(inventoryItem));
-                            });
-                        });
-                        
-                        return Promise.all(inventoryPromises);
-                    })
-                    .then(() => {
-                        showToast("Données de test créées avec succès: 3 dépôts et inventaire", "success");
-                    })
-                    .catch(error => {
-                        console.error("Erreur création données test:", error);
-                        showToast("Erreur lors de la création des données de test", "error");
-                    });
-                
-            } catch (error) {
-                console.error("Erreur dans createSampleData:", error);
-                showToast("Erreur lors de la création des données de test", "error");
-            }
+            showToast(`${products.length} produits exportés avec succès`, "success");
         }
         
         // Initialiser l'application
@@ -2253,89 +2240,96 @@
             const connectedRef = database.ref(".info/connected");
             connectedRef.on("value", function(snap) {
                 if (snap.val() === true) {
-                    loadData();
+                    loadInitialData();
                 }
             });
             
-            // Événements de recherche/filtre pour dépôts
-            document.getElementById('searchDepot').addEventListener('input', displayDepots);
-            document.getElementById('statusFilter').addEventListener('change', displayDepots);
-            document.getElementById('resetDepotFiltersBtn').addEventListener('click', function() {
-                document.getElementById('searchDepot').value = '';
-                document.getElementById('statusFilter').value = '';
-                displayDepots();
+            // Événements de recherche/filtre
+            document.getElementById('searchInput').addEventListener('input', function() {
+                applyFilters();
+                displayProducts();
+                updatePagination();
             });
             
-            // Événements de recherche/filtre pour inventaire
-            document.getElementById('searchInventory').addEventListener('input', function() {
-                applyInventoryFilters();
-                displayInventory();
-                updateInventoryPagination();
-            });
-            
-            document.getElementById('depotFilter').addEventListener('change', function() {
-                applyInventoryFilters();
-                displayInventory();
-                updateInventoryPagination();
+            document.getElementById('categoryFilter').addEventListener('change', function() {
+                applyFilters();
+                displayProducts();
+                updatePagination();
             });
             
             document.getElementById('stockFilter').addEventListener('change', function() {
-                applyInventoryFilters();
-                displayInventory();
-                updateInventoryPagination();
+                applyFilters();
+                displayProducts();
+                updatePagination();
             });
             
-            document.getElementById('resetInventoryFiltersBtn').addEventListener('click', function() {
-                document.getElementById('searchInventory').value = '';
-                document.getElementById('depotFilter').value = '';
+            document.getElementById('resetFiltersBtn').addEventListener('click', function() {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('categoryFilter').value = '';
                 document.getElementById('stockFilter').value = '';
-                applyInventoryFilters();
-                displayInventory();
-                updateInventoryPagination();
+                applyFilters();
+                displayProducts();
+                updatePagination();
             });
             
             // Événements modals
-            document.getElementById('addDepotBtn').addEventListener('click', openAddDepotModal);
+            document.getElementById('addProductBtn').addEventListener('click', openAddModal);
             document.getElementById('closeModal').addEventListener('click', closeModal);
             document.getElementById('cancelBtn').addEventListener('click', closeModal);
-            document.getElementById('saveDepotBtn').addEventListener('click', saveDepot);
+            document.getElementById('saveProductBtn').addEventListener('click', saveProduct);
+            
+            document.getElementById('closeStockModal').addEventListener('click', closeStockModal);
+            document.getElementById('cancelStockBtn').addEventListener('click', closeStockModal);
+            document.getElementById('saveStockBtn').addEventListener('click', adjustProductStock);
             
             document.getElementById('closeTransferModal').addEventListener('click', closeTransferModal);
             document.getElementById('cancelTransferBtn').addEventListener('click', closeTransferModal);
-            
-            document.getElementById('closeInventoryModal').addEventListener('click', closeInventoryModal);
-            document.getElementById('cancelInventoryBtn').addEventListener('click', closeInventoryModal);
+            document.getElementById('saveTransferBtn').addEventListener('click', performStockTransfer);
             
             document.getElementById('closeDeleteModal').addEventListener('click', closeDeleteModal);
             document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
-            document.getElementById('confirmDeleteBtn').addEventListener('click', deleteDepot);
+            document.getElementById('confirmDeleteBtn').addEventListener('click', deleteProduct);
+            
+            // Mettre à jour l'affichage du stock actuel
+            document.getElementById('adjustProduct').addEventListener('change', updateCurrentStockDisplay);
+            document.getElementById('transferProduct').addEventListener('change', updateAvailableStockForTransfer);
             
             // Export
-            document.getElementById('exportBtn').addEventListener('click', exportData);
+            document.getElementById('exportBtn').addEventListener('click', exportProducts);
             
             // Fermer modal en cliquant en dehors
             window.addEventListener('click', function(event) {
-                const depotModal = document.getElementById('depotModal');
+                const productModal = document.getElementById('productModal');
+                const stockModal = document.getElementById('stockModal');
                 const transferModal = document.getElementById('transferModal');
-                const inventoryModal = document.getElementById('inventoryModal');
                 const deleteModal = document.getElementById('deleteModal');
                 
-                if (event.target === depotModal) closeModal();
+                if (event.target === productModal) closeModal();
+                if (event.target === stockModal) closeStockModal();
                 if (event.target === transferModal) closeTransferModal();
-                if (event.target === inventoryModal) closeInventoryModal();
                 if (event.target === deleteModal) closeDeleteModal();
             });
             
             // Soumission des formulaires avec Entrée
-            document.getElementById('depotForm').addEventListener('submit', function(e) {
+            document.getElementById('productForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                saveDepot();
+                saveProduct();
+            });
+            
+            document.getElementById('stockForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                adjustProductStock();
+            });
+            
+            document.getElementById('transferForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                performStockTransfer();
             });
             
             // Rafraîchir automatiquement toutes les 30 secondes
             setInterval(() => {
-                if (depots.length === 0) {
-                    loadData();
+                if (currentDepot && products.length === 0) {
+                    loadDepotProducts();
                 }
             }, 30000);
         });
