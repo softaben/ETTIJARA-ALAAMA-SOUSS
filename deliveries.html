@@ -196,12 +196,13 @@
             display: none; 
             width: 148mm; 
             min-height: 210mm; 
-            padding: 10mm; 
+            padding: 7mm;
             background: white; 
             margin: 0 auto; 
             color: #000;
             direction: ltr;
             position: relative;
+            box-sizing: border-box;
         }
 
         .print-header {
@@ -209,47 +210,120 @@
             justify-content: space-between;
             align-items: flex-start;
             border-bottom: 2.5px solid #000;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
+            margin-bottom: 5px;
         }
         
         .print-title {
             text-align: center;
-            margin: 15px 0;
+            margin: 10px 0 5px 0;
         }
         
         .print-title h2 {
             border: 2px solid #000;
             display: inline-block;
-            padding: 8px 25px;
-            font-size: 18px;
+            padding: 5px 20px;
+            font-size: 16px;
+            margin: 0;
         }
 
+        /* Informations client en horizontal */
+        .client-info-horizontal {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 9.5px;
+        }
+
+        .client-info-column {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .client-info-column p {
+            margin: 2px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* TABLEAU OPTIMISÉ */
+        .print-table-container {
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
         .print-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin: 0;
+            table-layout: fixed;
+            font-size: 9px !important;
         }
         
         .print-table th, .print-table td {
             border: 1.5px solid #000;
-            padding: 8px;
-            font-size: 11px;
+            padding: 4px 3px !important;
+            font-size: 9px !important;
             text-align: center;
+            height: auto !important;
+            line-height: 1.2;
+            vertical-align: middle;
+            min-height: 5mm;
+            max-height: 6mm;
         }
         
         .print-table th {
             background: #f2f2f2 !important;
             font-weight: bold;
+            padding: 5px 3px !important;
         }
         
+        /* Largeurs spécifiques des colonnes */
+        .print-table th:nth-child(1),
+        .print-table td:nth-child(1) {
+            width: 7%;
+        }
+        
+        .print-table th:nth-child(2),
+        .print-table td:nth-child(2) {
+            width: 53%;
+            text-align: left;
+            padding-left: 5px !important;
+        }
+        
+        .print-table th:nth-child(3),
+        .print-table td:nth-child(3) {
+            width: 10%;
+        }
+        
+        .print-table th:nth-child(4),
+        .print-table td:nth-child(4) {
+            width: 15%;
+        }
+        
+        .print-table th:nth-child(5),
+        .print-table td:nth-child(5) {
+            width: 15%;
+        }
+
+        /* الصف الأخير مع الحدود الكاملة */
+        .print-table tr:last-child td {
+            border-bottom: 1.5px solid #000;
+        }
+
         .print-footer {
-            margin-top: 40px;
+            margin-top: 15px;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
+            padding-top: 10px;
         }
 
-        /* الختم الدائري */
         .round-stamp {
             width: 110px;
             height: 110px;
@@ -263,32 +337,52 @@
             color: var(--primary);
             font-weight: bold;
             transform: rotate(-12deg);
+            font-size: 8px;
         }
 
         .round-stamp .comp-name {
-            font-size: 9px;
+            font-size: 8px;
             text-transform: uppercase;
+            line-height: 1.1;
         }
         
         .round-stamp .depo-label {
-            font-size: 8px;
+            font-size: 7px;
             border-top: 1px solid var(--primary);
             width: 80%;
             margin-top: 2px;
+            padding-top: 1px;
         }
         
         .round-stamp .depo-name {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--danger);
+            line-height: 1.1;
         }
 
         .sig-box {
             border-top: 1px solid #000;
-            width: 150px;
-            margin-top: 40px;
+            width: 140px;
+            margin-top: 30px;
             text-align: center;
-            font-size: 11px;
-            padding-top: 5px;
+            font-size: 10px;
+            padding-top: 3px;
+        }
+
+        .page-break {
+            page-break-before: always;
+            margin-top: 20mm;
+        }
+
+        /* Mode démo */
+        .demo-mode {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
         }
 
         @media print {
@@ -309,7 +403,7 @@
                 height: 210mm;
                 border: none;
                 margin: 0;
-                padding: 10mm;
+                padding: 7mm;
             }
             
             .no-print { 
@@ -615,7 +709,7 @@
         @media (max-width: 480px) {
             .print-footer {
                 flex-direction: column;
-                gap: 20px;
+                gap: 15px;
                 align-items: center;
             }
             
@@ -639,6 +733,10 @@
 
     <main class="main-content">
         <div class="table-container">
+            <div id="demoModeIndicator" class="demo-mode" style="display: none;">
+                <i class="fas fa-info-circle"></i> Mode démo activé - Données locales utilisées
+            </div>
+            
             <div class="controls">
                 <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
                     <label><i class="fas fa-warehouse"></i> Sélectionner le Dépôt :</label>
@@ -788,35 +886,7 @@
                     </h4>
                     
                     <div id="itemsContainer">
-                        <div class="form-row item-row">
-                            <div class="form-group" style="flex: 3; position: relative;">
-                                <label>Désignation *</label>
-                                <input type="text" class="form-control item-name" 
-                                       placeholder="Cliquez pour rechercher un produit..." 
-                                       onclick="openProductSearch(this)" readonly>
-                                <button class="search-btn" onclick="openProductSearch(this)" 
-                                        style="left: 5px; top: 35px; width: 35px; height: 35px;">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label>Quantité *</label>
-                                <input type="number" class="form-control item-quantity" min="1" value="1" required>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label>Prix Unitaire (DH) *</label>
-                                <input type="number" class="form-control item-price" min="0" step="0.01" value="0" required>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label>Total (DH)</label>
-                                <input type="text" class="form-control item-total" value="0.00" readonly>
-                            </div>
-                            <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
-                                <button type="button" class="btn" onclick="removeItem(this)" style="background: var(--danger); color: white; padding: 12px;">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
+                        <!-- Les articles seront ajoutés ici dynamiquement -->
                     </div>
                     
                     <div style="margin-top: 15px;">
@@ -935,34 +1005,20 @@
             appId: "1:458158894252:web:d1e640b2e16ef32d978309"
         };
         
-        // ==================== INITIALISATION ====================
-        let database;
-        let isConnected = false;
-        
-        try {
-            // Vérifier si Firebase est déjà initialisé
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            database = firebase.database();
-            console.log("✅ Firebase initialisé avec succès");
-        } catch (error) {
-            console.error("❌ Erreur d'initialisation Firebase:", error);
-            showToast("Erreur de connexion à la base de données", "error");
-        }
-        
         // ==================== VARIABLES GLOBALES ====================
+        let database = null;
+        let isConnected = false;
+        let isDemoMode = false;
         let deliveries = [];
         let depots = [];
         let clients = [];
         let products = [];
         let currentDelivery = null;
-        let currentSearchType = null; // 'client' ou 'product'
-        let currentProductInput = null; // Pour savoir quel input produit est en cours de modification
+        let currentSearchType = null;
+        let currentProductInput = null;
         
         // ==================== FONCTIONS UTILITAIRES ====================
         
-        // Afficher une notification
         function showToast(message, type = "success") {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -978,7 +1034,6 @@
             }, 3000);
         }
         
-        // Mettre à jour le statut de connexion
         function updateConnectionStatus(connected) {
             const statusElement = document.getElementById('connectionStatus');
             isConnected = connected;
@@ -986,13 +1041,16 @@
             if (connected) {
                 statusElement.style.background = "#10b981";
                 statusElement.title = "Connecté à Firebase";
+                document.getElementById('demoModeIndicator').style.display = 'none';
             } else {
                 statusElement.style.background = "#ef4444";
                 statusElement.title = "Non connecté";
+                if (isDemoMode) {
+                    document.getElementById('demoModeIndicator').style.display = 'block';
+                }
             }
         }
         
-        // Formater la date
         function formatDate(dateString) {
             if (!dateString) return '--';
             try {
@@ -1007,7 +1065,6 @@
             }
         }
         
-        // Mettre à jour l'heure de la dernière mise à jour
         function updateLastUpdateTime() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('fr-FR', {
@@ -1017,14 +1074,12 @@
             document.getElementById('lastUpdate').textContent = `Dernière mise à jour: ${timeString}`;
         }
         
-        // Générer un numéro de bon automatique
         function generateBonNumber() {
             const date = new Date();
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
             
-            // Compter les livraisons d'aujourd'hui
             const todayDeliveries = deliveries.filter(d => {
                 const deliveryDate = new Date(d.createdAt || d.date);
                 return deliveryDate.toDateString() === date.toDateString();
@@ -1034,325 +1089,327 @@
             return `BL-${year}${month}${day}-${sequence}`;
         }
         
-        // ==================== CHARGEMENT DES DONNÉES ====================
+        // ==================== MODE DÉMO ====================
         
-        function loadDepots() {
-            try {
-                const depotsRef = database.ref('depots');
-                
-                depotsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    depots = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            depots.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        console.log(`✅ ${depots.length} dépôts chargés`);
-                        
-                        // Mettre à jour les sélecteurs de dépôts
-                        updateDepotSelectors();
-                        
-                        // Charger les autres données
-                        loadClients();
-                    } else {
-                        showNoDataState('depots');
-                    }
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des dépôts:", error);
-                    showToast("Erreur de chargement des dépôts", "error");
-                });
-                
-            } catch (error) {
-                console.error("❌ Erreur dans loadDepots:", error);
-            }
-        }
-        
-        function loadClients() {
-            try {
-                const clientsRef = database.ref('clients');
-                
-                clientsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    clients = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            clients.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        console.log(`✅ ${clients.length} clients chargés`);
-                        
-                        // Charger les produits
-                        loadProducts();
-                    } else {
-                        console.log("ℹ️ Aucun client trouvé");
-                        clients = [];
-                        loadProducts();
-                    }
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des clients:", error);
-                    clients = [];
-                    loadProducts();
-                });
-                
-            } catch (error) {
-                console.error("❌ Erreur dans loadClients:", error);
-                clients = [];
-                loadProducts();
-            }
-        }
-        
-        function loadProducts() {
-            try {
-                const productsRef = database.ref('products');
-                
-                productsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    products = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            products.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        console.log(`✅ ${products.length} produits chargés`);
-                        
-                        // Charger les livraisons
-                        loadDeliveries();
-                    } else {
-                        console.log("ℹ️ Aucun produit trouvé");
-                        products = [];
-                        loadDeliveries();
-                    }
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des produits:", error);
-                    products = [];
-                    loadDeliveries();
-                });
-                
-            } catch (error) {
-                console.error("❌ Erreur dans loadProducts:", error);
-                products = [];
-                loadDeliveries();
-            }
-        }
-        
-        function loadDeliveries() {
-            try {
-                const deliveriesRef = database.ref('deliveries');
-                
-                deliveriesRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    deliveries = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            deliveries.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        // Trier par date (plus récent d'abord)
-                        deliveries.sort((a, b) => {
-                            const dateA = new Date(a.createdAt || a.date || 0);
-                            const dateB = new Date(b.createdAt || b.date || 0);
-                            return dateB - dateA;
-                        });
-                        
-                        console.log(`✅ ${deliveries.length} livraisons chargées`);
-                        updateDeliveriesTable();
-                        updateStats();
-                        updateLastUpdateTime();
-                        
-                    } else {
-                        showEmptyState();
-                    }
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des livraisons:", error);
-                    showToast("Erreur de chargement des livraisons", "error");
-                    showEmptyState();
-                });
-                
-            } catch (error) {
-                console.error("❌ Erreur dans loadDeliveries:", error);
-                showEmptyState();
-            }
-        }
-        
-        function updateDepotSelectors() {
-            // Mettre à jour le sélecteur de dépôts principal
-            const depotSelect = document.getElementById('depotSelector');
-            let options = '<option value="">Tous les dépôts</option>';
+        function initializeDemoMode() {
+            console.log("🚀 Initialisation du mode démo...");
+            isDemoMode = true;
+            updateConnectionStatus(false);
             
-            depots.forEach(depot => {
-                const depotName = depot.name || 'Dépôt sans nom';
-                const depotCity = depot.city ? ` - ${depot.city}` : '';
-                options += `<option value="${depot.id}">${depotName}${depotCity}</option>`;
-            });
-            
-            depotSelect.innerHTML = options;
-            
-            // Mettre à jour le sélecteur de dépôts dans le formulaire
-            const newDepotSelect = document.getElementById('newDepotSelect');
-            let newOptions = '<option value="">Sélectionner un dépôt</option>';
-            
-            depots.forEach(depot => {
-                const depotName = depot.name || 'Dépôt sans nom';
-                const depotCity = depot.city ? ` - ${depot.city}` : '';
-                newOptions += `<option value="${depot.id}">${depotName}${depotCity}</option>`;
-            });
-            
-            newDepotSelect.innerHTML = newOptions;
-        }
-        
-        function showNoDataState(type) {
-            const message = {
-                'depots': 'Aucun dépôt disponible',
-                'clients': 'Aucun client disponible',
-                'products': 'Aucun produit disponible'
-            }[type] || 'Aucune donnée disponible';
-            
-            showToast(message, "warning");
-        }
-        
-        // Afficher l'état vide
-        function showEmptyState() {
-            const tableBody = document.getElementById('deliveriesTableBody');
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
-                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                        <h3 style="color: #64748b; margin-bottom: 10px;">Aucune livraison trouvée</h3>
-                        <p style="color: #94a3b8;">Commencez par créer un nouveau bon de livraison</p>
-                        <button class="btn btn-primary" onclick="openCreateDelivery()" style="margin-top: 15px;">
-                            <i class="fas fa-plus"></i> Créer un bon
-                        </button>
-                    </td>
-                </tr>
-            `;
-            updateStats();
-        }
-        
-        // ==================== GESTION DES LIVRAISONS ====================
-        
-        function updateDeliveriesTable() {
-            const tableBody = document.getElementById('deliveriesTableBody');
-            const selectedDepotId = document.getElementById('depotSelector').value;
-            
-            // Filtrer par dépôt si sélectionné
-            let filteredDeliveries = deliveries;
-            if (selectedDepotId) {
-                filteredDeliveries = deliveries.filter(delivery => delivery.depotId === selectedDepotId);
-            }
-            
-            if (filteredDeliveries.length === 0) {
-                showEmptyState();
-                return;
-            }
-            
-            let html = '';
-            filteredDeliveries.forEach(delivery => {
-                // Trouver le dépôt
-                const depot = depots.find(d => d.id === delivery.depotId);
-                const depotName = depot ? depot.name : 'Non spécifié';
-                
-                // Formater la date
-                const date = formatDate(delivery.createdAt || delivery.date);
-                
-                // Calculer le total
-                let totalAmount = delivery.totalAmount || 0;
-                if (!totalAmount && delivery.items && Array.isArray(delivery.items)) {
-                    totalAmount = delivery.items.reduce((sum, item) => {
-                        return sum + (item.total || (item.quantity * item.price) || 0);
-                    }, 0);
+            // Données démo pour les dépôts
+            depots = [
+                {
+                    id: "depot1",
+                    name: "Dépôt Principal",
+                    city: "Agadir"
+                },
+                {
+                    id: "depot2", 
+                    name: "Dépôt Secondaire",
+                    city: "Ait Melloul"
                 }
-                
-                // Déterminer le statut
-                const status = delivery.status || 'pending';
-                const statusClass = `status-${status}`;
-                const statusText = getStatusText(status);
-                
-                // Numéro du bon
-                const bonNumber = delivery.deliveryNumber || delivery.bonNumber || delivery.id.substring(0, 8);
-                
-                html += `
-                    <tr>
-                        <td><strong style="color: var(--primary);">${bonNumber}</strong></td>
-                        <td>${delivery.clientName || '--'}</td>
-                        <td>${delivery.clientPhone || '--'}</td>
-                        <td>${date}</td>
-                        <td>${depotName}</td>
-                        <td><strong>${totalAmount.toFixed(2)} DH</strong></td>
-                        <td>
-                            <span class="status-badge ${statusClass}">
-                                ${statusText}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-primary" onclick="showDeliveryPrint('${delivery.id}')" style="padding: 6px 12px; font-size: 12px;">
-                                <i class="fas fa-eye"></i> Voir
-                            </button>
-                        </td>
-                    </tr>
-                `;
+            ];
+            
+            // Données démo pour les clients
+            clients = [
+                {
+                    id: "client1",
+                    name: "Mohamed Ali",
+                    phone: "0612345678",
+                    address: "123 Rue Principale, Agadir"
+                },
+                {
+                    id: "client2",
+                    name: "Fatima Zahra",
+                    phone: "0623456789", 
+                    address: "456 Avenue des Orangers, Ait Melloul"
+                },
+                {
+                    id: "client3",
+                    name: "Karim Bennani",
+                    phone: "0634567890",
+                    address: "789 Boulevard Mohammed V, Inezgane"
+                }
+            ];
+            
+            // Données démo pour les produits
+            products = [
+                {
+                    id: "prod1",
+                    name: "Ciment 50kg",
+                    price: 85.50,
+                    stock: 100,
+                    unit: "Sac"
+                },
+                {
+                    id: "prod2",
+                    name: "Sable fin",
+                    price: 450.00,
+                    stock: 500,
+                    unit: "M3"
+                },
+                {
+                    id: "prod3",
+                    name: "Gravier 5/15",
+                    price: 520.00,
+                    stock: 300,
+                    unit: "M3"
+                },
+                {
+                    id: "prod4",
+                    name: "Brique 20x40",
+                    price: 3.20,
+                    stock: 5000,
+                    unit: "Unité"
+                },
+                {
+                    id: "prod5",
+                    name: "Tuyau PVC 100mm",
+                    price: 125.00,
+                    stock: 50,
+                    unit: "ML"
+                }
+            ];
+            
+            // Données démo pour les livraisons
+            deliveries = [
+                {
+                    id: "del1",
+                    bonNumber: "BL-20240215-001",
+                    bonDate: "2024-02-15",
+                    clientName: "Mohamed Ali",
+                    clientPhone: "0612345678",
+                    clientAddress: "123 Rue Principale, Agadir",
+                    depotId: "depot1",
+                    driver: "Ahmed",
+                    items: [
+                        {
+                            name: "Ciment 50kg",
+                            quantity: 10,
+                            price: 85.50,
+                            total: 855.00
+                        },
+                        {
+                            name: "Sable fin",
+                            quantity: 2,
+                            price: 450.00,
+                            total: 900.00
+                        }
+                    ],
+                    totalAmount: 1755.00,
+                    status: "delivered",
+                    paymentMethod: "cash",
+                    paymentStatus: "paid",
+                    notes: "Livraison urgente",
+                    createdAt: "2024-02-15T10:30:00Z"
+                },
+                {
+                    id: "del2",
+                    bonNumber: "BL-20240214-001",
+                    bonDate: "2024-02-14",
+                    clientName: "Fatima Zahra",
+                    clientPhone: "0623456789",
+                    clientAddress: "456 Avenue des Orangers, Ait Melloul",
+                    depotId: "depot2",
+                    driver: "Hassan",
+                    items: [
+                        {
+                            name: "Brique 20x40",
+                            quantity: 500,
+                            price: 3.20,
+                            total: 1600.00
+                        },
+                        {
+                            name: "Ciment 50kg",
+                            quantity: 5,
+                            price: 85.50,
+                            total: 427.50
+                        }
+                    ],
+                    totalAmount: 2027.50,
+                    status: "processing",
+                    paymentMethod: "check",
+                    paymentStatus: "pending",
+                    notes: "",
+                    createdAt: "2024-02-14T14:15:00Z"
+                }
+            ];
+            
+            updateDepotSelectors();
+            updateDeliveriesTable();
+            updateStats();
+            updateLastUpdateTime();
+            
+            showToast("Mode démo activé. Vous pouvez tester l'application avec des données locales.", "warning");
+        }
+        
+        // ==================== GESTION DU FORMULAIRE ====================
+
+        function openCreateDelivery() {
+            console.log("🔧 Ouverture du formulaire de création...");
+            
+            // Générer un nouveau numéro de bon
+            document.getElementById('newBonNumber').value = generateBonNumber();
+            
+            // Définir la date d'aujourd'hui
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('newBonDate').value = today;
+            
+            // Réinitialiser le formulaire
+            document.getElementById('clientSearch').value = '';
+            document.getElementById('newClientName').value = '';
+            document.getElementById('newClientPhone').value = '';
+            document.getElementById('newClientAddress').value = '';
+            document.getElementById('newDriver').value = '';
+            document.getElementById('newNotes').value = '';
+            document.getElementById('newPaymentMethod').value = 'cash';
+            document.getElementById('newPaymentStatus').value = 'pending';
+            document.getElementById('newDepotSelect').value = '';
+            
+            // Réinitialiser les articles
+            const itemsContainer = document.getElementById('itemsContainer');
+            itemsContainer.innerHTML = `
+                <div class="form-row item-row">
+                    <div class="form-group" style="flex: 3; position: relative;">
+                        <label>Désignation *</label>
+                        <input type="text" class="form-control item-name" 
+                               placeholder="Cliquez pour rechercher un produit..." 
+                               onclick="openProductSearch(this)" readonly>
+                        <button class="search-btn" onclick="openProductSearch(this)" 
+                                style="left: 5px; top: 35px; width: 35px; height: 35px;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Quantité *</label>
+                        <input type="number" class="form-control item-quantity" min="1" value="1" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Prix Unitaire (DH) *</label>
+                        <input type="number" class="form-control item-price" min="0" step="0.01" value="0" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Total (DH)</label>
+                        <input type="text" class="form-control item-total" value="0.00" readonly>
+                    </div>
+                    <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
+                        <button type="button" class="btn" onclick="removeItem(this)" style="background: var(--danger); color: white; padding: 12px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Réinitialiser le total
+            document.getElementById('totalAmount').textContent = '0.00 DH';
+            
+            // Ajouter les événements de calcul
+            attachItemCalculations();
+            
+            // Ouvrir la modal
+            document.getElementById('createModal').style.display = 'flex';
+            console.log("✅ Formulaire de création ouvert");
+        }
+        
+        function closeCreateModal() {
+            document.getElementById('createModal').style.display = 'none';
+        }
+        
+        function addNewItem() {
+            const itemsContainer = document.getElementById('itemsContainer');
+            const newItem = document.createElement('div');
+            newItem.className = 'form-row item-row';
+            newItem.innerHTML = `
+                <div class="form-group" style="flex: 3; position: relative;">
+                    <label>Désignation *</label>
+                    <input type="text" class="form-control item-name" 
+                           placeholder="Cliquez pour rechercher un produit..." 
+                           onclick="openProductSearch(this)" readonly>
+                    <button class="search-btn" onclick="openProductSearch(this)" 
+                            style="left: 5px; top: 35px; width: 35px; height: 35px;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Quantité *</label>
+                    <input type="number" class="form-control item-quantity" min="1" value="1" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Prix Unitaire (DH) *</label>
+                    <input type="number" class="form-control item-price" min="0" step="0.01" value="0" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Total (DH)</label>
+                    <input type="text" class="form-control item-total" value="0.00" readonly>
+                </div>
+                <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
+                    <button type="button" class="btn" onclick="removeItem(this)" style="background: var(--danger); color: white; padding: 12px;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            itemsContainer.appendChild(newItem);
+            attachItemCalculations();
+        }
+        
+        function removeItem(button) {
+            const itemRow = button.closest('.item-row');
+            if (itemRow && document.querySelectorAll('.item-row').length > 1) {
+                itemRow.remove();
+                calculateTotal();
+            } else {
+                showToast("Au moins un article est requis", "warning");
+            }
+        }
+        
+        function attachItemCalculations() {
+            const quantityInputs = document.querySelectorAll('.item-quantity');
+            const priceInputs = document.querySelectorAll('.item-price');
+            
+            quantityInputs.forEach(input => {
+                input.addEventListener('input', calculateItemTotalHandler);
             });
             
-            tableBody.innerHTML = html;
+            priceInputs.forEach(input => {
+                input.addEventListener('input', calculateItemTotalHandler);
+            });
+            
+            // Calculer les totaux initiaux
+            document.querySelectorAll('.item-row').forEach(row => {
+                calculateItemTotalForRow(row);
+            });
         }
         
-        // Obtenir le texte du statut
-        function getStatusText(status) {
-            switch(status) {
-                case 'pending': return 'En attente';
-                case 'processing': return 'En cours';
-                case 'delivered': return 'Livré';
-                case 'cancelled': return 'Annulé';
-                default: return 'Inconnu';
-            }
+        function calculateItemTotalHandler(event) {
+            const itemRow = event.target.closest('.item-row');
+            calculateItemTotalForRow(itemRow);
         }
         
-        // Mettre à jour les statistiques
-        function updateStats() {
-            const selectedDepotId = document.getElementById('depotSelector').value;
-            let filteredDeliveries = deliveries;
+        function calculateItemTotalForRow(itemRow) {
+            if (!itemRow) return;
             
-            if (selectedDepotId) {
-                filteredDeliveries = deliveries.filter(delivery => delivery.depotId === selectedDepotId);
-            }
+            const quantity = parseFloat(itemRow.querySelector('.item-quantity').value) || 0;
+            const price = parseFloat(itemRow.querySelector('.item-price').value) || 0;
+            const total = (quantity * price).toFixed(2);
             
-            const totalDeliveries = filteredDeliveries.length;
-            const totalAmount = filteredDeliveries.reduce((sum, delivery) => {
-                return sum + (delivery.totalAmount || 0);
-            }, 0);
-            
-            const pendingCount = filteredDeliveries.filter(d => d.status === 'pending').length;
-            const deliveredCount = filteredDeliveries.filter(d => d.status === 'delivered').length;
-            
-            document.getElementById('statsInfo').innerHTML = `
-                <span><i class="fas fa-box"></i> ${totalDeliveries} livraisons</span> |
-                <span><i class="fas fa-money-bill-wave"></i> ${totalAmount.toFixed(2)} DH</span> |
-                <span><i class="fas fa-clock"></i> ${pendingCount} en attente</span> |
-                <span><i class="fas fa-check-circle"></i> ${deliveredCount} livrées</span>
-            `;
+            itemRow.querySelector('.item-total').value = total;
+            calculateTotal();
         }
         
-        // ==================== RECHERCHE CLIENTS ====================
+        function calculateTotal() {
+            let grandTotal = 0;
+            const itemRows = document.querySelectorAll('.item-row');
+            
+            itemRows.forEach(row => {
+                const totalInput = row.querySelector('.item-total');
+                const itemTotal = parseFloat(totalInput.value) || 0;
+                grandTotal += itemTotal;
+            });
+            
+            document.getElementById('totalAmount').textContent = `${grandTotal.toFixed(2)} DH`;
+        }
+        
+        // ==================== RECHERCHE CLIENTS ET PRODUITS ====================
         
         function openClientSearch() {
             currentSearchType = 'client';
@@ -1427,19 +1484,14 @@
                 return;
             }
             
-            // Remplir les champs du formulaire
             document.getElementById('newClientName').value = client.name || '';
             document.getElementById('newClientPhone').value = client.phone || '';
             document.getElementById('newClientAddress').value = client.address || '';
             document.getElementById('clientSearch').value = client.name || '';
             
-            // Fermer la modal de recherche
             closeClientSearch();
-            
             showToast(`Client "${client.name}" sélectionné`, "success");
         }
-        
-        // ==================== RECHERCHE PRODUITS ====================
         
         function openProductSearch(inputElement) {
             currentSearchType = 'product';
@@ -1528,187 +1580,25 @@
                 return;
             }
             
-            // Trouver la ligne de l'article
             const itemRow = currentProductInput.closest('.item-row');
             if (!itemRow) {
                 showToast("Erreur: ligne d'article non trouvée", "error");
                 return;
             }
             
-            // Remplir les champs de l'article
             itemRow.querySelector('.item-name').value = product.name || '';
             itemRow.querySelector('.item-price').value = product.price || product.salePrice || 0;
             
-            // Calculer le total
             calculateItemTotalForRow(itemRow);
-            
-            // Fermer la modal de recherche
             closeProductSearch();
-            
             showToast(`Produit "${product.name}" sélectionné`, "success");
         }
         
-        // ==================== CRÉATION DE BON ====================
-        
-        function openCreateDelivery() {
-            // Générer un nouveau numéro de bon
-            document.getElementById('newBonNumber').value = generateBonNumber();
-            
-            // Définir la date d'aujourd'hui
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('newBonDate').value = today;
-            
-            // Réinitialiser le formulaire
-            document.getElementById('clientSearch').value = '';
-            document.getElementById('newClientName').value = '';
-            document.getElementById('newClientPhone').value = '';
-            document.getElementById('newClientAddress').value = '';
-            document.getElementById('newDriver').value = '';
-            document.getElementById('newNotes').value = '';
-            document.getElementById('newPaymentMethod').value = 'cash';
-            document.getElementById('newPaymentStatus').value = 'pending';
-            document.getElementById('newDepotSelect').value = '';
-            
-            // Réinitialiser les articles
-            const itemsContainer = document.getElementById('itemsContainer');
-            itemsContainer.innerHTML = `
-                <div class="form-row item-row">
-                    <div class="form-group" style="flex: 3; position: relative;">
-                        <label>Désignation *</label>
-                        <input type="text" class="form-control item-name" 
-                               placeholder="Cliquez pour rechercher un produit..." 
-                               onclick="openProductSearch(this)" readonly>
-                        <button class="search-btn" onclick="openProductSearch(this)" 
-                                style="left: 5px; top: 35px; width: 35px; height: 35px;">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Quantité *</label>
-                        <input type="number" class="form-control item-quantity" min="1" value="1" required>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Prix Unitaire (DH) *</label>
-                        <input type="number" class="form-control item-price" min="0" step="0.01" value="0" required>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Total (DH)</label>
-                        <input type="text" class="form-control item-total" value="0.00" readonly>
-                    </div>
-                    <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
-                        <button type="button" class="btn" onclick="removeItem(this)" style="background: var(--danger); color: white; padding: 12px;">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Réinitialiser le total
-            document.getElementById('totalAmount').textContent = '0.00 DH';
-            
-            // Ajouter les événements de calcul
-            attachItemCalculations();
-            
-            // Ouvrir la modal
-            document.getElementById('createModal').style.display = 'flex';
-        }
-        
-        function closeCreateModal() {
-            document.getElementById('createModal').style.display = 'none';
-        }
-        
-        function addNewItem() {
-            const itemsContainer = document.getElementById('itemsContainer');
-            const newItem = document.createElement('div');
-            newItem.className = 'form-row item-row';
-            newItem.innerHTML = `
-                <div class="form-group" style="flex: 3; position: relative;">
-                    <label>Désignation *</label>
-                    <input type="text" class="form-control item-name" 
-                           placeholder="Cliquez pour rechercher un produit..." 
-                           onclick="openProductSearch(this)" readonly>
-                    <button class="search-btn" onclick="openProductSearch(this)" 
-                            style="left: 5px; top: 35px; width: 35px; height: 35px;">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Quantité *</label>
-                    <input type="number" class="form-control item-quantity" min="1" value="1" required>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Prix Unitaire (DH) *</label>
-                    <input type="number" class="form-control item-price" min="0" step="0.01" value="0" required>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Total (DH)</label>
-                    <input type="text" class="form-control item-total" value="0.00" readonly>
-                </div>
-                <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
-                    <button type="button" class="btn" onclick="removeItem(this)" style="background: var(--danger); color: white; padding: 12px;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            itemsContainer.appendChild(newItem);
-            attachItemCalculations();
-        }
-        
-        function removeItem(button) {
-            const itemRow = button.closest('.item-row');
-            if (itemRow && document.querySelectorAll('.item-row').length > 1) {
-                itemRow.remove();
-                calculateTotal();
-            } else {
-                showToast("Au moins un article est requis", "warning");
-            }
-        }
-        
-        function attachItemCalculations() {
-            const quantityInputs = document.querySelectorAll('.item-quantity');
-            const priceInputs = document.querySelectorAll('.item-price');
-            
-            quantityInputs.forEach(input => {
-                input.removeEventListener('input', calculateItemTotalHandler);
-                input.addEventListener('input', calculateItemTotalHandler);
-            });
-            
-            priceInputs.forEach(input => {
-                input.removeEventListener('input', calculateItemTotalHandler);
-                input.addEventListener('input', calculateItemTotalHandler);
-            });
-        }
-        
-        function calculateItemTotalHandler(event) {
-            const itemRow = event.target.closest('.item-row');
-            calculateItemTotalForRow(itemRow);
-        }
-        
-        function calculateItemTotalForRow(itemRow) {
-            if (!itemRow) return;
-            
-            const quantity = parseFloat(itemRow.querySelector('.item-quantity').value) || 0;
-            const price = parseFloat(itemRow.querySelector('.item-price').value) || 0;
-            const total = (quantity * price).toFixed(2);
-            
-            itemRow.querySelector('.item-total').value = total;
-            calculateTotal();
-        }
-        
-        function calculateTotal() {
-            let grandTotal = 0;
-            const itemRows = document.querySelectorAll('.item-row');
-            
-            itemRows.forEach(row => {
-                const totalInput = row.querySelector('.item-total');
-                const itemTotal = parseFloat(totalInput.value) || 0;
-                grandTotal += itemTotal;
-            });
-            
-            document.getElementById('totalAmount').textContent = `${grandTotal.toFixed(2)} DH`;
-        }
+        // ==================== ENREGISTREMENT DU BON ====================
         
         function saveNewDelivery() {
+            console.log("💾 Enregistrement du bon en cours...");
+            
             // Validation des champs obligatoires
             const depotId = document.getElementById('newDepotSelect').value;
             const clientName = document.getElementById('newClientName').value.trim();
@@ -1789,32 +1679,431 @@
                 updatedAt: new Date().toISOString()
             };
             
-            try {
-                // Enregistrer dans Firebase
-                const deliveriesRef = database.ref('deliveries');
-                const newDeliveryRef = deliveriesRef.push();
+            console.log("📦 Données du bon:", bonData);
+            
+            if (isDemoMode) {
+                // En mode démo, sauvegarder localement
+                const newId = 'del' + Date.now();
+                deliveries.unshift({
+                    id: newId,
+                    ...bonData
+                });
                 
-                newDeliveryRef.set(bonData)
-                    .then(() => {
-                        showToast("Bon de livraison créé avec succès!", "success");
-                        closeCreateModal();
-                        refreshData();
-                        
-                        // Afficher le bon pour impression
-                        currentDelivery = { ...bonData, id: newDeliveryRef.key };
+                showToast("Bon de livraison créé en mode démo!", "success");
+                closeCreateModal();
+                refreshData();
+                
+                // Afficher le bon pour impression
+                currentDelivery = { ...bonData, id: newId };
+                setTimeout(() => {
+                    showDeliveryPrint(newId);
+                }, 500);
+            } else {
+                try {
+                    // Enregistrer dans Firebase
+                    const deliveriesRef = database.ref('deliveries');
+                    const newDeliveryRef = deliveriesRef.push();
+                    
+                    newDeliveryRef.set(bonData)
+                        .then(() => {
+                            showToast("Bon de livraison créé avec succès!", "success");
+                            closeCreateModal();
+                            refreshData();
+                            
+                            // Afficher le bon pour impression
+                            currentDelivery = { ...bonData, id: newDeliveryRef.key };
+                            setTimeout(() => {
+                                showDeliveryPrint(newDeliveryRef.key);
+                            }, 500);
+                        })
+                        .catch(error => {
+                            console.error("❌ Erreur d'enregistrement Firebase:", error);
+                            showToast("Erreur lors de l'enregistrement du bon", "error");
+                        });
+                    
+                } catch (error) {
+                    console.error("❌ Erreur dans saveNewDelivery:", error);
+                    showToast("Erreur lors de l'enregistrement du bon", "error");
+                }
+            }
+        }
+        
+        // ==================== INITIALISATION FIREBASE ====================
+        
+        function initializeFirebase() {
+            try {
+                console.log("🔧 Tentative de connexion à Firebase...");
+                
+                // Vérifier si Firebase est disponible
+                if (typeof firebase === 'undefined') {
+                    console.error("❌ Firebase SDK non chargé");
+                    throw new Error("Firebase SDK non chargé");
+                }
+                
+                // Vérifier la configuration
+                if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
+                    console.error("❌ Configuration Firebase manquante");
+                    throw new Error("Configuration Firebase manquante");
+                }
+                
+                // Initialiser Firebase
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                    console.log("✅ Firebase initialisé avec succès");
+                } else {
+                    console.log("ℹ️ Firebase déjà initialisé");
+                }
+                
+                database = firebase.database();
+                
+                // Tester la connexion
+                const testRef = database.ref('.info/connected');
+                
+                testRef.on('value', (snapshot) => {
+                    const connected = snapshot.val() === true;
+                    updateConnectionStatus(connected);
+                    
+                    if (connected) {
+                        console.log("✅ Connecté à Firebase Realtime Database");
+                        isDemoMode = false;
+                        loadDepots();
+                    } else {
+                        console.log("❌ Déconnecté de Firebase");
+                        // Basculer en mode démo après 3 secondes
                         setTimeout(() => {
-                            showDeliveryPrint(newDeliveryRef.key);
-                        }, 500);
-                    })
-                    .catch(error => {
-                        console.error("❌ Erreur d'enregistrement:", error);
-                        showToast("Erreur lors de l'enregistrement du bon", "error");
-                    });
+                            if (!isConnected && !isDemoMode) {
+                                console.log("🔄 Passage en mode démo...");
+                                initializeDemoMode();
+                            }
+                        }, 3000);
+                    }
+                }, (error) => {
+                    console.error("❌ Erreur de surveillance de connexion:", error);
+                    updateConnectionStatus(false);
+                    initializeDemoMode();
+                });
+                
+                // Ajouter un timeout pour la connexion
+                setTimeout(() => {
+                    if (!isConnected && !isDemoMode) {
+                        console.log("⏱️ Timeout de connexion - Passage en mode démo");
+                        initializeDemoMode();
+                    }
+                }, 5000);
                 
             } catch (error) {
-                console.error("❌ Erreur dans saveNewDelivery:", error);
-                showToast("Erreur lors de l'enregistrement du bon", "error");
+                console.error("❌ Erreur d'initialisation Firebase:", error);
+                updateConnectionStatus(false);
+                showToast("Erreur de connexion Firebase. Mode démo activé.", "error");
+                initializeDemoMode();
             }
+        }
+        
+        // ==================== CHARGEMENT DES DONNÉES ====================
+        
+        function loadDepots() {
+            if (isDemoMode) {
+                updateDepotSelectors();
+                updateDeliveriesTable();
+                updateStats();
+                return;
+            }
+            
+            try {
+                const depotsRef = database.ref('depots');
+                
+                depotsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    depots = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            depots.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        console.log(`✅ ${depots.length} dépôts chargés`);
+                        updateDepotSelectors();
+                        loadClients();
+                    } else {
+                        console.log("ℹ️ Aucun dépôt trouvé");
+                        showToast("Aucun dépôt trouvé dans la base de données", "warning");
+                        updateDepotSelectors();
+                        loadClients();
+                    }
+                    
+                }, (error) => {
+                    console.error("❌ Erreur de chargement des dépôts:", error);
+                    showToast("Erreur de chargement des dépôts", "error");
+                    updateDepotSelectors();
+                    loadClients();
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur dans loadDepots:", error);
+                updateDepotSelectors();
+                loadClients();
+            }
+        }
+        
+        function loadClients() {
+            if (isDemoMode) return;
+            
+            try {
+                const clientsRef = database.ref('clients');
+                
+                clientsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    clients = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            clients.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        console.log(`✅ ${clients.length} clients chargés`);
+                        loadProducts();
+                    } else {
+                        console.log("ℹ️ Aucun client trouvé");
+                        clients = [];
+                        loadProducts();
+                    }
+                    
+                }, (error) => {
+                    console.error("❌ Erreur de chargement des clients:", error);
+                    clients = [];
+                    loadProducts();
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur dans loadClients:", error);
+                clients = [];
+                loadProducts();
+            }
+        }
+        
+        function loadProducts() {
+            if (isDemoMode) return;
+            
+            try {
+                const productsRef = database.ref('products');
+                
+                productsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    products = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            products.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        console.log(`✅ ${products.length} produits chargés`);
+                        loadDeliveries();
+                    } else {
+                        console.log("ℹ️ Aucun produit trouvé");
+                        products = [];
+                        loadDeliveries();
+                    }
+                    
+                }, (error) => {
+                    console.error("❌ Erreur de chargement des produits:", error);
+                    products = [];
+                    loadDeliveries();
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur dans loadProducts:", error);
+                products = [];
+                loadDeliveries();
+            }
+        }
+        
+        function loadDeliveries() {
+            if (isDemoMode) {
+                updateDeliveriesTable();
+                updateStats();
+                updateLastUpdateTime();
+                return;
+            }
+            
+            try {
+                const deliveriesRef = database.ref('deliveries');
+                
+                deliveriesRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    deliveries = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            deliveries.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        
+                        deliveries.sort((a, b) => {
+                            const dateA = new Date(a.createdAt || a.date || 0);
+                            const dateB = new Date(b.createdAt || b.date || 0);
+                            return dateB - dateA;
+                        });
+                        
+                        console.log(`✅ ${deliveries.length} livraisons chargées`);
+                        updateDeliveriesTable();
+                        updateStats();
+                        updateLastUpdateTime();
+                        
+                    } else {
+                        showEmptyState();
+                    }
+                    
+                }, (error) => {
+                    console.error("❌ Erreur de chargement des livraisons:", error);
+                    showToast("Erreur de chargement des livraisons", "error");
+                    showEmptyState();
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur dans loadDeliveries:", error);
+                showEmptyState();
+            }
+        }
+        
+        function updateDepotSelectors() {
+            const depotSelect = document.getElementById('depotSelector');
+            const newDepotSelect = document.getElementById('newDepotSelect');
+            
+            let options = '<option value="">Tous les dépôts</option>';
+            let newOptions = '<option value="">Sélectionner un dépôt</option>';
+            
+            depots.forEach(depot => {
+                const depotName = depot.name || 'Dépôt sans nom';
+                const depotCity = depot.city ? ` - ${depot.city}` : '';
+                options += `<option value="${depot.id}">${depotName}${depotCity}</option>`;
+                newOptions += `<option value="${depot.id}">${depotName}${depotCity}</option>`;
+            });
+            
+            depotSelect.innerHTML = options;
+            if (newDepotSelect) {
+                newDepotSelect.innerHTML = newOptions;
+            }
+        }
+        
+        function showEmptyState() {
+            const tableBody = document.getElementById('deliveriesTableBody');
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
+                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <h3 style="color: #64748b; margin-bottom: 10px;">Aucune livraison trouvée</h3>
+                        <p style="color: #94a3b8;">${isDemoMode ? 'Mode démo - Créez un nouveau bon pour tester' : 'Commencez par créer un nouveau bon de livraison'}</p>
+                        <button class="btn btn-primary" onclick="openCreateDelivery()" style="margin-top: 15px;">
+                            <i class="fas fa-plus"></i> Créer un bon
+                        </button>
+                    </td>
+                </tr>
+            `;
+            updateStats();
+        }
+        
+        // ==================== GESTION DES LIVRAISONS ====================
+        
+        function updateDeliveriesTable() {
+            const tableBody = document.getElementById('deliveriesTableBody');
+            const selectedDepotId = document.getElementById('depotSelector').value;
+            
+            let filteredDeliveries = deliveries;
+            if (selectedDepotId) {
+                filteredDeliveries = deliveries.filter(delivery => delivery.depotId === selectedDepotId);
+            }
+            
+            if (filteredDeliveries.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            let html = '';
+            filteredDeliveries.forEach(delivery => {
+                const depot = depots.find(d => d.id === delivery.depotId);
+                const depotName = depot ? depot.name : 'Non spécifié';
+                const date = formatDate(delivery.createdAt || delivery.date);
+                let totalAmount = delivery.totalAmount || 0;
+                
+                if (!totalAmount && delivery.items && Array.isArray(delivery.items)) {
+                    totalAmount = delivery.items.reduce((sum, item) => {
+                        return sum + (item.total || (item.quantity * item.price) || 0);
+                    }, 0);
+                }
+                
+                const status = delivery.status || 'pending';
+                const statusClass = `status-${status}`;
+                const statusText = getStatusText(status);
+                const bonNumber = delivery.deliveryNumber || delivery.bonNumber || delivery.id.substring(0, 8);
+                
+                html += `
+                    <tr>
+                        <td><strong style="color: var(--primary);">${bonNumber}</strong></td>
+                        <td>${delivery.clientName || '--'}</td>
+                        <td>${delivery.clientPhone || '--'}</td>
+                        <td>${date}</td>
+                        <td>${depotName}</td>
+                        <td><strong>${totalAmount.toFixed(2)} DH</strong></td>
+                        <td>
+                            <span class="status-badge ${statusClass}">
+                                ${statusText}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" onclick="showDeliveryPrint('${delivery.id}')" style="padding: 6px 12px; font-size: 12px;">
+                                <i class="fas fa-eye"></i> Voir
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        }
+        
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'En attente';
+                case 'processing': return 'En cours';
+                case 'delivered': return 'Livré';
+                case 'cancelled': return 'Annulé';
+                default: return 'Inconnu';
+            }
+        }
+        
+        function updateStats() {
+            const selectedDepotId = document.getElementById('depotSelector').value;
+            let filteredDeliveries = deliveries;
+            
+            if (selectedDepotId) {
+                filteredDeliveries = deliveries.filter(delivery => delivery.depotId === selectedDepotId);
+            }
+            
+            const totalDeliveries = filteredDeliveries.length;
+            const totalAmount = filteredDeliveries.reduce((sum, delivery) => {
+                return sum + (delivery.totalAmount || 0);
+            }, 0);
+            
+            const pendingCount = filteredDeliveries.filter(d => d.status === 'pending').length;
+            const deliveredCount = filteredDeliveries.filter(d => d.status === 'delivered').length;
+            
+            document.getElementById('statsInfo').innerHTML = `
+                <span><i class="fas fa-box"></i> ${totalDeliveries} livraisons</span> |
+                <span><i class="fas fa-money-bill-wave"></i> ${totalAmount.toFixed(2)} DH</span> |
+                <span><i class="fas fa-clock"></i> ${pendingCount} en attente</span> |
+                <span><i class="fas fa-check-circle"></i> ${deliveredCount} livrées</span>
+            `;
         }
         
         // ==================== AFFICHAGE ET IMPRESSION ====================
@@ -1835,66 +2124,61 @@
             
             currentDelivery = delivery;
             
-            // Trouver le dépôt
             const depot = depots.find(d => d.id === delivery.depotId);
             const depotName = depot ? depot.name : 'Non spécifié';
             const depotCity = depot ? depot.city : '';
             
             const container = document.getElementById('a5DeliveryNote');
+            const items = delivery.items || [];
+            
             let grandTotal = 0;
+            items.forEach(item => {
+                const quantity = item.quantity || 0;
+                const price = item.price || 0;
+                const total = item.total || (quantity * price);
+                grandTotal += total;
+            });
             
-            // Générer les lignes des articles
-            let itemsHtml = '';
-            if (delivery.items && Array.isArray(delivery.items) && delivery.items.length > 0) {
-                delivery.items.forEach((item, index) => {
-                    const quantity = item.quantity || 0;
-                    const price = item.price || 0;
-                    const total = item.total || (quantity * price);
-                    grandTotal += total;
-                    
-                    itemsHtml += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td style="text-align:left;">${item.name || 'Produit sans nom'}</td>
-                            <td>${quantity}</td>
-                            <td>${price.toFixed(2)}</td>
-                            <td>${total.toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
-            } else {
-                itemsHtml = `
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 20px;">
-                            Aucun article dans cette livraison
-                        </td>
-                    </tr>
-                `;
-                grandTotal = delivery.totalAmount || 0;
-            }
-            
-            // Numéro du bon
             const bonNumber = delivery.deliveryNumber || delivery.bonNumber || delivery.id.substring(0, 8).toUpperCase();
-            
-            // Date de création
             const creationDate = delivery.createdAt ? new Date(delivery.createdAt) : new Date();
             const formattedDate = creationDate.toLocaleDateString('fr-FR');
             const formattedTime = creationDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             
+            // إنشاء أسطر الجدول بدون أسطر فارغة
+            let itemsHtml = '';
+            const totalItems = items.length;
+            
+            for (let i = 0; i < totalItems; i++) {
+                const item = items[i];
+                const quantity = item.quantity || 0;
+                const price = item.price || 0;
+                const total = item.total || (quantity * price);
+                
+                itemsHtml += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td style="text-align:left; padding-left: 5px !important;">${item.name || 'Produit sans nom'}</td>
+                        <td>${quantity}</td>
+                        <td>${price.toFixed(2)}</td>
+                        <td>${total.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+            
             container.innerHTML = `
                 <div class="print-header">
                     <div style="text-align:left; flex: 1;">
-                        <h3 style="margin:0; color: var(--primary); font-size: 20px;">ETTIJARA ALAAMA SOUSS</h3>
-                        <p style="font-size:10px; margin: 3px 0;">Système de Gestion des Livraisons</p>
-                        <p style="font-size:10px; margin-top: 8px;">
+                        <h3 style="margin:0; color: var(--primary); font-size: 18px; line-height: 1.2;">ETTIJARA ALAAMA SOUSS</h3>
+                        <p style="font-size:9px; margin: 2px 0;">Tél: 0525265980 | Email: ettijaraalaamasouss@gmail.com</p>
+                        <p style="font-size:9px; margin-top: 5px;">
                             <strong>Dépôt:</strong> ${depotName} ${depotCity ? '- ' + depotCity : ''}
                         </p>
                     </div>
-                    <div style="text-align:right; font-size:11px;">
-                        <div style="border: 1px solid #000; padding: 8px; border-radius: 4px;">
-                            <p style="margin: 2px 0;"><strong>N° BON:</strong> ${bonNumber}</p>
-                            <p style="margin: 2px 0;"><strong>DATE:</strong> ${formattedDate}</p>
-                            <p style="margin: 2px 0;"><strong>HEURE:</strong> ${formattedTime}</p>
+                    <div style="text-align:right; font-size:10px;">
+                        <div style="border: 1px solid #000; padding: 6px; border-radius: 4px;">
+                            <p style="margin: 1px 0;"><strong>N° BON:</strong> ${bonNumber}</p>
+                            <p style="margin: 1px 0;"><strong>DATE:</strong> ${formattedDate}</p>
+                            <p style="margin: 1px 0;"><strong>HEURE:</strong> ${formattedTime}</p>
                         </div>
                     </div>
                 </div>
@@ -1903,60 +2187,63 @@
                     <h2>BON DE LIVRAISON</h2>
                 </div>
 
-                <div style="margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
-                    <p style="font-size: 11px; font-weight: bold; margin-bottom: 5px;">INFORMATIONS CLIENT:</p>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
-                        <div>
-                            <p style="margin: 3px 0;"><strong>Nom:</strong> ${delivery.clientName || 'Non spécifié'}</p>
-                        </div>
-                        <div>
-                            <p style="margin: 3px 0;"><strong>Adresse:</strong> ${delivery.clientAddress || 'Non spécifiée'}</p>
-                            ${delivery.driver ? `<p style="margin: 3px 0;"><strong>Livreur:</strong> ${delivery.driver}</p>` : ''}
-                        </div>
+                <!-- Informations client en horizontal -->
+                <div class="client-info-horizontal">
+                    <div class="client-info-column">
+                        <p style="font-weight: bold; font-size: 10px;">INFORMATIONS CLIENT</p>
+                        <p><strong>Nom:</strong> ${delivery.clientName || 'Non spécifié'}</p>
+                        <p><strong>Tél:</strong> ${delivery.clientPhone || 'Non spécifié'}</p>
+                    </div>
+                    <div class="client-info-column">
+                        <p><strong>Adresse:</strong></p>
+                        <p>${delivery.clientAddress || 'Non spécifiée'}</p>
+                    </div>
+                    <div class="client-info-column">
+                        ${delivery.driver ? `<p><strong>Livreur:</strong> ${delivery.driver}</p>` : ''}
+                        ${delivery.paymentMethod ? `
+                            <p><strong>Paiement:</strong> ${delivery.paymentMethod === 'cash' ? 'Espèces' : 
+                                                           delivery.paymentMethod === 'check' ? 'Chèque' : 
+                                                           delivery.paymentMethod === 'card' ? 'Carte Bancaire' : 
+                                                           delivery.paymentMethod === 'transfer' ? 'Virement' : delivery.paymentMethod}
+                            </p>
+                        ` : ''}
                     </div>
                 </div>
 
-                <table class="print-table">
-                    <thead>
-                        <tr>
-                            <th width="5%">N°</th>
-                            <th width="45%">Désignation</th>
-                            <th width="10%">Qté</th>
-                            <th width="15%">Prix Unitaire</th>
-                            <th width="15%">Total (DH)</th>
-                        </tr>
-                    </thead>
-                    <tbody>${itemsHtml}</tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4" style="text-align: right; border: none; padding-top: 12px; font-weight: bold;">
-                                TOTAL À PAYER (DH) :
-                            </td>
-                            <td style="border: 2.5px solid #000; padding-top: 12px; background: #f9f9f9; font-weight: bold; font-size: 12px;">
-                                ${grandTotal.toFixed(2)}
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                <div class="print-table-container">
+                    <table class="print-table">
+                        <thead>
+                            <tr>
+                                <th width="7%">N°</th>
+                                <th width="53%">Désignation</th>
+                                <th width="10%">Qté</th>
+                                <th width="15%">Prix Unitaire (DH)</th>
+                                <th width="15%">Total (DH)</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsHtml}</tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" style="text-align: right; border: none; padding-top: 8px; font-weight: bold; font-size: 10px;">
+                                    TOTAL GÉNÉRAL (DH) :
+                                </td>
+                                <td style="border: 2.5px solid #000; padding-top: 8px; background: #f9f9f9; font-weight: bold; font-size: 11px;">
+                                    ${grandTotal.toFixed(2)}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
                 
                 ${delivery.notes ? `
-                <div style="margin-top: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 10px;">
+                <div style="margin-top: 8px; padding: 5px; border: 1px solid #ddd; border-radius: 3px; font-size: 9px;">
                     <strong>Remarques:</strong> ${delivery.notes}
-                </div>
-                ` : ''}
-                
-                ${delivery.paymentMethod ? `
-                <div style="margin-top: 10px; font-size: 11px;">
-                    <strong>Mode de paiement:</strong> ${delivery.paymentMethod === 'cash' ? 'Espèces' : 
-                                                       delivery.paymentMethod === 'check' ? 'Chèque' : 
-                                                       delivery.paymentMethod === 'card' ? 'Carte Bancaire' : 
-                                                       delivery.paymentMethod === 'transfer' ? 'Virement' : delivery.paymentMethod}
                 </div>
                 ` : ''}
 
                 <div class="print-footer">
                     <div style="text-align: center;">
-                        <p style="font-size: 11px; margin-bottom: 5px;">Le client</p>
+                        <p style="font-size: 10px; margin-bottom: 3px;">Le client</p>
                         <div class="sig-box">
                             Signature
                         </div>
@@ -1969,14 +2256,17 @@
                     </div>
 
                     <div style="text-align: center;">
-                        <p style="font-size: 11px; margin-bottom: 5px;">La société</p>
+                        <p style="font-size: 10px; margin-bottom: 3px;">La société</p>
                         <div class="sig-box">
                             Signature & Cachet
                         </div>
                     </div>
                 </div>
                 
-                <div style="margin-top: 30px; font-size: 8px; text-align: center; color: #666; border-top: 1px dashed #ddd; padding-top: 10px;">
+                <div style="margin-top: 20px; font-size: 7px; text-align: center; color: #666; border-top: 1px dashed #ddd; padding-top: 8px;">
+                    <p>
+                        <strong>ETTIJARA ALAAMA SOUSS</strong> | Tél: 0525265980 | Email: ettijaraalaamasouss@gmail.com
+                    </p>
                     <p>
                         Document généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} 
                         | ETTIJARA ALAAMA SOUSS © ${new Date().getFullYear()} | Ce document est émis par ordinateur, signature non requise.
@@ -1987,7 +2277,6 @@
             document.getElementById('printModal').style.display = 'flex';
         }
         
-        // Imprimer le bon de livraison
         function printDeliveryNote() {
             if (!currentDelivery) {
                 showToast("Aucun bon à imprimer", "error");
@@ -1997,7 +2286,6 @@
             window.print();
         }
         
-        // Fermer la modal
         function closeModal() {
             document.getElementById('printModal').style.display = 'none';
             currentDelivery = null;
@@ -2006,6 +2294,14 @@
         // ==================== UTILITAIRES ====================
         
         function refreshData() {
+            if (isDemoMode) {
+                showToast("Mode démo - Données locales actualisées", "info");
+                updateDeliveriesTable();
+                updateStats();
+                updateLastUpdateTime();
+                return;
+            }
+            
             document.getElementById('deliveriesTableBody').innerHTML = `
                 <tr>
                     <td colspan="8" class="loading">
@@ -2022,39 +2318,12 @@
         // ==================== INITIALISATION ====================
         
         document.addEventListener('DOMContentLoaded', function() {
-            if (database) {
-                // Surveiller la connexion Firebase
-                const connectedRef = database.ref(".info/connected");
-                
-                connectedRef.on("value", function(snap) {
-                    const connected = snap.val() === true;
-                    updateConnectionStatus(connected);
-                    
-                    if (connected) {
-                        console.log("✅ Connecté à Firebase Realtime Database");
-                        loadDepots();
-                    } else {
-                        console.log("❌ Déconnecté de Firebase");
-                        document.getElementById('deliveriesTableBody').innerHTML = `
-                            <tr>
-                                <td colspan="8" style="text-align: center; padding: 40px; color: #ef4444;">
-                                    <i class="fas fa-wifi-slash" style="font-size: 48px; margin-bottom: 15px;"></i>
-                                    <h3 style="color: #dc2626; margin-bottom: 10px;">Connexion perdue</h3>
-                                    <p style="color: #f87171;">Impossible de se connecter à la base de données</p>
-                                    <button class="btn btn-primary" onclick="refreshData()" style="margin-top: 15px;">
-                                        <i class="fas fa-sync-alt"></i> Réessayer
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    }
-                });
-                
-            } else {
-                showToast("Erreur d'initialisation de Firebase", "error");
-            }
+            console.log("🚀 Application en cours de démarrage...");
             
-            // Écouter les changements de sélection de dépôt
+            // Essayer de se connecter à Firebase
+            initializeFirebase();
+            
+            // Configurer les écouteurs d'événements
             document.getElementById('depotSelector').addEventListener('change', function() {
                 updateDeliveriesTable();
                 updateStats();
@@ -2062,7 +2331,6 @@
             
             // Raccourcis clavier
             document.addEventListener('keydown', function(e) {
-                // Échap pour fermer les modals
                 if (e.key === 'Escape') {
                     closeModal();
                     closeCreateModal();
@@ -2070,13 +2338,11 @@
                     closeProductSearch();
                 }
                 
-                // Ctrl+R pour actualiser
                 if (e.ctrlKey && e.key === 'r') {
                     e.preventDefault();
                     refreshData();
                 }
                 
-                // Ctrl+N pour nouveau bon
                 if (e.ctrlKey && e.key === 'n') {
                     e.preventDefault();
                     openCreateDelivery();
@@ -2097,6 +2363,14 @@
                     }
                 });
             });
+            
+            // Vérifier la connexion après 2 secondes
+            setTimeout(() => {
+                if (!isConnected && !isDemoMode) {
+                    console.log("🔄 Passage automatique en mode démo...");
+                    initializeDemoMode();
+                }
+            }, 2000);
         });
     </script>
 </body>
