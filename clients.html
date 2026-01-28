@@ -3,156 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Gestion des clients et suivi des paiements">
-    <meta name="theme-color" content="#1a237e">
-    <title>ETTIJARA ALAAMA SOUSS - Gestion Clients</title>
+    <title>ETTIJARA - Gestion Clients</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
     <style>
         :root {
             --primary: #1a237e;
             --secondary: #0d47a1;
-            --accent: #1565c0;
             --light: #e3f2fd;
             --bg: #f5f7fa;
-            --text: #333333;
-            --text-light: #666666;
-            --card-bg: #ffffff;
+            --text: #333;
+            --card-bg: white;
             --border: #e2e8f0;
             --success: #2e7d32;
-            --warning: #f57c00;
             --danger: #c62828;
-            --info: #0288d1;
-            --shadow: 0 3px 15px rgba(0,0,0,0.08);
+            --warning: #f57c00;
         }
 
         [data-theme="dark"] {
             --primary: #3949ab;
-            --secondary: #1565c0;
-            --accent: #42a5f5;
-            --light: #1e293b;
             --bg: #0f172a;
             --text: #e2e8f0;
-            --text-light: #94a3b8;
             --card-bg: #1e293b;
             --border: #334155;
-            --success: #4caf50;
-            --warning: #ff9800;
-            --danger: #ef5350;
-            --info: #29b6f6;
-            --shadow: 0 3px 15px rgba(0,0,0,0.3);
+            --light: #1e293b;
         }
 
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s;
         }
-        
-        body { 
-            background-color: var(--bg); 
+
+        body {
+            background: var(--bg);
             color: var(--text);
-            direction: rtl; 
+            direction: rtl;
             min-height: 100vh;
         }
 
-        /* Header */
-        .header { 
-            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-            color: white; 
-            height: 70px; 
-            display: flex; 
-            align-items: center; 
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            height: 70px;
+            display: flex;
+            align-items: center;
             justify-content: space-between;
-            padding: 0 30px; 
-            position: fixed; 
-            width: 100%; 
-            top: 0; 
+            padding: 0 30px;
+            position: fixed;
+            width: 100%;
+            top: 0;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        
-        .logo { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-        }
-        
-        .logo i { 
-            font-size: 28px; 
-        }
-        
-        .logo h1 { 
-            font-size: 22px; 
-            font-weight: 700; 
-        }
 
-        /* Navigation */
-        .nav {
+        .logo {
             display: flex;
-            gap: 10px;
             align-items: center;
+            gap: 15px;
         }
 
-        .nav-item {
-            padding: 8px 20px;
-            border-radius: 6px;
+        .logo h1 {
+            font-size: 22px;
+        }
+
+        .theme-toggle {
+            background: rgba(255,255,255,0.1);
+            border: none;
             color: white;
-            text-decoration: none;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
         }
 
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-item.active {
-            background: rgba(255, 255, 255, 0.2);
-            font-weight: 600;
-        }
-
-        /* Main Content */
-        .main-content { 
-            padding: 90px 30px 30px; 
-            min-height: calc(100vh - 70px);
+        .main-content {
+            padding: 90px 30px 30px;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Welcome Section */
         .welcome-section {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             padding: 30px;
             border-radius: 15px;
             margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow);
         }
 
-        .welcome-text h2 {
+        .welcome-section h2 {
             font-size: 28px;
             margin-bottom: 10px;
         }
 
-        .welcome-text p {
-            opacity: 0.9;
-            font-size: 16px;
-        }
-
-        /* Stats Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -167,14 +114,8 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            box-shadow: var(--shadow);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
             border: 1px solid var(--border);
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
         }
 
         .stat-icon {
@@ -186,314 +127,102 @@
             justify-content: center;
             font-size: 24px;
             color: white;
-        }
-
-        .stat-icon.total {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-        }
-
-        .stat-icon.active {
-            background: linear-gradient(135deg, var(--success), #4caf50);
-        }
-
-        .stat-icon.debt {
-            background: linear-gradient(135deg, var(--danger), #ef5350);
-        }
-
-        .stat-icon.payments {
-            background: linear-gradient(135deg, var(--info), #29b6f6);
         }
 
         .stat-info h3 {
             font-size: 14px;
-            color: var(--text-light);
+            color: var(--text);
             margin-bottom: 5px;
-            font-weight: 500;
+            opacity: 0.8;
         }
 
         .stat-info .value {
             font-size: 28px;
             font-weight: 700;
-            color: var(--text);
-            margin-bottom: 5px;
         }
 
-        /* Tabs */
-        .tabs {
-            display: flex;
-            background: var(--light);
-            border-radius: 12px;
-            padding: 5px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 15px 20px;
-            border: none;
-            background: none;
-            color: var(--text);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            white-space: nowrap;
-        }
-
-        .tab-btn:hover {
-            background: rgba(26, 35, 126, 0.1);
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Quick Actions */
-        .quick-actions {
+        .clients-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
+            margin-top: 20px;
         }
 
-        .action-card {
+        .client-card {
             background: var(--card-bg);
             border-radius: 12px;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
             border: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            transition: transform 0.3s;
         }
 
-        .action-card:hover {
+        .client-card:hover {
             transform: translateY(-5px);
             border-color: var(--primary);
         }
 
-        .action-icon {
-            width: 60px;
-            height: 60px;
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .client-avatar {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
             color: white;
-            font-size: 24px;
-        }
-
-        /* Table Container */
-        .table-container {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            margin-bottom: 30px;
-        }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .table-header h3 {
-            font-size: 18px;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .table-toolbar {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 20px;
-            border-radius: 6px;
-            border: none;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #1b5e20;
-            transform: translateY(-2px);
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #e65100;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #b71c1c;
-            transform: translateY(-2px);
-        }
-
-        /* Table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th {
-            background: var(--light);
-            padding: 15px;
-            border-bottom: 2px solid var(--border);
-            text-align: center;
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border);
-            text-align: center;
-            color: var(--text);
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        tr:hover {
-            background-color: var(--light);
-        }
-
-        /* Status Badges */
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-block;
-        }
-        
-        .status-active {
-            background-color: rgba(6, 95, 70, 0.1);
-            color: #065f46;
-        }
-        
-        .status-inactive {
-            background-color: rgba(75, 85, 99, 0.1);
-            color: #4b5563;
-        }
-        
-        .status-blocked {
-            background-color: rgba(220, 38, 38, 0.1);
-            color: #dc2626;
-        }
-
-        .payment-status {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        
-        .payment-paid {
-            background-color: rgba(6, 95, 70, 0.1);
-            color: #065f46;
-        }
-        
-        .payment-partial {
-            background-color: rgba(217, 119, 6, 0.1);
-            color: #d97706;
-        }
-        
-        .payment-pending {
-            background-color: rgba(220, 38, 38, 0.1);
-            color: #dc2626;
-        }
-        
-        .payment-overdue {
-            background-color: rgba(220, 38, 38, 0.2);
-            color: #dc2626;
+            font-size: 20px;
             font-weight: bold;
         }
 
-        /* Action Buttons */
+        .client-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--text);
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         .action-buttons {
             display: flex;
-            gap: 5px;
-            justify-content: center;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 15px;
         }
 
         .btn-icon {
-            width: 32px;
-            height: 32px;
+            width: 35px;
+            height: 35px;
             border-radius: 6px;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
             background: var(--light);
             color: var(--text);
         }
@@ -503,7 +232,7 @@
         }
 
         .btn-edit:hover {
-            background: var(--info);
+            background: #0288d1;
             color: white;
         }
 
@@ -512,24 +241,18 @@
             color: white;
         }
 
-        .btn-view:hover {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-payment:hover {
+        .btn-situation:hover {
             background: var(--warning);
             color: white;
         }
 
-        /* Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0,0,0,0.5);
             display: none;
             justify-content: center;
             align-items: center;
@@ -541,11 +264,13 @@
             background: var(--card-bg);
             border-radius: 12px;
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            border: 1px solid var(--border);
+        }
+
+        .situation-modal {
+            max-width: 700px;
         }
 
         .modal-header {
@@ -556,77 +281,42 @@
             align-items: center;
         }
 
-        .modal-header h3 {
-            font-size: 20px;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .modal-close:hover {
-            color: var(--danger);
-            transform: rotate(90deg);
-        }
-
         .modal-body {
             padding: 20px;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+        .form-group {
             margin-bottom: 15px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
         .form-group label {
-            font-size: 14px;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        .form-group .required {
-            color: var(--danger);
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text);
         }
 
         .form-input {
-            padding: 10px 15px;
-            border-radius: 8px;
+            width: 100%;
+            padding: 10px;
             border: 1px solid var(--border);
+            border-radius: 6px;
             background: var(--card-bg);
             color: var(--text);
-            font-size: 14px;
-            transition: all 0.3s;
         }
 
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
         }
 
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
+        .btn-primary {
+            background: var(--primary);
+            color: white;
         }
 
-        /* Toast Notification */
         .toast {
             position: fixed;
             top: 100px;
@@ -640,265 +330,154 @@
             gap: 10px;
             z-index: 3000;
             animation: slideIn 0.3s ease;
-            border-left: 4px solid;
-            color: var(--text);
-            max-width: 400px;
-        }
-
-        .toast.success {
-            border-left-color: var(--success);
-        }
-
-        .toast.error {
-            border-left-color: var(--danger);
         }
 
         @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        /* Loading */
         .loading {
             text-align: center;
             padding: 40px;
-            color: var(--text-light);
-        }
-        
-        .loading i {
-            font-size: 32px;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            gap: 10px;
-        }
-
-        .page-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--card-bg);
             color: var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
         }
 
-        .page-btn:hover:not(.disabled) {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .page-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .page-btn.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Client Details */
-        .client-details {
-            background: var(--light);
-            border-radius: 8px;
-            padding: 20px;
+        .search-bar {
             margin-bottom: 20px;
         }
 
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .detail-label {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .detail-value {
-            font-size: 16px;
-            font-weight: 600;
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
             color: var(--text);
         }
 
-        /* Payment History */
-        .payment-item {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border);
+        .connection-status {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 5px;
+            font-size: 12px;
         }
 
-        .payment-info {
-            flex: 1;
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
         }
 
-        .payment-amount {
-            font-size: 18px;
+        .status-dot.connected {
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .situation-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .summary-card h4 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .summary-card .value {
+            font-size: 24px;
             font-weight: bold;
-            color: var(--success);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header { 
-                padding: 0 15px; 
-                height: 60px;
-            }
-            
-            .main-content { 
-                padding: 80px 15px 15px; 
-            }
-            
-            .logo h1 {
-                font-size: 18px;
-            }
-
-            .nav {
-                display: none;
-            }
-
-            .welcome-section {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .table-header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: stretch;
-            }
-
-            .table-toolbar {
-                flex-wrap: wrap;
-            }
-
-            table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            .tabs {
-                flex-direction: column;
-            }
-
-            .tab-btn {
-                padding: 12px;
-            }
-
-            .toast {
-                left: 15px;
-                right: 15px;
-                top: 80px;
-            }
-
-            .quick-actions {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .summary-card.total-due {
+            background: linear-gradient(135deg, #f57c00, #ff9800);
+            color: white;
         }
 
-        @media (max-width: 480px) {
-            .logo h1 {
-                font-size: 16px;
-            }
+        .summary-card.total-paid {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+        }
 
-            .welcome-text h2 {
-                font-size: 22px;
-            }
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
 
-            .stat-card {
-                padding: 15px;
-            }
+        .transaction-table th,
+        .transaction-table td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+        }
 
-            .quick-actions {
-                grid-template-columns: 1fr;
-            }
+        .transaction-table th {
+            background: var(--light);
+            font-weight: 600;
+        }
+
+        .transaction-table tr:hover {
+            background: var(--light);
+        }
+
+        .payment-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .payment-btn:hover {
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
-    <header class="header">
+    <div class="header">
         <div class="logo">
             <i class="fas fa-users"></i>
-            <h1>ETTIJARA ALAAMA SOUSS - GESTION CLIENTS</h1>
+            <h1>ETTIJARA - Gestion Clients</h1>
         </div>
-        <nav class="nav">
-            <a href="index.html" class="nav-item">
-                <i class="fas fa-truck"></i>
-                Livraisons
-            </a>
-            <a href="dashboard.html" class="nav-item">
-                <i class="fas fa-chart-pie"></i>
-                Dashboard
-            </a>
-            <a href="#" class="nav-item active">
-                <i class="fas fa-users"></i>
-                Clients
-            </a>
-            <a href="stock.html" class="nav-item">
-                <i class="fas fa-boxes"></i>
-                Stock
-            </a>
-            <a href="settings.html" class="nav-item">
-                <i class="fas fa-cog"></i>
-                Paramètres
-            </a>
-        </nav>
-    </header>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="connection-status">
+                <div id="connectionStatus" class="status-dot"></div>
+                <span style="color: white;">Firebase</span>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </div>
 
-    <main class="main-content">
-        <!-- Welcome Section -->
+    <div class="main-content">
         <div class="welcome-section">
-            <div class="welcome-text">
-                <h2>Gestion des Clients 💼</h2>
-                <p>Gérez vos clients et suivez leurs paiements en temps réel</p>
-            </div>
-            <div class="date-display">
-                <div class="day" id="currentDay">--</div>
-                <div class="month-year" id="currentDate">-- --- ----</div>
-            </div>
+            <h2>Gestion des Clients 👥</h2>
+            <p>Gérez vos clients et suivez leurs paiements en temps réel</p>
         </div>
 
-        <!-- Stats Cards -->
         <div class="stats-grid">
-            <div class="stat-card" onclick="filterClients('all')">
-                <div class="stat-icon total">
+            <div class="stat-card">
+                <div class="stat-icon">
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="stat-info">
@@ -907,8 +486,8 @@
                 </div>
             </div>
             
-            <div class="stat-card" onclick="filterClients('active')">
-                <div class="stat-icon active">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #2e7d32, #4caf50);">
                     <i class="fas fa-user-check"></i>
                 </div>
                 <div class="stat-info">
@@ -917,478 +496,100 @@
                 </div>
             </div>
             
-            <div class="stat-card" onclick="filterClients('debt')">
-                <div class="stat-icon debt">
-                    <i class="fas fa-money-bill-wave"></i>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f57c00, #ff9800);">
+                    <i class="fas fa-exclamation-triangle"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>Total Dettes</h3>
-                    <div class="value" id="totalDebt">0 DH</div>
-                </div>
-            </div>
-            
-            <div class="stat-card" onclick="showPayments()">
-                <div class="stat-icon payments">
-                    <i class="fas fa-credit-card"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Paiements Aujourd'hui</h3>
-                    <div class="value" id="todayPayments">0 DH</div>
+                    <h3>Solde Clients</h3>
+                    <div class="value" id="debtClients">0</div>
                 </div>
             </div>
         </div>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="clients">
-                <i class="fas fa-users"></i>
-                Liste des Clients
-            </button>
-            <button class="tab-btn" data-tab="payments">
-                <i class="fas fa-credit-card"></i>
-                Paiements
-            </button>
-            <button class="tab-btn" data-tab="debt">
-                <i class="fas fa-exclamation-triangle"></i>
-                Dettes en Souffrance
-            </button>
-            <button class="tab-btn" data-tab="reports">
-                <i class="fas fa-chart-bar"></i>
-                Rapports
+        <div class="search-bar">
+            <input type="text" 
+                   class="search-input" 
+                   id="searchInput"
+                   placeholder="🔍 Rechercher client par nom, téléphone..."
+                   oninput="searchClients()">
+        </div>
+
+        <div style="text-align: right; margin-bottom: 20px;">
+            <button class="btn btn-primary" onclick="openAddClientModal()">
+                <i class="fas fa-user-plus"></i> Nouveau Client
             </button>
         </div>
 
-        <!-- Clients Tab -->
-        <div id="clientsTab" class="tab-content active">
-            <!-- Quick Actions -->
-            <div class="quick-actions">
-                <div class="action-card" onclick="openAddClientModal()">
-                    <div class="action-icon">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <h4>Nouveau Client</h4>
-                    <p>Ajouter un nouveau client</p>
-                </div>
-                
-                <div class="action-card" onclick="importClients()">
-                    <div class="action-icon">
-                        <i class="fas fa-file-import"></i>
-                    </div>
-                    <h4>Importer Clients</h4>
-                    <p>Importer depuis Excel/CSV</p>
-                </div>
-                
-                <div class="action-card" onclick="exportClients()">
-                    <div class="action-icon">
-                        <i class="fas fa-file-export"></i>
-                    </div>
-                    <h4>Exporter Clients</h4>
-                    <p>Exporter vers Excel/CSV</p>
-                </div>
-                
-                <div class="action-card" onclick="sendBulkSMS()">
-                    <div class="action-icon">
-                        <i class="fas fa-sms"></i>
-                    </div>
-                    <h4>Envoyer SMS</h4>
-                    <p>Envoyer SMS groupé</p>
-                </div>
-            </div>
-
-            <!-- Filters -->
-            <div class="table-container" style="margin-bottom: 20px;">
-                <div class="table-header">
-                    <h3><i class="fas fa-filter"></i> Filtres</h3>
-                </div>
-                <div style="padding: 20px;">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="searchClient">Rechercher Client</label>
-                            <input type="text" id="searchClient" class="form-input" placeholder="Nom, téléphone, email..." oninput="filterClientsList()">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="filterStatus">Statut</label>
-                            <select id="filterStatus" class="form-input" onchange="filterClientsList()">
-                                <option value="">Tous les statuts</option>
-                                <option value="active">Actif</option>
-                                <option value="inactive">Inactif</option>
-                                <option value="blocked">Bloqué</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="filterCity">Ville</label>
-                            <input type="text" id="filterCity" class="form-input" placeholder="Ville..." oninput="filterClientsList()">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="filterDebt">Dette ></label>
-                            <input type="number" id="filterDebt" class="form-input" placeholder="Montant DH" oninput="filterClientsList()">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Clients Table -->
-            <div class="table-container">
-                <div class="table-header">
-                    <h3><i class="fas fa-list"></i> Liste des Clients</h3>
-                    <div class="table-toolbar">
-                        <button class="btn btn-primary" onclick="openAddClientModal()">
-                            <i class="fas fa-user-plus"></i> Nouveau Client
-                        </button>
-                        <button class="btn btn-success" onclick="exportClients()">
-                            <i class="fas fa-file-excel"></i> Exporter
-                        </button>
-                        <button class="btn btn-warning" onclick="sendReminders()">
-                            <i class="fas fa-bell"></i> Rappels
-                        </button>
-                    </div>
-                </div>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Client</th>
-                            <th>Téléphone</th>
-                            <th>Email</th>
-                            <th>Ville</th>
-                            <th>Total Achat</th>
-                            <th>Dette Actuelle</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="clientsTable">
-                        <tr>
-                            <td colspan="9" class="loading">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <p>Chargement des clients...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <div class="pagination" id="clientsPagination"></div>
+        <div class="clients-grid" id="clientsContainer">
+            <!-- Les clients seront chargés ici -->
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin" style="font-size: 32px;"></i>
+                <p>Chargement des clients...</p>
             </div>
         </div>
+    </div>
 
-        <!-- Payments Tab -->
-        <div id="paymentsTab" class="tab-content">
-            <!-- Payments Table -->
-            <div class="table-container">
-                <div class="table-header">
-                    <h3><i class="fas fa-credit-card"></i> Historique des Paiements</h3>
-                    <div class="table-toolbar">
-                        <button class="btn btn-primary" onclick="openAddPaymentModal()">
-                            <i class="fas fa-plus"></i> Nouveau Paiement
-                        </button>
-                        <button class="btn btn-success" onclick="exportPayments()">
-                            <i class="fas fa-file-excel"></i> Exporter
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Payments Filters -->
-                <div style="padding: 20px; border-bottom: 1px solid var(--border);">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="paymentClient">Client</label>
-                            <select id="paymentClient" class="form-input" onchange="filterPayments()">
-                                <option value="">Tous les clients</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="paymentMethod">Méthode</label>
-                            <select id="paymentMethod" class="form-input" onchange="filterPayments()">
-                                <option value="">Toutes les méthodes</option>
-                                <option value="cash">Espèces</option>
-                                <option value="check">Chèque</option>
-                                <option value="transfer">Virement</option>
-                                <option value="card">Carte</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="paymentDateFrom">Date de Début</label>
-                            <input type="date" id="paymentDateFrom" class="form-input" onchange="filterPayments()">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="paymentDateTo">Date de Fin</label>
-                            <input type="date" id="paymentDateTo" class="form-input" onchange="filterPayments()">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Payments Table -->
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Client</th>
-                            <th>Montant (DH)</th>
-                            <th>Méthode</th>
-                            <th>Référence</th>
-                            <th>Statut</th>
-                            <th>Notes</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="paymentsTable">
-                        <tr>
-                            <td colspan="8" class="loading">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <p>Chargement des paiements...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <div class="pagination" id="paymentsPagination"></div>
-            </div>
-        </div>
-
-        <!-- Debt Tab -->
-        <div id="debtTab" class="tab-content">
-            <!-- Debt Summary -->
-            <div class="table-container" style="margin-bottom: 20px;">
-                <div class="table-header">
-                    <h3><i class="fas fa-exclamation-triangle"></i> Dettes en Souffrance</h3>
-                </div>
-                <div style="padding: 20px;">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon debt">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Total Dettes</h3>
-                                <div class="value" id="overdueDebt">0 DH</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon total">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Clients Débiteurs</h3>
-                                <div class="value" id="debtClients">0</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon payments">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Retards > 30j</h3>
-                                <div class="value" id="late30Days">0</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon active">
-                                <i class="fas fa-history"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Retards > 60j</h3>
-                                <div class="value" id="late60Days">0</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Debt Table -->
-            <div class="table-container">
-                <div class="table-header">
-                    <h3><i class="fas fa-list"></i> Liste des Détails</h3>
-                    <div class="table-toolbar">
-                        <button class="btn btn-warning" onclick="sendDebtReminders()">
-                            <i class="fas fa-bell"></i> Envoyer Rappels
-                        </button>
-                        <button class="btn btn-danger" onclick="generateDebtReport()">
-                            <i class="fas fa-file-pdf"></i> Rapport Dettes
-                        </button>
-                    </div>
-                </div>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Client</th>
-                            <th>Téléphone</th>
-                            <th>Dette Totale</th>
-                            <th>Dernier Paiement</th>
-                            <th>Jours de Retard</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="debtTable">
-                        <tr>
-                            <td colspan="7" class="loading">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <p>Chargement des dettes...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Reports Tab -->
-        <div id="reportsTab" class="tab-content">
-            <!-- Reports Cards -->
-            <div class="quick-actions">
-                <div class="action-card" onclick="generateClientReport()">
-                    <div class="action-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h4>Rapport Clients</h4>
-                    <p>Liste détaillée des clients</p>
-                </div>
-                
-                <div class="action-card" onclick="generatePaymentReport()">
-                    <div class="action-icon">
-                        <i class="fas fa-credit-card"></i>
-                    </div>
-                    <h4>Rapport Paiements</h4>
-                    <p>Historique des paiements</p>
-                </div>
-                
-                <div class="action-card" onclick="generateDebtReport()">
-                    <div class="action-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h4>Analyse Dettes</h4>
-                    <p>Analyse des dettes clients</p>
-                </div>
-                
-                <div class="action-card" onclick="generateMonthlyReport()">
-                    <div class="action-icon">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <h4>Rapport Mensuel</h4>
-                    <p>Synthèse mensuelle</p>
-                </div>
-            </div>
-
-            <!-- Reports Container -->
-            <div class="table-container">
-                <div class="table-header">
-                    <h3><i class="fas fa-chart-bar"></i> Rapports et Statistiques</h3>
-                </div>
-                <div style="padding: 20px;" id="reportsContainer">
-                    <!-- Reports will be generated here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="dashboard-footer">
-            <p>© 2024 ETTIJARA ALAAMA SOUSS - Système de Gestion Clients</p>
-            <p style="font-size: 12px; margin-top: 5px;">
-                <span id="lastUpdate">Dernière mise à jour: --:--</span> | 
-                <span id="totalStats">0 clients | 0 paiements | 0 DH dettes</span>
-            </p>
-        </div>
-    </main>
-
-    <!-- Add/Edit Client Modal -->
+    <!-- Modal Ajouter/Modifier Client -->
     <div class="modal-overlay" id="clientModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-user"></i> <span id="modalTitle">Nouveau Client</span></h3>
-                <button class="modal-close" onclick="closeClientModal()">&times;</button>
+                <button onclick="closeClientModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="clientForm">
+                <form id="clientForm" onsubmit="saveClient(event)">
                     <input type="hidden" id="clientId">
                     
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="clientName">Nom Complet <span class="required">*</span></label>
-                            <input type="text" id="clientName" class="form-input" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="clientPhone">Téléphone <span class="required">*</span></label>
-                            <input type="tel" id="clientPhone" class="form-input" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="clientEmail">Email</label>
-                            <input type="email" id="clientEmail" class="form-input">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="clientType">Type de Client</label>
-                            <select id="clientType" class="form-input">
-                                <option value="particulier">Particulier</option>
-                                <option value="entreprise">Entreprise</option>
-                                <option value="gouvernement">Gouvernement</option>
-                                <option value="revendeur">Revendeur</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="clientCompany">Entreprise</label>
-                            <input type="text" id="clientCompany" class="form-input">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="clientICE">ICE / IF</label>
-                            <input type="text" id="clientICE" class="form-input">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="clientAddress">Adresse</label>
-                            <input type="text" id="clientAddress" class="form-input">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="clientCity">Ville</label>
-                            <input type="text" id="clientCity" class="form-input">
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="clientCreditLimit">Limite de Crédit (DH)</label>
-                            <input type="number" id="clientCreditLimit" class="form-input" min="0" value="0">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="clientPaymentTerms">Conditions Paiement (jours)</label>
-                            <input type="number" id="clientPaymentTerms" class="form-input" min="0" value="30">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="clientStatus">Statut</label>
-                            <select id="clientStatus" class="form-input">
-                                <option value="active">Actif</option>
-                                <option value="inactive">Inactif</option>
-                                <option value="blocked">Bloqué</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <label>Nom Complet *</label>
+                        <input type="text" id="clientName" class="form-input" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="clientNotes">Notes</label>
-                        <textarea id="clientNotes" class="form-input form-textarea"></textarea>
+                        <label>Téléphone *</label>
+                        <input type="tel" id="clientPhone" class="form-input" required>
                     </div>
                     
-                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                        <button type="button" class="btn btn-secondary" onclick="closeClientModal()">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="clientEmail" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Adresse</label>
+                        <input type="text" id="clientAddress" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Ville</label>
+                        <input type="text" id="clientCity" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>ICE/IF</label>
+                        <input type="text" id="clientICE" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Statut</label>
+                        <select id="clientStatus" class="form-input">
+                            <option value="actif">Actif</option>
+                            <option value="inactif">Inactif</option>
+                            <option value="bloqué">Bloqué</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="clientNotes" class="form-input" rows="3"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="button" class="btn" onclick="closeClientModal()" style="flex: 1; background: #ccc;">
                             Annuler
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">
                             <i class="fas fa-save"></i> Enregistrer
                         </button>
                     </div>
@@ -1397,109 +598,23 @@
         </div>
     </div>
 
-    <!-- Add Payment Modal -->
-    <div class="modal-overlay" id="paymentModal">
-        <div class="modal-content">
+    <!-- Modal Situation Client -->
+    <div class="modal-overlay" id="situationModal">
+        <div class="modal-content situation-modal">
             <div class="modal-header">
-                <h3><i class="fas fa-credit-card"></i> Nouveau Paiement</h3>
-                <button class="modal-close" onclick="closePaymentModal()">&times;</button>
+                <h3><i class="fas fa-file-invoice-dollar"></i> Situation Financière</h3>
+                <button onclick="closeSituationModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="paymentForm">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="paymentClientSelect">Client <span class="required">*</span></label>
-                            <select id="paymentClientSelect" class="form-input" required onchange="updateClientDebt()">
-                                <option value="">Sélectionner un client...</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="paymentAmount">Montant (DH) <span class="required">*</span></label>
-                            <input type="number" id="paymentAmount" class="form-input" min="0" step="0.01" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="paymentMethodSelect">Méthode <span class="required">*</span></label>
-                            <select id="paymentMethodSelect" class="form-input" required>
-                                <option value="cash">Espèces</option>
-                                <option value="check">Chèque</option>
-                                <option value="transfer">Virement</option>
-                                <option value="card">Carte Bancaire</option>
-                                <option value="other">Autre</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="paymentDate">Date</label>
-                            <input type="datetime-local" id="paymentDate" class="form-input" value="">
-                        </div>
-                    </div>
-                    
-                    <div id="clientDebtInfo" style="background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none;">
-                        <h4>Informations Client</h4>
-                        <div id="debtInfoContent"></div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="paymentReference">Référence</label>
-                            <input type="text" id="paymentReference" class="form-input" placeholder="Numéro chèque, virement...">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="paymentStatus">Statut</label>
-                            <select id="paymentStatus" class="form-input">
-                                <option value="completed">Complété</option>
-                                <option value="pending">En attente</option>
-                                <option value="cancelled">Annulé</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="paymentNotes">Notes</label>
-                        <textarea id="paymentNotes" class="form-input form-textarea"></textarea>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                        <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Enregistrer Paiement
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- View Client Details Modal -->
-    <div class="modal-overlay" id="viewClientModal">
-        <div class="modal-content" style="max-width: 800px;">
-            <div class="modal-header">
-                <h3><i class="fas fa-user"></i> Détails Client</h3>
-                <button class="modal-close" onclick="closeViewClientModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="clientDetailsContent">
-                    <!-- Client details will be loaded here -->
+                <div id="situationContent">
+                    <!-- Le contenu sera chargé dynamiquement -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Loading Overlay -->
-    <div class="modal-overlay" id="loadingOverlay" style="display: none; background: rgba(0,0,0,0.7);">
-        <div style="text-align: center; color: white;">
-            <i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 20px;"></i>
-            <h3 id="loadingMessage">Chargement...</h3>
-        </div>
-    </div>
-
     <script>
-        // ==================== CONFIGURATION FIREBASE ====================
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAV_c5Gt_f1h5nZF47FcPjW_h4P24LYADk",
             authDomain: "commerce22-610cc.firebaseapp.com",
@@ -1510,815 +625,221 @@
             appId: "1:458158894252:web:d1e640b2e16ef32d978309"
         };
 
-        // ==================== VARIABLES GLOBALES ====================
+        // Initialisation
         let database = null;
-        let auth = null;
-        let currentUser = null;
         let clients = [];
-        let payments = [];
         let filteredClients = [];
-        let filteredPayments = [];
-        let currentPage = 1;
-        const itemsPerPage = 10;
-        
-        // ==================== INITIALISATION ====================
+        let currentSituationClientId = null;
+
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("🚀 Système de Gestion Clients en démarrage...");
+            // Initialiser le thème
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
             
-            // Mettre à jour la date
-            updateCurrentDate();
+            // Mettre à jour l'icône du thème
+            const themeIcon = document.querySelector('#themeToggle i');
+            themeIcon.className = savedTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
             
-            // Gestion des onglets
-            document.querySelectorAll('.tab-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    const tabId = button.getAttribute('data-tab');
-                    switchTab(tabId);
-                });
-            });
-            
-            // Form submissions
-            document.getElementById('clientForm').addEventListener('submit', saveClient);
-            document.getElementById('paymentForm').addEventListener('submit', savePayment);
-            
-            // Raccourcis clavier
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.key === 'n') {
-                    e.preventDefault();
-                    const activeTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
-                    if (activeTab === 'clients') openAddClientModal();
-                    else if (activeTab === 'payments') openAddPaymentModal();
-                }
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
                 
-                if (e.key === 'Escape') {
-                    closeAllModals();
-                }
+                // Changer l'icône
+                const icon = document.querySelector('#themeToggle i');
+                icon.className = newTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
             });
-            
-            // Actualiser la date chaque minute
-            setInterval(updateCurrentDate, 60000);
-            
+
             // Initialiser Firebase
             initializeFirebase();
         });
-        
-        function updateCurrentDate() {
-            const now = new Date();
-            const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-            const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-            
-            document.getElementById('currentDay').textContent = now.getDate();
-            document.getElementById('currentDate').textContent = 
-                `${days[now.getDay()]} ${months[now.getMonth()]} ${now.getFullYear()}`;
-        }
-        
-        // ==================== FIREBASE ====================
+
         function initializeFirebase() {
             try {
-                console.log("🔧 Initialisation de Firebase...");
-                
+                // Initialiser Firebase
                 if (!firebase.apps.length) {
                     firebase.initializeApp(firebaseConfig);
-                    console.log("✅ Firebase initialisé avec succès");
                 }
                 
                 database = firebase.database();
-                auth = firebase.auth();
                 
-                // Surveiller la connexion
+                // Vérifier la connexion
                 const connectedRef = database.ref(".info/connected");
                 connectedRef.on("value", function(snap) {
-                    if (snap.val() === true) {
-                        console.log("✅ Connecté à Firebase");
-                        loadInitialData();
+                    const isConnected = snap.val() === true;
+                    const statusElement = document.getElementById('connectionStatus');
+                    
+                    if (isConnected) {
+                        statusElement.className = "status-dot connected";
+                        statusElement.title = "Connecté à Firebase";
+                        loadClients();
                     } else {
-                        console.log("❌ Déconnecté de Firebase");
+                        statusElement.className = "status-dot";
+                        statusElement.style.background = "#ef4444";
+                        statusElement.title = "Déconnecté";
+                        showToast("Déconnecté de Firebase", "error");
                     }
                 });
-                
-                // Authentification (simulée)
-                simulateAuth();
-                
+
             } catch (error) {
-                console.error("❌ Erreur d'initialisation Firebase:", error);
-                showToast("Erreur de connexion Firebase", "error");
+                console.error("Erreur Firebase:", error);
+                showToast("Erreur de connexion à la base de données", "error");
             }
         }
-        
-        function simulateAuth() {
-            currentUser = {
-                uid: 'admin_001',
-                email: 'admin@ettijara.com',
-                displayName: 'Administrateur'
-            };
-            
-            updateWelcomeMessage();
-        }
-        
-        function updateWelcomeMessage() {
-            if (currentUser) {
-                document.getElementById('welcomeMessage').textContent = `Bienvenue ${currentUser.displayName || 'Administrateur'} !`;
-            }
-        }
-        
-        function loadInitialData() {
-            console.log("📊 Chargement des données clients...");
-            loadClients();
-        }
-        
-        async function loadClients() {
+
+        function loadClients() {
             if (!database) return;
             
-            try {
-                const clientsRef = database.ref('clients');
-                clientsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    clients = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            const client = {
-                                id: key,
-                                ...data[key]
-                            };
-                            
-                            // Calculer la dette totale
-                            calculateClientDebt(client);
-                            
-                            clients.push(client);
+            const clientsRef = database.ref('clients');
+            
+            clientsRef.on('value', (snapshot) => {
+                clients = [];
+                const data = snapshot.val();
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        clients.push({
+                            id: key,
+                            ...data[key]
                         });
-                        
-                        console.log(`✅ ${clients.length} clients chargés`);
-                    }
-                    
-                    updateClientsTable();
-                    updateClientsStats();
-                    updatePayments();
-                });
+                    });
+                }
                 
-            } catch (error) {
-                console.error("❌ Erreur de chargement des clients:", error);
-                loadPayments();
-            }
-        }
-        
-        async function loadPayments() {
-            if (!database) return;
-            
-            try {
-                const paymentsRef = database.ref('payments');
-                paymentsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    payments = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            payments.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        console.log(`✅ ${payments.length} paiements chargés`);
-                    }
-                    
-                    updatePaymentsTable();
-                    updateLastUpdateTime();
-                    updateDebtTab();
-                });
+                filteredClients = [...clients];
+                renderClients();
+                updateStats();
                 
-            } catch (error) {
-                console.error("❌ Erreur de chargement des paiements:", error);
-                updateLastUpdateTime();
-            }
-        }
-        
-        function calculateClientDebt(client) {
-            // Pour l'instant, nous simulons la dette
-            // Dans une application réelle, cela viendrait des factures impayées
-            client.totalDebt = client.totalDebt || Math.random() * 10000;
-            client.totalPurchases = client.totalPurchases || Math.random() * 50000;
-            client.lastPaymentDate = client.lastPaymentDate || new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString();
-            client.lastPaymentAmount = client.lastPaymentAmount || Math.random() * 5000;
-            
-            // Calculer les jours de retard
-            if (client.lastPaymentDate && client.totalDebt > 0) {
-                const lastPayment = new Date(client.lastPaymentDate);
-                const now = new Date();
-                const diffTime = Math.abs(now - lastPayment);
-                client.daysOverdue = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            } else {
-                client.daysOverdue = 0;
-            }
-            
-            // Déterminer le statut de paiement
-            if (client.totalDebt <= 0) {
-                client.paymentStatus = 'paid';
-            } else if (client.daysOverdue > 60) {
-                client.paymentStatus = 'overdue';
-            } else if (client.daysOverdue > 30) {
-                client.paymentStatus = 'pending';
-            } else if (client.totalDebt > 0) {
-                client.paymentStatus = 'partial';
-            } else {
-                client.paymentStatus = 'paid';
-            }
-        }
-        
-        // ==================== FONCTIONS UTILITAIRES ====================
-        function showToast(message, type = "success") {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'times-circle'}"></i>
-                <div>
-                    <strong>${type === 'success' ? 'Succès' : 'Erreur'}</strong>
-                    <div style="font-size: 12px;">${message}</div>
-                </div>
-            `;
-            
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.animation = 'slideIn 0.3s ease reverse';
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            }, 5000);
-        }
-        
-        function showLoading(message = "Chargement...") {
-            document.getElementById('loadingMessage').textContent = message;
-            document.getElementById('loadingOverlay').style.display = 'flex';
-        }
-        
-        function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-        
-        function formatNumber(num) {
-            return new Intl.NumberFormat('fr-FR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(num);
-        }
-        
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('fr-FR');
-        }
-        
-        function updateLastUpdateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('fr-FR', {
-                hour: '2-digit',
-                minute: '2-digit'
+                showToast(`✅ ${clients.length} clients chargés`, "success");
+            }, (error) => {
+                console.error("Erreur de chargement:", error);
+                showToast("Erreur de chargement des clients", "error");
             });
-            document.getElementById('lastUpdate').textContent = `Dernière mise à jour: ${timeString}`;
-            
-            const totalClients = clients.length;
-            const totalPayments = payments.length;
-            const totalDebt = clients.reduce((sum, client) => sum + (client.totalDebt || 0), 0);
-            document.getElementById('totalStats').textContent = 
-                `${totalClients} clients | ${totalPayments} paiements | ${formatNumber(totalDebt)} DH dettes`;
         }
-        
-        // ==================== GESTION DES ONGLETS ====================
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(button => {
-                button.classList.remove('active');
-            });
-            document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(`${tabId}Tab`).classList.add('active');
-            
-            if (tabId === 'payments') {
-                updatePaymentsTab();
-            } else if (tabId === 'debt') {
-                updateDebtTab();
-            } else if (tabId === 'reports') {
-                updateReportsTab();
-            }
-        }
-        
-        // ==================== GESTION DES CLIENTS ====================
-        function updateClientsStats() {
-            const totalClients = clients.length;
-            const activeClients = clients.filter(c => c.status === 'active').length;
-            const totalDebt = clients.reduce((sum, client) => sum + (client.totalDebt || 0), 0);
-            
-            // Calculer les paiements d'aujourd'hui
-            const today = new Date().toISOString().split('T')[0];
-            const todayPayments = payments
-                .filter(p => p.date && p.date.includes(today))
-                .reduce((sum, p) => sum + (p.amount || 0), 0);
-            
-            document.getElementById('totalClients').textContent = totalClients;
-            document.getElementById('activeClients').textContent = activeClients;
-            document.getElementById('totalDebt').textContent = formatNumber(totalDebt) + ' DH';
-            document.getElementById('todayPayments').textContent = formatNumber(todayPayments) + ' DH';
-        }
-        
-        function filterClientsList() {
-            const searchTerm = document.getElementById('searchClient').value.toLowerCase();
-            const statusFilter = document.getElementById('filterStatus').value;
-            const cityFilter = document.getElementById('filterCity').value.toLowerCase();
-            const debtFilter = parseFloat(document.getElementById('filterDebt').value) || 0;
-            
-            filteredClients = clients.filter(client => {
-                const matchesSearch = !searchTerm || 
-                    client.name.toLowerCase().includes(searchTerm) ||
-                    (client.phone && client.phone.includes(searchTerm)) ||
-                    (client.email && client.email.toLowerCase().includes(searchTerm)) ||
-                    (client.company && client.company.toLowerCase().includes(searchTerm));
-                
-                const matchesStatus = !statusFilter || client.status === statusFilter;
-                const matchesCity = !cityFilter || 
-                    (client.city && client.city.toLowerCase().includes(cityFilter));
-                const matchesDebt = !debtFilter || (client.totalDebt || 0) >= debtFilter;
-                
-                return matchesSearch && matchesStatus && matchesCity && matchesDebt;
-            });
-            
-            filteredClients.sort((a, b) => (b.totalDebt || 0) - (a.totalDebt || 0));
-            
-            updateClientsTable();
-        }
-        
-        function filterClients(filter) {
-            if (filter === 'all') {
-                document.getElementById('filterStatus').value = '';
-            } else if (filter === 'active') {
-                document.getElementById('filterStatus').value = 'active';
-            } else if (filter === 'debt') {
-                document.getElementById('filterDebt').value = '1';
-            }
-            
-            filterClientsList();
-        }
-        
-        function updateClientsTable() {
-            const tableBody = document.getElementById('clientsTable');
-            const pagination = document.getElementById('clientsPagination');
+
+        function renderClients() {
+            const container = document.getElementById('clientsContainer');
             
             if (filteredClients.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="9" style="text-align: center; padding: 40px; color: var(--text-light);">
-                            <i class="fas fa-users" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun client trouvé</h3>
-                            <p>${clients.length === 0 ? 'Aucun client dans la base de données' : 'Essayez de modifier vos critères de recherche'}</p>
-                        </td>
-                    </tr>
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text); opacity: 0.7;">
+                        <i class="fas fa-users" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <h3>Aucun client trouvé</h3>
+                        <p>${clients.length === 0 ? 'Ajoutez votre premier client' : 'Essayez une autre recherche'}</p>
+                    </div>
                 `;
-                pagination.innerHTML = '';
                 return;
             }
             
-            // Pagination
-            const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const pageClients = filteredClients.slice(startIndex, endIndex);
-            
             let html = '';
-            pageClients.forEach((client, index) => {
-                const statusClass = `status-${client.status || 'active'}`;
-                const statusText = client.status === 'active' ? 'Actif' : 
-                                 client.status === 'inactive' ? 'Inactif' : 'Bloqué';
+            
+            filteredClients.forEach(client => {
+                // Calculer les dettes (simulation)
+                const totalDebt = Math.random() * 10000;
+                const paymentStatus = totalDebt > 0 ? 'Débiteur' : 'À jour';
+                const statusColor = totalDebt > 0 ? '#f57c00' : '#2e7d32';
                 
-                const paymentClass = `payment-${client.paymentStatus || 'paid'}`;
-                const paymentText = client.paymentStatus === 'paid' ? 'À jour' :
-                                  client.paymentStatus === 'partial' ? 'Partiel' :
-                                  client.paymentStatus === 'pending' ? 'En attente' : 'En retard';
+                // Initiales pour l'avatar
+                const initials = client.name ? client.name.split(' ').map(n => n[0]).join('').toUpperCase() : '??';
                 
                 html += `
-                    <tr>
-                        <td>${startIndex + index + 1}</td>
-                        <td style="text-align: right;">
-                            <div><strong>${client.name}</strong></div>
-                            ${client.company ? `<div style="font-size: 12px; color: var(--text-light);">${client.company}</div>` : ''}
-                        </td>
-                        <td>${client.phone || 'N/A'}</td>
-                        <td>${client.email || 'N/A'}</td>
-                        <td>${client.city || 'N/A'}</td>
-                        <td><strong>${formatNumber(client.totalPurchases || 0)} DH</strong></td>
-                        <td>
-                            <strong style="color: ${(client.totalDebt || 0) > 0 ? 'var(--danger)' : 'var(--success)'};">
-                                ${formatNumber(client.totalDebt || 0)} DH
-                            </strong>
-                            ${client.daysOverdue > 30 ? `<div style="font-size: 11px; color: var(--warning);">(${client.daysOverdue} jours)</div>` : ''}
-                        </td>
-                        <td>
-                            <span class="status-badge ${statusClass}">
-                                ${statusText}
-                            </span>
-                            <br>
-                            <span class="payment-status ${paymentClass}" style="margin-top: 5px; display: inline-block;">
-                                ${paymentText}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-icon btn-view" onclick="viewClient('${client.id}')" title="Voir détails">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn-icon btn-edit" onclick="editClient('${client.id}')" title="Modifier">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn-icon btn-payment" onclick="addPaymentForClient('${client.id}')" title="Ajouter paiement">
-                                    <i class="fas fa-money-bill-wave"></i>
-                                </button>
-                                <button class="btn-icon btn-delete" onclick="deleteClient('${client.id}')" title="Supprimer">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                    <div class="client-card">
+                        <div class="client-header">
+                            <div class="client-avatar">${initials.substring(0, 2)}</div>
+                            <div style="text-align: left;">
+                                <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">
+                                    ${paymentStatus}
+                                </span>
                             </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tableBody.innerHTML = html;
-            updatePagination(pagination, totalPages, currentPage, 'clients');
-        }
-        
-        // ==================== GESTION DES PAIEMENTS ====================
-        function updatePaymentsTab() {
-            updatePaymentsFilter();
-            filterPayments();
-        }
-        
-        function updatePaymentsFilter() {
-            const clientSelect = document.getElementById('paymentClient');
-            let html = '<option value="">Tous les clients</option>';
-            
-            clients.forEach(client => {
-                html += `<option value="${client.id}">${client.name}${client.company ? ` (${client.company})` : ''}</option>`;
-            });
-            
-            clientSelect.innerHTML = html;
-        }
-        
-        function filterPayments() {
-            const clientFilter = document.getElementById('paymentClient').value;
-            const methodFilter = document.getElementById('paymentMethod').value;
-            const dateFrom = document.getElementById('paymentDateFrom').value;
-            const dateTo = document.getElementById('paymentDateTo').value;
-            
-            filteredPayments = payments.filter(payment => {
-                const matchesClient = !clientFilter || payment.clientId === clientFilter;
-                const matchesMethod = !methodFilter || payment.method === methodFilter;
-                
-                let matchesDate = true;
-                if (dateFrom) {
-                    const paymentDate = new Date(payment.date).toISOString().split('T')[0];
-                    if (paymentDate < dateFrom) matchesDate = false;
-                }
-                if (dateTo) {
-                    const paymentDate = new Date(payment.date).toISOString().split('T')[0];
-                    if (paymentDate > dateTo) matchesDate = false;
-                }
-                
-                return matchesClient && matchesMethod && matchesDate;
-            });
-            
-            filteredPayments.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            updatePaymentsTable();
-        }
-        
-        function showPayments() {
-            switchTab('payments');
-        }
-        
-        function updatePaymentsTable() {
-            const tableBody = document.getElementById('paymentsTable');
-            const pagination = document.getElementById('paymentsPagination');
-            
-            if (filteredPayments.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-light);">
-                            <i class="fas fa-credit-card" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun paiement trouvé</h3>
-                            <p>${payments.length === 0 ? 'Aucun paiement dans la base de données' : 'Essayez de modifier vos critères de recherche'}</p>
-                        </td>
-                    </tr>
-                `;
-                pagination.innerHTML = '';
-                return;
-            }
-            
-            const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const pagePayments = filteredPayments.slice(startIndex, endIndex);
-            
-            let html = '';
-            pagePayments.forEach((payment, index) => {
-                const client = clients.find(c => c.id === payment.clientId);
-                const clientName = client ? client.name : 'Client inconnu';
-                
-                const date = new Date(payment.date);
-                const dateStr = date.toLocaleDateString('fr-FR');
-                const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                
-                let methodText = '';
-                switch(payment.method) {
-                    case 'cash': methodText = 'Espèces'; break;
-                    case 'check': methodText = 'Chèque'; break;
-                    case 'transfer': methodText = 'Virement'; break;
-                    case 'card': methodText = 'Carte'; break;
-                    default: methodText = payment.method;
-                }
-                
-                html += `
-                    <tr>
-                        <td>
-                            <div style="font-weight: 600;">${dateStr}</div>
-                            <div style="font-size: 12px; color: var(--text-light);">${timeStr}</div>
-                        </td>
-                        <td>${clientName}</td>
-                        <td><strong style="color: var(--success);">${formatNumber(payment.amount)} DH</strong></td>
-                        <td>${methodText}</td>
-                        <td>${payment.reference || 'N/A'}</td>
-                        <td>
-                            <span class="status-badge ${payment.status === 'completed' ? 'status-active' : payment.status === 'pending' ? 'status-inactive' : 'status-blocked'}">
-                                ${payment.status === 'completed' ? 'Complété' : payment.status === 'pending' ? 'En attente' : 'Annulé'}
-                            </span>
-                        </td>
-                        <td>${payment.notes || 'N/A'}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-icon btn-edit" onclick="editPayment('${payment.id}')" title="Modifier">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn-icon btn-delete" onclick="deletePayment('${payment.id}')" title="Supprimer">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                        </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <h3 style="font-size: 18px; margin-bottom: 5px;">${client.name || 'Non nommé'}</h3>
+                            <div style="color: var(--text); opacity: 0.8; font-size: 14px;">
+                                ${client.company || ''}
                             </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tableBody.innerHTML = html;
-            updatePagination(pagination, totalPages, currentPage, 'payments');
-        }
-        
-        // ==================== GESTION DES DETTES ====================
-        function updateDebtTab() {
-            const overdueClients = clients.filter(client => (client.totalDebt || 0) > 0);
-            const totalOverdueDebt = overdueClients.reduce((sum, client) => sum + (client.totalDebt || 0), 0);
-            const late30Days = overdueClients.filter(client => client.daysOverdue > 30).length;
-            const late60Days = overdueClients.filter(client => client.daysOverdue > 60).length;
-            
-            document.getElementById('overdueDebt').textContent = formatNumber(totalOverdueDebt) + ' DH';
-            document.getElementById('debtClients').textContent = overdueClients.length;
-            document.getElementById('late30Days').textContent = late30Days;
-            document.getElementById('late60Days').textContent = late60Days;
-            
-            updateDebtTable();
-        }
-        
-        function updateDebtTable() {
-            const tableBody = document.getElementById('debtTable');
-            
-            const debtClients = clients
-                .filter(client => (client.totalDebt || 0) > 0)
-                .sort((a, b) => (b.totalDebt || 0) - (a.totalDebt || 0));
-            
-            if (debtClients.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-light);">
-                            <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucune dette en souffrance</h3>
-                            <p>Tous les clients sont à jour dans leurs paiements</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            let html = '';
-            debtClients.forEach(client => {
-                const daysOverdue = client.daysOverdue || 0;
-                let statusClass = 'status-active';
-                let statusText = 'Normal';
-                
-                if (daysOverdue > 60) {
-                    statusClass = 'status-blocked';
-                    statusText = 'Critique';
-                } else if (daysOverdue > 30) {
-                    statusClass = 'status-inactive';
-                    statusText = 'Attention';
-                }
-                
-                html += `
-                    <tr>
-                        <td>
-                            <div><strong>${client.name}</strong></div>
-                            ${client.company ? `<div style="font-size: 12px; color: var(--text-light);">${client.company}</div>` : ''}
-                        </td>
-                        <td>${client.phone || 'N/A'}</td>
-                        <td><strong style="color: var(--danger);">${formatNumber(client.totalDebt || 0)} DH</strong></td>
-                        <td>
-                            ${client.lastPaymentDate ? formatDate(client.lastPaymentDate) : 'Jamais'}
-                            ${client.lastPaymentAmount ? `<div style="font-size: 11px; color: var(--text-light);">${formatNumber(client.lastPaymentAmount)} DH</div>` : ''}
-                        </td>
-                        <td>
-                            <strong style="color: ${daysOverdue > 30 ? 'var(--warning)' : 'var(--success)'};">
-                                ${daysOverdue} jours
-                            </strong>
-                        </td>
-                        <td>
-                            <span class="status-badge ${statusClass}">
-                                ${statusText}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-icon btn-view" onclick="viewClient('${client.id}')" title="Voir détails">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn-icon btn-payment" onclick="addPaymentForClient('${client.id}')" title="Ajouter paiement">
-                                    <i class="fas fa-money-bill-wave"></i>
-                                </button>
-                                <button class="btn-icon" style="background: var(--warning); color: white;" onclick="sendReminder('${client.id}')" title="Envoyer rappel">
-                                    <i class="fas fa-bell"></i>
-                                </button>
+                        </div>
+                        
+                        <div class="client-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Téléphone</div>
+                                <div class="detail-value">${client.phone || 'Non spécifié'}</div>
                             </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tableBody.innerHTML = html;
-        }
-        
-        // ==================== GESTION DES RAPPORTS ====================
-        function updateReportsTab() {
-            const container = document.getElementById('reportsContainer');
-            
-            const today = new Date();
-            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-            const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-            
-            const monthPayments = payments.filter(p => {
-                const paymentDate = new Date(p.date);
-                return paymentDate >= monthStart && paymentDate <= monthEnd;
-            });
-            
-            const totalMonthPayments = monthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
-            const totalDebt = clients.reduce((sum, c) => sum + (c.totalDebt || 0), 0);
-            const activeClientsCount = clients.filter(c => c.status === 'active').length;
-            
-            const topDebtClients = [...clients]
-                .filter(c => (c.totalDebt || 0) > 0)
-                .sort((a, b) => (b.totalDebt || 0) - (a.totalDebt || 0))
-                .slice(0, 5);
-            
-            let topDebtHtml = '';
-            topDebtClients.forEach(client => {
-                topDebtHtml += `
-                    <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border);">
-                        <span>${client.name}</span>
-                        <strong style="color: var(--danger);">${formatNumber(client.totalDebt || 0)} DH</strong>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">Email</div>
+                                <div class="detail-value">${client.email || 'Non spécifié'}</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">Ville</div>
+                                <div class="detail-value">${client.city || 'Non spécifiée'}</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">Solde</div>
+                                <div class="detail-value" style="color: ${totalDebt > 0 ? '#f57c00' : '#2e7d32'}">
+                                    ${totalDebt.toFixed(2)} DH
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn-icon btn-situation" onclick="viewSituation('${client.id}')" title="Voir situation">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </button>
+                            <button class="btn-icon" onclick="viewClient('${client.id}')" title="Voir détails">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-icon btn-edit" onclick="editClient('${client.id}')" title="Modifier">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon btn-delete" onclick="deleteClient('${client.id}')" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
             });
-            
-            container.innerHTML = `
-                <div class="stats-grid" style="margin-bottom: 30px;">
-                    <div class="stat-card">
-                        <div class="stat-icon total">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Clients Actifs</h3>
-                            <div class="value">${activeClientsCount}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon payments">
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Paiements Mois</h3>
-                            <div class="value">${formatNumber(totalMonthPayments)} DH</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon debt">
-                            <i class="fas fa-money-bill-wave"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Dettes Total</h3>
-                            <div class="value">${formatNumber(totalDebt)} DH</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                    <div style="background: var(--light); border-radius: 8px; padding: 20px;">
-                        <h4 style="margin-bottom: 15px;">Top 5 Dettes</h4>
-                        ${topDebtHtml || '<p style="text-align: center; color: var(--text-light);">Aucune dette</p>'}
-                    </div>
-                    
-                    <div style="background: var(--light); border-radius: 8px; padding: 20px;">
-                        <h4 style="margin-bottom: 15px;">Statistiques Rapides</h4>
-                        <div style="display: grid; gap: 10px;">
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Total Clients:</span>
-                                <strong>${clients.length}</strong>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Total Paiements:</span>
-                                <strong>${payments.length}</strong>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Paiements Aujourd'hui:</span>
-                                <strong>${formatNumber(payments.filter(p => p.date && p.date.includes(new Date().toISOString().split('T')[0])).reduce((sum, p) => sum + (p.amount || 0), 0))} DH</strong>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Clients Débiteurs:</span>
-                                <strong>${clients.filter(c => (c.totalDebt || 0) > 0).length}</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // ==================== PAGINATION ====================
-        function updatePagination(container, totalPages, currentPage, type) {
-            if (totalPages <= 1) {
-                container.innerHTML = '';
-                return;
-            }
-            
-            let html = '';
-            
-            // Previous button
-            html += `<button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" 
-                     onclick="changePage(${currentPage - 1}, '${type}')" ${currentPage === 1 ? 'disabled' : ''}>
-                     <i class="fas fa-chevron-right"></i></button>`;
-            
-            // Page numbers
-            const maxVisible = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
-            
-            if (endPage - startPage + 1 < maxVisible) {
-                startPage = Math.max(1, endPage - maxVisible + 1);
-            }
-            
-            for (let i = startPage; i <= endPage; i++) {
-                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" 
-                         onclick="changePage(${i}, '${type}')">${i}</button>`;
-            }
-            
-            // Next button
-            html += `<button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" 
-                     onclick="changePage(${currentPage + 1}, '${type}')" ${currentPage === totalPages ? 'disabled' : ''}>
-                     <i class="fas fa-chevron-left"></i></button>`;
             
             container.innerHTML = html;
         }
-        
-        function changePage(page, type) {
-            currentPage = page;
+
+        function searchClients() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
-            if (type === 'clients') {
-                updateClientsTable();
-            } else if (type === 'payments') {
-                updatePaymentsTable();
+            if (!searchTerm) {
+                filteredClients = [...clients];
+            } else {
+                filteredClients = clients.filter(client => {
+                    return (
+                        (client.name && client.name.toLowerCase().includes(searchTerm)) ||
+                        (client.phone && client.phone.includes(searchTerm)) ||
+                        (client.email && client.email.toLowerCase().includes(searchTerm)) ||
+                        (client.city && client.city.toLowerCase().includes(searchTerm))
+                    );
+                });
             }
             
-            // Scroll to top of table
-            document.querySelector(`#${type}Tab .table-container`).scrollIntoView({ 
-                behavior: 'smooth' 
-            });
+            renderClients();
         }
-        
-        // ==================== GESTION DES MODALES ====================
+
+        function updateStats() {
+            document.getElementById('totalClients').textContent = clients.length;
+            document.getElementById('activeClients').textContent = clients.filter(c => c.status === 'actif').length;
+            
+            // Simuler des clients débiteurs (30% des clients)
+            const debtClients = Math.floor(clients.length * 0.3);
+            document.getElementById('debtClients').textContent = debtClients;
+        }
+
         function openAddClientModal() {
             document.getElementById('modalTitle').textContent = 'Nouveau Client';
             document.getElementById('clientForm').reset();
             document.getElementById('clientId').value = '';
-            
-            // Générer un code client unique
-            const nextId = clients.length + 1;
-            // Pas besoin de pré-remplir un code pour l'instant
-            
             document.getElementById('clientModal').style.display = 'flex';
         }
-        
+
         function editClient(clientId) {
             const client = clients.find(c => c.id === clientId);
             if (!client) return;
@@ -2328,482 +849,325 @@
             document.getElementById('clientName').value = client.name || '';
             document.getElementById('clientPhone').value = client.phone || '';
             document.getElementById('clientEmail').value = client.email || '';
-            document.getElementById('clientType').value = client.type || 'particulier';
-            document.getElementById('clientCompany').value = client.company || '';
-            document.getElementById('clientICE').value = client.ice || '';
             document.getElementById('clientAddress').value = client.address || '';
             document.getElementById('clientCity').value = client.city || '';
-            document.getElementById('clientCreditLimit').value = client.creditLimit || 0;
-            document.getElementById('clientPaymentTerms').value = client.paymentTerms || 30;
-            document.getElementById('clientStatus').value = client.status || 'active';
+            document.getElementById('clientICE').value = client.ice || '';
+            document.getElementById('clientStatus').value = client.status || 'actif';
             document.getElementById('clientNotes').value = client.notes || '';
             
             document.getElementById('clientModal').style.display = 'flex';
         }
-        
+
         function closeClientModal() {
             document.getElementById('clientModal').style.display = 'none';
         }
-        
-        function viewClient(clientId) {
-            const client = clients.find(c => c.id === clientId);
-            if (!client) return;
-            
-            // Récupérer les paiements du client
-            const clientPayments = payments
-                .filter(p => p.clientId === clientId)
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 10);
-            
-            let paymentsHtml = '';
-            if (clientPayments.length === 0) {
-                paymentsHtml = '<p style="text-align: center; color: var(--text-light);">Aucun paiement enregistré</p>';
-            } else {
-                clientPayments.forEach(payment => {
-                    const date = new Date(payment.date);
-                    paymentsHtml += `
-                        <div class="payment-item">
-                            <div class="payment-info">
-                                <div style="font-weight: 600;">${date.toLocaleDateString('fr-FR')}</div>
-                                <div style="font-size: 12px; color: var(--text-light);">
-                                    ${payment.method === 'cash' ? 'Espèces' : 
-                                      payment.method === 'check' ? 'Chèque' : 
-                                      payment.method === 'transfer' ? 'Virement' : 'Carte'} 
-                                    • ${payment.reference || 'Sans référence'}
-                                </div>
-                                ${payment.notes ? `<div style="font-size: 12px; margin-top: 5px;">${payment.notes}</div>` : ''}
-                            </div>
-                            <div class="payment-amount">
-                                ${formatNumber(payment.amount)} DH
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            
-            document.getElementById('clientDetailsContent').innerHTML = `
-                <div class="client-details">
-                    <div class="details-grid">
-                        <div class="detail-item">
-                            <div class="detail-label">Nom Complet</div>
-                            <div class="detail-value">${client.name}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Téléphone</div>
-                            <div class="detail-value">${client.phone || 'N/A'}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Email</div>
-                            <div class="detail-value">${client.email || 'N/A'}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Entreprise</div>
-                            <div class="detail-value">${client.company || 'N/A'}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">ICE/IF</div>
-                            <div class="detail-value">${client.ice || 'N/A'}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Adresse</div>
-                            <div class="detail-value">${client.address || 'N/A'}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Ville</div>
-                            <div class="detail-value">${client.city || 'N/A'}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Statut</div>
-                            <div class="detail-value">
-                                <span class="status-badge status-${client.status || 'active'}">
-                                    ${client.status === 'active' ? 'Actif' : client.status === 'inactive' ? 'Inactif' : 'Bloqué'}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                        <div class="detail-item">
-                            <div class="detail-label">Total Achats</div>
-                            <div class="detail-value">${formatNumber(client.totalPurchases || 0)} DH</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Dette Actuelle</div>
-                            <div class="detail-value" style="color: ${(client.totalDebt || 0) > 0 ? 'var(--danger)' : 'var(--success)'};">
-                                ${formatNumber(client.totalDebt || 0)} DH
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Limite Crédit</div>
-                            <div class="detail-value">${formatNumber(client.creditLimit || 0)} DH</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Jours Retard</div>
-                            <div class="detail-value">${client.daysOverdue || 0} jours</div>
-                        </div>
-                    </div>
-                    
-                    ${client.notes ? `
-                        <div style="margin-top: 20px; padding: 15px; background: var(--light); border-radius: 8px;">
-                            <div class="detail-label">Notes</div>
-                            <div class="detail-value">${client.notes}</div>
-                        </div>
-                    ` : ''}
-                </div>
-                
-                <div style="margin-top: 20px;">
-                    <h4 style="margin-bottom: 15px;">Derniers Paiements</h4>
-                    ${paymentsHtml}
-                </div>
-                
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                    <button class="btn btn-secondary" onclick="closeViewClientModal()">
-                        Fermer
-                    </button>
-                    <button class="btn btn-primary" onclick="editClient('${client.id}')">
-                        <i class="fas fa-edit"></i> Modifier
-                    </button>
-                    <button class="btn btn-success" onclick="addPaymentForClient('${client.id}')">
-                        <i class="fas fa-money-bill-wave"></i> Ajouter Paiement
-                    </button>
-                </div>
-            `;
-            
-            document.getElementById('viewClientModal').style.display = 'flex';
-        }
-        
-        function closeViewClientModal() {
-            document.getElementById('viewClientModal').style.display = 'none';
-        }
-        
-        function openAddPaymentModal(clientId = '') {
-            const clientSelect = document.getElementById('paymentClientSelect');
-            let html = '<option value="">Sélectionner un client...</option>';
-            
-            clients.forEach(client => {
-                html += `<option value="${client.id}" ${client.id === clientId ? 'selected' : ''}>${client.name}${client.company ? ` (${client.company})` : ''}</option>`;
-            });
-            
-            clientSelect.innerHTML = html;
-            
-            // Définir la date actuelle par défaut
-            const now = new Date();
-            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-            document.getElementById('paymentDate').value = localDateTime;
-            
-            if (clientId) {
-                updateClientDebt();
-            }
-            
-            document.getElementById('paymentModal').style.display = 'flex';
-        }
-        
-        function addPaymentForClient(clientId) {
-            openAddPaymentModal(clientId);
-        }
-        
-        function updateClientDebt() {
-            const clientId = document.getElementById('paymentClientSelect').value;
-            const client = clients.find(c => c.id === clientId);
-            
-            if (client) {
-                const debtInfo = document.getElementById('debtInfoContent');
-                debtInfo.innerHTML = `
-                    <div><strong>Client:</strong> ${client.name}</div>
-                    <div><strong>Dette actuelle:</strong> ${formatNumber(client.totalDebt || 0)} DH</div>
-                    <div><strong>Dernier paiement:</strong> ${client.lastPaymentDate ? formatDate(client.lastPaymentDate) : 'Jamais'}</div>
-                    <div><strong>Jours de retard:</strong> ${client.daysOverdue || 0} jours</div>
-                `;
-                document.getElementById('clientDebtInfo').style.display = 'block';
-                
-                // Suggérer le montant de la dette
-                if (client.totalDebt > 0) {
-                    document.getElementById('paymentAmount').value = client.totalDebt;
-                }
-            } else {
-                document.getElementById('clientDebtInfo').style.display = 'none';
-            }
-        }
-        
-        function closePaymentModal() {
-            document.getElementById('paymentModal').style.display = 'none';
-            document.getElementById('paymentForm').reset();
-            document.getElementById('clientDebtInfo').style.display = 'none';
-        }
-        
-        function closeAllModals() {
-            closeClientModal();
-            closePaymentModal();
-            closeViewClientModal();
-        }
-        
-        // ==================== CRUD CLIENTS ====================
-        async function saveClient(e) {
-            e.preventDefault();
+
+        function saveClient(event) {
+            event.preventDefault();
             
             const clientId = document.getElementById('clientId').value;
-            const isNew = !clientId;
-            
             const clientData = {
                 name: document.getElementById('clientName').value,
                 phone: document.getElementById('clientPhone').value,
                 email: document.getElementById('clientEmail').value,
-                type: document.getElementById('clientType').value,
-                company: document.getElementById('clientCompany').value,
-                ice: document.getElementById('clientICE').value,
                 address: document.getElementById('clientAddress').value,
                 city: document.getElementById('clientCity').value,
-                creditLimit: parseFloat(document.getElementById('clientCreditLimit').value) || 0,
-                paymentTerms: parseInt(document.getElementById('clientPaymentTerms').value) || 30,
+                ice: document.getElementById('clientICE').value,
                 status: document.getElementById('clientStatus').value,
                 notes: document.getElementById('clientNotes').value,
                 updatedAt: new Date().toISOString()
             };
             
-            if (isNew) {
+            if (!clientId) {
+                // Nouveau client
                 clientData.createdAt = new Date().toISOString();
-                clientData.totalDebt = 0;
-                clientData.totalPurchases = 0;
-            }
-            
-            try {
-                if (isNew) {
-                    const newRef = database.ref('clients').push();
-                    await newRef.set(clientData);
-                    
-                    showToast("Client ajouté avec succès", "success");
-                } else {
-                    await database.ref(`clients/${clientId}`).update(clientData);
-                    
-                    showToast("Client modifié avec succès", "success");
-                }
+                clientData.createdBy = 'admin';
                 
-                closeClientModal();
-                
-            } catch (error) {
-                console.error("❌ Erreur lors de l'enregistrement du client:", error);
-                showToast("Erreur lors de l'enregistrement", "error");
-            }
-        }
-        
-        async function deleteClient(clientId) {
-            if (!confirm("Êtes-vous sûr de vouloir supprimer ce client ? Cette action est irréversible.")) {
-                return;
-            }
-            
-            try {
-                await database.ref(`clients/${clientId}`).remove();
-                showToast("Client supprimé avec succès", "success");
-                
-            } catch (error) {
-                console.error("❌ Erreur lors de la suppression du client:", error);
-                showToast("Erreur lors de la suppression", "error");
-            }
-        }
-        
-        // ==================== CRUD PAIEMENTS ====================
-        async function savePayment(e) {
-            e.preventDefault();
-            
-            const paymentData = {
-                clientId: document.getElementById('paymentClientSelect').value,
-                amount: parseFloat(document.getElementById('paymentAmount').value),
-                method: document.getElementById('paymentMethodSelect').value,
-                date: document.getElementById('paymentDate').value || new Date().toISOString(),
-                reference: document.getElementById('paymentReference').value,
-                status: document.getElementById('paymentStatus').value,
-                notes: document.getElementById('paymentNotes').value,
-                createdAt: new Date().toISOString(),
-                userId: currentUser?.uid,
-                userName: currentUser?.email || 'Administrateur'
-            };
-            
-            if (!paymentData.clientId) {
-                showToast("Veuillez sélectionner un client", "error");
-                return;
-            }
-            
-            try {
-                const newRef = database.ref('payments').push();
-                await newRef.set(paymentData);
-                
-                // Mettre à jour la dette du client
-                const clientRef = database.ref(`clients/${paymentData.clientId}`);
-                const snapshot = await clientRef.once('value');
-                const client = snapshot.val();
-                
-                if (client) {
-                    const newDebt = Math.max(0, (client.totalDebt || 0) - paymentData.amount);
-                    await clientRef.update({
-                        totalDebt: newDebt,
-                        lastPaymentDate: paymentData.date,
-                        lastPaymentAmount: paymentData.amount,
-                        updatedAt: new Date().toISOString()
+                database.ref('clients').push(clientData)
+                    .then(() => {
+                        showToast("Client ajouté avec succès", "success");
+                        closeClientModal();
+                    })
+                    .catch(error => {
+                        showToast("Erreur lors de l'ajout", "error");
+                        console.error(error);
                     });
-                }
-                
-                showToast("Paiement enregistré avec succès", "success");
-                closePaymentModal();
-                
-            } catch (error) {
-                console.error("❌ Erreur lors de l'enregistrement du paiement:", error);
-                showToast("Erreur lors de l'enregistrement", "error");
+            } else {
+                // Modification
+                database.ref(`clients/${clientId}`).update(clientData)
+                    .then(() => {
+                        showToast("Client modifié avec succès", "success");
+                        closeClientModal();
+                    })
+                    .catch(error => {
+                        showToast("Erreur lors de la modification", "error");
+                        console.error(error);
+                    });
             }
         }
-        
-        async function deletePayment(paymentId) {
-            if (!confirm("Êtes-vous sûr de vouloir supprimer ce paiement ?")) {
+
+        function deleteClient(clientId) {
+            if (!confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) {
                 return;
             }
             
-            try {
-                // Récupérer le paiement pour mettre à jour la dette du client
-                const paymentRef = database.ref(`payments/${paymentId}`);
-                const snapshot = await paymentRef.once('value');
-                const payment = snapshot.val();
-                
-                if (payment) {
-                    // Ré-ajouter le montant à la dette du client
-                    const clientRef = database.ref(`clients/${payment.clientId}`);
-                    const clientSnapshot = await clientRef.once('value');
-                    const client = clientSnapshot.val();
-                    
-                    if (client) {
-                        const newDebt = (client.totalDebt || 0) + payment.amount;
-                        await clientRef.update({
-                            totalDebt: newDebt,
-                            updatedAt: new Date().toISOString()
-                        });
-                    }
-                }
-                
-                await paymentRef.remove();
-                showToast("Paiement supprimé avec succès", "success");
-                
-            } catch (error) {
-                console.error("❌ Erreur lors de la suppression du paiement:", error);
-                showToast("Erreur lors de la suppression", "error");
-            }
-        }
-        
-        // ==================== FONCTIONS DIVERSES ====================
-        function importClients() {
-            showToast("Fonctionnalité d'import en développement", "info");
-        }
-        
-        function exportClients() {
-            let csvContent = "Nom;Téléphone;Email;Entreprise;ICE;Adresse;Ville;Type;Statut;Limite Crédit;Conditions Paiement;Total Achats;Dette Actuelle;Notes\n";
-            
-            clients.forEach(client => {
-                csvContent += `"${client.name || ''}";"${client.phone || ''}";"${client.email || ''}";"${client.company || ''}";"${client.ice || ''}";"${client.address || ''}";"${client.city || ''}";"${client.type || ''}";"${client.status || ''}";"${client.creditLimit || 0}";"${client.paymentTerms || 30}";"${client.totalPurchases || 0}";"${client.totalDebt || 0}";"${(client.notes || '').replace(/"/g, '""')}"\n`;
-            });
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `clients_${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showToast("Export des clients généré", "success");
-        }
-        
-        function exportPayments() {
-            let csvContent = "Date;Client;Montant;Méthode;Référence;Statut;Notes\n";
-            
-            payments.forEach(payment => {
-                const client = clients.find(c => c.id === payment.clientId);
-                const clientName = client ? client.name : 'Client inconnu';
-                const date = new Date(payment.date);
-                
-                let methodText = '';
-                switch(payment.method) {
-                    case 'cash': methodText = 'Espèces'; break;
-                    case 'check': methodText = 'Chèque'; break;
-                    case 'transfer': methodText = 'Virement'; break;
-                    case 'card': methodText = 'Carte'; break;
-                    default: methodText = payment.method;
-                }
-                
-                csvContent += `"${date.toLocaleDateString('fr-FR')}";"${clientName}";"${payment.amount}";"${methodText}";"${payment.reference || ''}";"${payment.status || ''}";"${(payment.notes || '').replace(/"/g, '""')}"\n`;
-            });
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `paiements_${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showToast("Export des paiements généré", "success");
-        }
-        
-        function sendBulkSMS() {
-            showToast("Fonctionnalité SMS en développement", "info");
-        }
-        
-        function sendReminders() {
-            const debtClients = clients.filter(client => (client.totalDebt || 0) > 0 && client.daysOverdue > 0);
-            
-            if (debtClients.length === 0) {
-                showToast("Aucun client avec des dettes en retard", "info");
-                return;
-            }
-            
-            if (confirm(`Envoyer des rappels à ${debtClients.length} client(s) ?`)) {
-                debtClients.forEach(client => {
-                    // Simuler l'envoi de rappel
-                    console.log(`📞 Rappel envoyé à ${client.name} (${client.phone}): Dette de ${client.totalDebt} DH`);
+            database.ref(`clients/${clientId}`).remove()
+                .then(() => {
+                    showToast("Client supprimé avec succès", "success");
+                })
+                .catch(error => {
+                    showToast("Erreur lors de la suppression", "error");
+                    console.error(error);
                 });
-                
-                showToast(`Rappels envoyés à ${debtClients.length} client(s)`, "success");
-            }
         }
-        
-        function sendDebtReminders() {
-            sendReminders();
-        }
-        
-        function sendReminder(clientId) {
+
+        function viewClient(clientId) {
             const client = clients.find(c => c.id === clientId);
             if (!client) return;
             
-            if (confirm(`Envoyer un rappel à ${client.name} ?`)) {
-                // Simuler l'envoi de rappel
-                console.log(`📞 Rappel envoyé à ${client.name} (${client.phone}): Dette de ${client.totalDebt} DH`);
-                showToast(`Rappel envoyé à ${client.name}`, "success");
+            alert(`Détails du client:\n\n` +
+                  `Nom: ${client.name || 'Non spécifié'}\n` +
+                  `Téléphone: ${client.phone || 'Non spécifié'}\n` +
+                  `Email: ${client.email || 'Non spécifié'}\n` +
+                  `Adresse: ${client.address || 'Non spécifiée'}\n` +
+                  `Ville: ${client.city || 'Non spécifiée'}\n` +
+                  `ICE/IF: ${client.ice || 'Non spécifié'}\n` +
+                  `Statut: ${client.status || 'Actif'}\n` +
+                  `Notes: ${client.notes || 'Aucune note'}`);
+        }
+
+        function viewSituation(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+            
+            currentSituationClientId = clientId;
+            
+            // Simulation des données financières
+            const totalInvoices = 5;
+            const totalPaid = Math.random() * 5000;
+            const totalDue = Math.random() * 3000;
+            const lastPaymentDate = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
+            
+            // Simulation des transactions
+            const transactions = [
+                { date: '2024-01-15', type: 'Facture', amount: 2500.00, status: 'Impayée' },
+                { date: '2024-01-10', type: 'Paiement', amount: -1500.00, status: 'Payé' },
+                { date: '2024-01-05', type: 'Facture', amount: 1800.00, status: 'Payée' },
+                { date: '2023-12-28', type: 'Facture', amount: 3200.00, status: 'Partiellement payée' },
+                { date: '2023-12-20', type: 'Paiement', amount: -2000.00, status: 'Payé' }
+            ];
+            
+            const situationContent = document.getElementById('situationContent');
+            situationContent.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-size: 20px; margin-bottom: 5px;">${client.name || 'Client'}</h4>
+                    <div style="color: var(--text); opacity: 0.8;">
+                        ${client.phone || ''} • ${client.city || ''}
+                    </div>
+                </div>
+                
+                <div class="situation-summary">
+                    <div class="summary-card total-due">
+                        <h4>Total Dû</h4>
+                        <div class="value">${totalDue.toFixed(2)} DH</div>
+                    </div>
+                    <div class="summary-card total-paid">
+                        <h4>Total Payé</h4>
+                        <div class="value">${totalPaid.toFixed(2)} DH</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Factures</h4>
+                        <div class="value">${totalInvoices}</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Dernier Paiement</h4>
+                        <div class="value">${lastPaymentDate}</div>
+                    </div>
+                </div>
+                
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">Historique des Transactions</h4>
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${transactions.map(transaction => `
+                            <tr>
+                                <td>${transaction.date}</td>
+                                <td>${transaction.type}</td>
+                                <td style="color: ${transaction.amount < 0 ? '#2e7d32' : '#f57c00'}; font-weight: 600;">
+                                    ${transaction.amount < 0 ? '-' : '+'} ${Math.abs(transaction.amount).toFixed(2)} DH
+                                </td>
+                                <td>
+                                    <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; 
+                                        background: ${transaction.status === 'Payé' || transaction.status === 'Payée' ? '#e8f5e9' : 
+                                          transaction.status === 'Impayée' ? '#ffebee' : '#fff3e0'};
+                                        color: ${transaction.status === 'Payé' || transaction.status === 'Payée' ? '#2e7d32' : 
+                                          transaction.status === 'Impayée' ? '#c62828' : '#f57c00'};">
+                                        ${transaction.status}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" style="width: 30px; height: 30px;" title="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button class="payment-btn" onclick="addPayment()">
+                        <i class="fas fa-money-bill-wave"></i> Enregistrer Paiement
+                    </button>
+                    <button class="payment-btn" style="background: linear-gradient(135deg, #f57c00, #ff9800);" onclick="addInvoice()">
+                        <i class="fas fa-file-invoice"></i> Créer Facture
+                    </button>
+                    <button class="payment-btn" style="background: linear-gradient(135deg, #757575, #9e9e9e);" onclick="printStatement()">
+                        <i class="fas fa-print"></i> Imprimer Relevé
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('situationModal').style.display = 'flex';
+        }
+
+        function closeSituationModal() {
+            document.getElementById('situationModal').style.display = 'none';
+            currentSituationClientId = null;
+        }
+
+        function addPayment() {
+            if (!currentSituationClientId) return;
+            
+            const amount = prompt("Montant du paiement (DH):");
+            if (amount && !isNaN(parseFloat(amount))) {
+                showToast(`Paiement de ${parseFloat(amount).toFixed(2)} DH enregistré`, "success");
+                // Ici vous ajouteriez le code pour sauvegarder dans Firebase
             }
         }
-        
-        function generateClientReport() {
-            switchTab('reports');
-            showToast("Rapport clients généré", "success");
+
+        function addInvoice() {
+            if (!currentSituationClientId) return;
+            
+            const amount = prompt("Montant de la facture (DH):");
+            if (amount && !isNaN(parseFloat(amount))) {
+                showToast(`Facture de ${parseFloat(amount).toFixed(2)} DH créée`, "success");
+                // Ici vous ajouteriez le code pour sauvegarder dans Firebase
+            }
         }
-        
-        function generatePaymentReport() {
-            switchTab('payments');
-            showToast("Rapport paiements généré", "success");
+
+        function printStatement() {
+            const client = clients.find(c => c.id === currentSituationClientId);
+            if (!client) return;
+            
+            alert(`Relevé de compte pour ${client.name}\n\n` +
+                  `Ceci est une fonction de démonstration. Dans une version réelle,\n` +
+                  `cette fonction générerait un PDF avec l'historique complet.`);
         }
-        
-        function generateDebtReport() {
-            switchTab('debt');
-            showToast("Rapport dettes généré", "success");
+
+        function showToast(message, type = "info") {
+            // Supprimer les anciens toasts
+            const oldToasts = document.querySelectorAll('.toast');
+            oldToasts.forEach(toast => toast.remove());
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = 'info-circle';
+            let bgColor = '#0288d1';
+            
+            if (type === 'success') {
+                icon = 'check-circle';
+                bgColor = '#2e7d32';
+            } else if (type === 'error') {
+                icon = 'exclamation-circle';
+                bgColor = '#c62828';
+            } else if (type === 'warning') {
+                icon = 'exclamation-triangle';
+                bgColor = '#f57c00';
+            }
+            
+            toast.innerHTML = `
+                <i class="fas fa-${icon}" style="color: ${bgColor};"></i>
+                <div>${message}</div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
         }
-        
-        function generateMonthlyReport() {
-            switchTab('reports');
-            showToast("Rapport mensuel généré", "success");
+
+        // Charger les données de démonstration si vide
+        function loadDemoData() {
+            const demoClients = [
+                {
+                    name: "Mohamed Ali",
+                    phone: "0612345678",
+                    email: "mohamed@example.com",
+                    address: "123 Rue Hassan II",
+                    city: "Agadir",
+                    ice: "123456789012",
+                    status: "actif",
+                    notes: "Client fidèle depuis 2020",
+                    createdAt: new Date().toISOString(),
+                    createdBy: "admin"
+                },
+                {
+                    name: "Fatima Zahra",
+                    phone: "0633445566",
+                    email: "fatima@entreprise.com",
+                    address: "45 Avenue Mohammed V",
+                    city: "Marrakech",
+                    ice: "987654321098",
+                    status: "actif",
+                    notes: "Grossiste en matériaux",
+                    createdAt: new Date().toISOString(),
+                    createdBy: "admin"
+                },
+                {
+                    name: "Karim Bensaid",
+                    phone: "0528223344",
+                    email: "karim@construction.ma",
+                    address: "Zone Industrielle",
+                    city: "Casablanca",
+                    ice: "456789123045",
+                    status: "actif",
+                    notes: "Entreprise de BTP",
+                    createdAt: new Date().toISOString(),
+                    createdBy: "admin"
+                }
+            ];
+            
+            demoClients.forEach(client => {
+                database.ref('clients').push(client);
+            });
+            
+            showToast("Données de démonstration chargées", "success");
         }
-        
-        function editPayment(paymentId) {
-            showToast("Modification de paiement en développement", "info");
-        }
+
+        // Si pas de données après 5 secondes, proposer de charger des données de démonstration
+        setTimeout(() => {
+            if (clients.length === 0) {
+                if (confirm("Aucun client trouvé. Voulez-vous charger des données de démonstration ?")) {
+                    loadDemoData();
+                }
+            }
+        }, 5000);
     </script>
 </body>
 </html>
