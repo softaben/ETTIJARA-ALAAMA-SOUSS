@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETTIJARA ALAAMA SOUSS - Système de Livraison</title>
+    <title>ETTIJARA ALAAMA SOUSS - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -24,6 +25,9 @@
             --success: #2e7d32;
             --warning: #f57c00;
             --danger: #c62828;
+            --info: #0288d1;
+            --purple: #7b1fa2;
+            --cyan: #0097a7;
             --shadow: 0 3px 15px rgba(0,0,0,0.08);
         }
 
@@ -40,6 +44,9 @@
             --success: #4caf50;
             --warning: #ff9800;
             --danger: #ef5350;
+            --info: #29b6f6;
+            --purple: #ba68c8;
+            --cyan: #26c6da;
             --shadow: 0 3px 15px rgba(0,0,0,0.3);
         }
 
@@ -89,6 +96,33 @@
             font-weight: 700; 
         }
 
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-item {
+            padding: 8px 20px;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
         /* Theme Toggle */
         .theme-toggle {
             background: rgba(255, 255, 255, 0.1);
@@ -125,97 +159,214 @@
         .main-content { 
             padding: 90px 30px 30px; 
             min-height: calc(100vh - 70px);
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
-        
-        /* Buttons */
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            display: inline-flex;
+
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .btn-success {
-            background-color: var(--success);
-            color: white;
+            box-shadow: var(--shadow);
         }
 
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
+        .welcome-text h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
         }
 
-        .btn-outline:hover {
-            background: var(--primary);
-            color: white;
+        .welcome-text p {
+            opacity: 0.9;
+            font-size: 16px;
         }
-        
-        /* Table Container */
-        .table-container {
-            background: var(--card-bg);
+
+        .date-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
             border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .date-display .day {
+            font-size: 32px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .date-display .month-year {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Stats Cards Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-icon.delivered {
+            background: linear-gradient(135deg, var(--success), #4caf50);
+        }
+
+        .stat-icon.pending {
+            background: linear-gradient(135deg, var(--warning), #ff9800);
+        }
+
+        .stat-icon.processing {
+            background: linear-gradient(135deg, var(--info), #29b6f6);
+        }
+
+        .stat-icon.revenue {
+            background: linear-gradient(135deg, var(--purple), #ba68c8);
+        }
+
+        .stat-info h3 {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .stat-info .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .stat-info .change {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .change.positive {
+            color: var(--success);
+        }
+
+        .change.negative {
+            color: var(--danger);
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1100px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: 12px;
             padding: 25px;
             box-shadow: var(--shadow);
-            margin-bottom: 30px;
             border: 1px solid var(--border);
-        }
-        
-        .controls {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            margin-bottom: 25px;
-            background: var(--light);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-        
-        select, input, textarea {
-            padding: 10px 15px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            font-weight: 600;
-            color: var(--text);
-            outline: none;
-            background: var(--card-bg);
         }
 
-        select:focus, input:focus, textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
-        
-        select {
-            min-width: 200px;
-            cursor: pointer;
+
+        .chart-header h3 {
+            font-size: 18px;
+            color: var(--text);
         }
-        
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Recent Deliveries */
+        .recent-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            font-size: 18px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .view-all:hover {
+            gap: 10px;
+        }
+
+        /* Table */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
         
         th {
@@ -225,6 +376,7 @@
             text-align: center;
             color: var(--primary);
             font-weight: 600;
+            font-size: 14px;
         }
         
         td {
@@ -233,324 +385,22 @@
             text-align: center;
             color: var(--text);
             font-weight: 500;
+            font-size: 14px;
         }
         
         tr:hover {
             background-color: var(--light);
         }
-        
-        /* Modal Overlay */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
-            width: 95%;
-            max-width: 900px;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid var(--border);
-        }
-        
-        /* --- MODULE IMPRESSION A5 --- */
-        #a5DeliveryNote { 
-            display: none; 
-            width: 148mm; 
-            min-height: 210mm; 
-            padding: 7mm;
-            background: white; 
-            margin: 0 auto; 
-            color: #000;
-            direction: ltr;
-            position: relative;
-            box-sizing: border-box;
-        }
 
-        .print-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 2.5px solid #000;
-            padding-bottom: 8px;
-            margin-bottom: 5px;
-        }
-        
-        .print-title {
-            text-align: center;
-            margin: 10px 0 5px 0;
-        }
-        
-        .print-title h2 {
-            border: 2px solid #000;
-            display: inline-block;
-            padding: 5px 20px;
-            font-size: 16px;
-            margin: 0;
-        }
-
-        /* Informations client en horizontal */
-        .client-info-horizontal {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 8px;
-            border: 1px solid #ddd;
-            padding: 8px;
-            border-radius: 4px;
-            font-size: 9.5px;
-        }
-
-        .client-info-column {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .client-info-column p {
-            margin: 2px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* TABLEAU OPTIMISÉ */
-        .print-table-container {
-            margin-top: 5px;
-            overflow: hidden;
-        }
-        
-        .print-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 0;
-            table-layout: fixed;
-            font-size: 9px !important;
-        }
-        
-        .print-table th, .print-table td {
-            border: 1.5px solid #000;
-            padding: 4px 3px !important;
-            font-size: 9px !important;
-            text-align: center;
-            height: auto !important;
-            line-height: 1.2;
-            vertical-align: middle;
-            min-height: 5mm;
-            max-height: 6mm;
-        }
-        
-        .print-table th {
-            background: #f2f2f2 !important;
-            font-weight: bold;
-            padding: 5px 3px !important;
-        }
-        
-        /* Largeurs spécifiques des colonnes */
-        .print-table th:nth-child(1),
-        .print-table td:nth-child(1) {
-            width: 7%;
-        }
-        
-        .print-table th:nth-child(2),
-        .print-table td:nth-child(2) {
-            width: 53%;
-            text-align: left;
-            padding-left: 5px !important;
-        }
-        
-        .print-table th:nth-child(3),
-        .print-table td:nth-child(3) {
-            width: 10%;
-        }
-        
-        .print-table th:nth-child(4),
-        .print-table td:nth-child(4) {
-            width: 15%;
-        }
-        
-        .print-table th:nth-child(5),
-        .print-table td:nth-child(5) {
-            width: 15%;
-        }
-
-        /* الصف الأخير مع الحدود الكاملة */
-        .print-table tr:last-child td {
-            border-bottom: 1.5px solid #000;
-        }
-
-        .print-footer {
-            margin-top: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding-top: 10px;
-        }
-
-        .round-stamp {
-            width: 110px;
-            height: 110px;
-            border: 3px double var(--primary);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--primary);
-            font-weight: bold;
-            transform: rotate(-12deg);
-            font-size: 8px;
-        }
-
-        .round-stamp .comp-name {
-            font-size: 8px;
-            text-transform: uppercase;
-            line-height: 1.1;
-        }
-        
-        .round-stamp .depo-label {
-            font-size: 7px;
-            border-top: 1px solid var(--primary);
-            width: 80%;
-            margin-top: 2px;
-            padding-top: 1px;
-        }
-        
-        .round-stamp .depo-name {
-            font-size: 9px;
-            color: var(--danger);
-            line-height: 1.1;
-        }
-
-        .sig-box {
-            border-top: 1px solid #000;
-            width: 140px;
-            margin-top: 30px;
-            text-align: center;
-            font-size: 10px;
-            padding-top: 3px;
-        }
-
-        .page-break {
-            page-break-before: always;
-            margin-top: 20mm;
-        }
-
-        /* Mode démo */
-        .demo-mode {
-            background: linear-gradient(135deg, #ff9800, #f57c00);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        @media print {
-            body * { 
-                visibility: hidden; 
-            }
-            
-            #a5DeliveryNote, #a5DeliveryNote * { 
-                visibility: visible; 
-            }
-            
-            #a5DeliveryNote {
-                display: block !important;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 148mm;
-                height: 210mm;
-                border: none;
-                margin: 0;
-                padding: 7mm;
-            }
-            
-            .no-print { 
-                display: none !important; 
-            }
-            
-            @page { 
-                size: A5 portrait; 
-                margin: 0; 
-            }
-        }
-        
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-light);
-        }
-        
-        .loading i {
-            font-size: 32px;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-        
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            top: 100px;
-            right: 30px;
-            padding: 15px 25px;
-            border-radius: 8px;
-            background: var(--card-bg);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 3000;
-            animation: slideIn 0.3s ease;
-            border-left: 4px solid;
-            color: var(--text);
-        }
-        
-        @keyframes slideIn {
-            from { 
-                transform: translateX(100%); 
-                opacity: 0; 
-            }
-            
-            to { 
-                transform: translateX(0); 
-                opacity: 1; 
-            }
-        }
-        
-        .toast.success { 
-            border-left-color: var(--success); 
-        }
-        
-        .toast.error { 
-            border-left-color: var(--danger); 
-        }
-        
-        .toast.warning { 
-            border-left-color: var(--warning); 
-        }
-        
+        /* Status Badge */
         .status-badge {
-            padding: 4px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            display: inline-block;
         }
         
         .status-pending {
@@ -572,198 +422,87 @@
             background-color: rgba(220, 38, 38, 0.1);
             color: #dc2626;
         }
-        
-        /* Formulaire création bon */
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-light);
-            font-size: 14px;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
+
+        .action-card {
             background: var(--card-bg);
-            color: var(--text);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            cursor: pointer;
         }
-        
-        .form-control:focus {
-            outline: none;
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
         }
-        
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-        }
-        
-        /* Search Input avec bouton */
-        .search-input-container {
-            position: relative;
-        }
-        
-        .search-input-container .form-control {
-            padding-right: 50px;
-        }
-        
-        .search-btn {
-            position: absolute;
-            left: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            width: 40px;
-            height: 40px;
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            margin: 0 auto 15px;
+            font-size: 24px;
+            color: var(--primary);
             transition: all 0.3s;
         }
-        
-        .search-btn:hover {
-            background: var(--secondary);
+
+        .action-card:hover .action-icon {
+            background: var(--primary);
+            color: white;
         }
-        
-        /* Modal de recherche */
-        .search-modal-content {
-            max-width: 600px;
-            max-height: 80vh;
+
+        .action-card h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--text);
         }
-        
-        .search-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--light);
+
+        .action-card p {
+            font-size: 13px;
+            color: var(--text-light);
         }
-        
-        .search-input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        
-        .search-input-group input {
-            width: 100%;
-            padding: 12px 45px 12px 15px;
-            border: 2px solid var(--light);
-            border-radius: 8px;
+
+        /* Footer */
+        .dashboard-footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
             font-size: 14px;
-            background: var(--card-bg);
-            color: var(--text);
+            border-top: 1px solid var(--border);
+            margin-top: 30px;
         }
-        
-        .search-input-group i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-        }
-        
-        .search-results {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--card-bg);
-        }
-        
-        .search-result-item {
-            padding: 15px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text);
-        }
-        
-        .search-result-item:hover {
-            background-color: var(--light);
-        }
-        
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-        
-        .client-name {
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-        
-        .client-details {
-            font-size: 12px;
-            color: var(--text-light);
-        }
-        
-        .client-details span {
-            margin-right: 10px;
-        }
-        
-        .product-name {
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-        
-        .product-details {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-light);
-        }
-        
-        .product-price {
-            font-weight: bold;
-            color: var(--success);
-        }
-        
-        .no-results {
+
+        /* Loading */
+        .loading {
             text-align: center;
             padding: 40px;
             color: var(--text-light);
         }
-
-        /* Stats info */
-        .stats-info {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 12px;
-            color: var(--text-light);
-            border: 1px solid var(--border);
-        }
         
+        .loading i {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
-            .controls { 
-                flex-direction: column; 
-                align-items: stretch; 
-                gap: 15px;
-            }
-            
             .header { 
                 padding: 0 15px; 
                 height: 60px;
@@ -776,23 +515,28 @@
             .logo h1 {
                 font-size: 18px;
             }
-            
-            select {
-                min-width: 100%;
+
+            .nav {
+                display: none;
             }
-            
+
+            .welcome-section {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
             table {
                 display: block;
                 overflow-x: auto;
-            }
-            
-            .modal-content {
-                padding: 15px;
-            }
-            
-            .form-row {
-                flex-direction: column;
-                gap: 10px;
             }
 
             .theme-toggle {
@@ -800,20 +544,26 @@
                 height: 35px;
             }
         }
-        
-        @media (max-width: 480px) {
-            .print-footer {
-                flex-direction: column;
-                gap: 15px;
-                align-items: center;
-            }
-            
-            .sig-box {
-                width: 120px;
-            }
 
+        @media (max-width: 480px) {
             .logo h1 {
                 font-size: 16px;
+            }
+
+            .welcome-text h2 {
+                font-size: 22px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .chart-card {
+                padding: 15px;
+            }
+
+            .recent-section {
+                padding: 15px;
             }
         }
     </style>
@@ -821,280 +571,239 @@
 <body>
     <header class="header">
         <div class="logo">
-            <i class="fas fa-truck"></i>
-            <h1>ETTIJARA ALAAMA SOUSS</h1>
+            <i class="fas fa-chart-line"></i>
+            <h1>ETTIJARA ALAAMA SOUSS - DASHBOARD</h1>
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
+            <nav class="nav">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-truck"></i>
+                    Livraisons
+                </a>
+                <a href="dashboard.html" class="nav-item active">
+                    <i class="fas fa-chart-pie"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    Clients
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-boxes"></i>
+                    Produits
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    Paramètres
+                </a>
+            </nav>
             <button class="theme-toggle" id="themeToggle" title="Changer le thème">
                 <i class="fas fa-moon"></i>
                 <i class="fas fa-sun"></i>
             </button>
-            <span style="font-size: 14px;">Gestion des Livraisons</span>
             <div id="connectionStatus" style="width: 12px; height: 12px; border-radius: 50%; background: #ccc;" title="Statut de connexion"></div>
         </div>
     </header>
 
     <main class="main-content">
-        <div class="table-container">
-            <div id="demoModeIndicator" class="demo-mode" style="display: none;">
-                <i class="fas fa-info-circle"></i> Mode démo activé - Données locales utilisées
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-text">
+                <h2>Bonjour, Administrateur 👋</h2>
+                <p>Bienvenue sur votre tableau de bord de gestion des livraisons</p>
+            </div>
+            <div class="date-display">
+                <div class="day" id="currentDay">--</div>
+                <div class="month-year" id="currentDate">-- --- ----</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="action-card" onclick="window.location.href='index.html'">
+                <div class="action-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <h4>Nouveau Bon</h4>
+                <p>Créer un nouveau bon de livraison</p>
             </div>
             
-            <div class="controls">
-                <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                    <label><i class="fas fa-warehouse"></i> Sélectionner le Dépôt :</label>
-                    <select id="depotSelector">
-                        <option value="">Chargement des dépôts...</option>
-                    </select>
+            <div class="action-card" onclick="openClientSearch()">
+                <div class="action-icon">
+                    <i class="fas fa-user-plus"></i>
                 </div>
-                
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-primary" onclick="refreshData()">
-                        <i class="fas fa-sync-alt"></i> Actualiser
-                    </button>
-                    
-                    <button class="btn btn-success" onclick="openCreateDelivery()">
-                        <i class="fas fa-plus"></i> Nouveau Bon
-                    </button>
+                <h4>Ajouter Client</h4>
+                <p>Enregistrer un nouveau client</p>
+            </div>
+            
+            <div class="action-card" onclick="openProductSearch()">
+                <div class="action-icon">
+                    <i class="fas fa-box"></i>
+                </div>
+                <h4>Ajouter Produit</h4>
+                <p>Ajouter un nouveau produit</p>
+            </div>
+            
+            <div class="action-card" onclick="refreshDashboard()">
+                <div class="action-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h4>Actualiser</h4>
+                <p>Mettre à jour les données</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon delivered">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Livraisons Terminées</h3>
+                    <div class="value" id="deliveredCount">0</div>
+                    <div class="change positive" id="deliveredChange">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>--%</span>
+                    </div>
                 </div>
             </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>En Attente</h3>
+                    <div class="value" id="pendingCount">0</div>
+                    <div class="change negative" id="pendingChange">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>--%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon processing">
+                    <i class="fas fa-truck-loading"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>En Cours</h3>
+                    <div class="value" id="processingCount">0</div>
+                    <div class="change positive" id="processingChange">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>--%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon revenue">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Chiffre d'Affaires</h3>
+                    <div class="value" id="revenueAmount">0 DH</div>
+                    <div class="change positive" id="revenueChange">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>--%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-bar"></i> Livraisons par Mois</h3>
+                    <select id="chartPeriod" onchange="updateCharts()" style="padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text);">
+                        <option value="month">Ce mois</option>
+                        <option value="quarter">Ce trimestre</option>
+                        <option value="year">Cette année</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="deliveriesChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-pie"></i> Répartition par Statut</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Deliveries -->
+        <div class="recent-section">
+            <div class="section-header">
+                <h3><i class="fas fa-history"></i> Livraisons Récentes</h3>
+                <a href="index.html" class="view-all">
+                    Voir toutes
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            </div>
             <table>
                 <thead>
                     <tr>
                         <th>N° Bon</th>
                         <th>Client</th>
-                        <th>Téléphone</th>
                         <th>Date</th>
                         <th>Dépôt</th>
-                        <th>Total (DH)</th>
+                        <th>Montant (DH)</th>
                         <th>Statut</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="deliveriesTableBody">
+                <tbody id="recentDeliveries">
                     <tr>
-                        <td colspan="8" class="loading">
+                        <td colspan="6" class="loading">
                             <i class="fas fa-spinner fa-spin"></i>
-                            <p>Connexion à la base de données...</p>
+                            <p>Chargement des livraisons récentes...</p>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            
-            <div class="stats-info">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span id="statsInfo">Chargement des statistiques...</span>
-                    <span id="lastUpdate">Dernière mise à jour: --:--</span>
-                </div>
+        </div>
+
+        <!-- Top Clients -->
+        <div class="recent-section">
+            <div class="section-header">
+                <h3><i class="fas fa-crown"></i> Top Clients</h3>
             </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Téléphone</th>
+                        <th>Livraisons</th>
+                        <th>Total (DH)</th>
+                        <th>Dernière Commande</th>
+                    </tr>
+                </thead>
+                <tbody id="topClients">
+                    <tr>
+                        <td colspan="5" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Chargement des clients...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="dashboard-footer">
+            <p>© 2024 ETTIJARA ALAAMA SOUSS - Système de Gestion des Livraisons</p>
+            <p style="font-size: 12px; margin-top: 5px;">
+                <span id="lastUpdate">Dernière mise à jour: --:--</span> | 
+                <span id="totalStats">0 livraisons | 0 DH</span>
+            </p>
         </div>
     </main>
-
-    <!-- Modal d'impression -->
-    <div class="modal" id="printModal">
-        <div class="modal-content">
-            <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="color: var(--primary);"><i class="fas fa-print"></i> Bon de Livraison A5</h3>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-success" onclick="printDeliveryNote()">
-                        <i class="fas fa-print"></i> Imprimer
-                    </button>
-                    <button class="btn btn-outline" onclick="closeModal()">
-                        <i class="fas fa-times"></i> Fermer
-                    </button>
-                </div>
-            </div>
-            <div id="a5DeliveryNote">
-                <!-- Le contenu du bon sera injecté ici -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de création de bon -->
-    <div class="modal" id="createModal" style="display: none;">
-        <div class="modal-content">
-            <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="color: var(--primary);"><i class="fas fa-plus-circle"></i> Créer un Nouveau Bon</h3>
-                <button class="btn btn-outline" onclick="closeCreateModal()">
-                    <i class="fas fa-times"></i> Annuler
-                </button>
-            </div>
-            
-            <div id="createForm" style="max-height: 70vh; overflow-y: auto;">
-                <div class="form-section">
-                    <h4 style="color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--light); padding-bottom: 8px;">
-                        <i class="fas fa-info-circle"></i> Informations du Bon
-                    </h4>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="newBonNumber">Numéro du Bon *</label>
-                            <input type="text" id="newBonNumber" class="form-control" value="BL-2024-001" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="newBonDate">Date du Bon *</label>
-                            <input type="date" id="newBonDate" class="form-control">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="newDepotSelect">Dépôt *</label>
-                            <select id="newDepotSelect" class="form-control">
-                                <option value="">Sélectionner un dépôt</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="newDriver">Livreur</label>
-                            <input type="text" id="newDriver" class="form-control" placeholder="Nom du livreur">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h4 style="color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--light); padding-bottom: 8px;">
-                        <i class="fas fa-user"></i> Informations Client
-                    </h4>
-                    
-                    <div class="form-group search-input-container">
-                        <label for="clientSearch">Rechercher Client *</label>
-                        <input type="text" id="clientSearch" class="form-control" 
-                               placeholder="Cliquez pour rechercher un client..." readonly
-                               onclick="openClientSearch()">
-                        <button class="search-btn" onclick="openClientSearch()">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="newClientName">Nom Complet *</label>
-                            <input type="text" id="newClientName" class="form-control" readonly required>
-                        </div>
-                        <div class="form-group">
-                            <label for="newClientPhone">Téléphone *</label>
-                            <input type="tel" id="newClientPhone" class="form-control" readonly required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="newClientAddress">Adresse de Livraison *</label>
-                        <textarea id="newClientAddress" class="form-control" rows="2" required></textarea>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h4 style="color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--light); padding-bottom: 8px;">
-                        <i class="fas fa-boxes"></i> Articles
-                    </h4>
-                    
-                    <div id="itemsContainer">
-                        <!-- Les articles seront ajoutés ici dynamiquement -->
-                    </div>
-                    
-                    <div style="margin-top: 15px;">
-                        <button type="button" class="btn btn-primary" onclick="addNewItem()">
-                            <i class="fas fa-plus"></i> Ajouter un article
-                        </button>
-                    </div>
-                    
-                    <div style="margin-top: 20px; padding: 15px; background: var(--light); border-radius: 8px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-weight: bold;">Total Général:</span>
-                            <span id="totalAmount" style="font-size: 18px; font-weight: bold; color: var(--primary);">0.00 DH</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h4 style="color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--light); padding-bottom: 8px;">
-                        <i class="fas fa-sticky-note"></i> Remarques et Paiement
-                    </h4>
-                    <div class="form-group">
-                        <label for="newNotes">Remarques</label>
-                        <textarea id="newNotes" class="form-control" rows="2" placeholder="Remarques supplémentaires..."></textarea>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="newPaymentMethod">Mode de Paiement</label>
-                            <select id="newPaymentMethod" class="form-control">
-                                <option value="cash">Espèces</option>
-                                <option value="check">Chèque</option>
-                                <option value="card">Carte Bancaire</option>
-                                <option value="transfer">Virement</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="newPaymentStatus">Statut Paiement</label>
-                            <select id="newPaymentStatus" class="form-control">
-                                <option value="pending">En attente</option>
-                                <option value="partial">Partiel</option>
-                                <option value="paid">Payé</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid var(--light); display: flex; justify-content: flex-end; gap: 15px;">
-                    <button type="button" class="btn btn-outline" onclick="closeCreateModal()">
-                        Annuler
-                    </button>
-                    <button type="button" class="btn btn-success" onclick="saveNewDelivery()">
-                        <i class="fas fa-save"></i> Enregistrer et Imprimer
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de recherche clients -->
-    <div class="modal" id="clientSearchModal" style="display: none;">
-        <div class="modal-content search-modal-content">
-            <div class="search-header">
-                <h3 style="color: var(--primary); margin: 0;">
-                    <i class="fas fa-users"></i> Recherche de Clients
-                </h3>
-                <button class="btn btn-outline" onclick="closeClientSearch()">
-                    <i class="fas fa-times"></i> Fermer
-                </button>
-            </div>
-            
-            <div class="search-input-group">
-                <input type="text" id="clientSearchInput" placeholder="Tapez pour rechercher un client par nom ou téléphone..." 
-                       onkeyup="searchClients(this.value)">
-                <i class="fas fa-search"></i>
-            </div>
-            
-            <div class="search-results" id="clientSearchResults">
-                <!-- Les résultats de recherche seront affichés ici -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de recherche produits -->
-    <div class="modal" id="productSearchModal" style="display: none;">
-        <div class="modal-content search-modal-content">
-            <div class="search-header">
-                <h3 style="color: var(--primary); margin: 0;">
-                    <i class="fas fa-boxes"></i> Recherche de Produits
-                </h3>
-                <button class="btn btn-outline" onclick="closeProductSearch()">
-                    <i class="fas fa-times"></i> Fermer
-                </button>
-            </div>
-            
-            <div class="search-input-group">
-                <input type="text" id="productSearchInput" placeholder="Tapez pour rechercher un produit par nom..." 
-                       onkeyup="searchProducts(this.value)">
-                <i class="fas fa-search"></i>
-            </div>
-            
-            <div class="search-results" id="productSearchResults">
-                <!-- Les résultats de recherche seront affichés ici -->
-            </div>
-        </div>
-    </div>
 
     <script>
         // ==================== GESTION DU THEME ====================
@@ -1110,7 +819,8 @@
                 document.documentElement.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
                 
-                showToast(`Thème ${newTheme === 'dark' ? 'sombre' : 'clair'} activé`, 'success');
+                // Re-initialiser les charts avec le nouveau thème
+                updateCharts();
             });
         }
 
@@ -1133,15 +843,77 @@
         let depots = [];
         let clients = [];
         let products = [];
-        let currentDelivery = null;
-        let currentSearchType = null;
-        let currentProductInput = null;
+        let deliveriesChart = null;
+        let statusChart = null;
+        
+        // ==================== INITIALISATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("🚀 Dashboard en cours de démarrage...");
+            
+            // Initialiser le thème
+            initTheme();
+            
+            // Mettre à jour la date
+            updateCurrentDate();
+            
+            // Initialiser Firebase
+            initializeFirebase();
+            
+            // Raccourcis clavier
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    refreshDashboard();
+                }
+                
+                if (e.ctrlKey && e.key === 'd') {
+                    e.preventDefault();
+                    document.getElementById('themeToggle').click();
+                }
+                
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            // Actualiser la date chaque minute
+            setInterval(updateCurrentDate, 60000);
+        });
+        
+        function updateCurrentDate() {
+            const now = new Date();
+            const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+            const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+            
+            document.getElementById('currentDay').textContent = now.getDate();
+            document.getElementById('currentDate').textContent = 
+                `${days[now.getDay()]} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        }
         
         // ==================== FONCTIONS UTILITAIRES ====================
         
         function showToast(message, type = "success") {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 30px;
+                padding: 15px 25px;
+                border-radius: 8px;
+                background: var(--card-bg);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 3000;
+                animation: slideIn 0.3s ease;
+                border-left: 4px solid;
+                border-left-color: ${type === 'success' ? 'var(--success)' : type === 'warning' ? 'var(--warning)' : 'var(--danger)'};
+                color: var(--text);
+            `;
+            
             toast.innerHTML = `
                 <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i>
                 <span>${message}</span>
@@ -1161,27 +933,9 @@
             if (connected) {
                 statusElement.style.background = "#10b981";
                 statusElement.title = "Connecté à Firebase";
-                document.getElementById('demoModeIndicator').style.display = 'none';
             } else {
                 statusElement.style.background = "#ef4444";
                 statusElement.title = "Non connecté";
-                if (isDemoMode) {
-                    document.getElementById('demoModeIndicator').style.display = 'block';
-                }
-            }
-        }
-        
-        function formatDate(dateString) {
-            if (!dateString) return '--';
-            try {
-                const date = new Date(dateString);
-                return date.toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                });
-            } catch (e) {
-                return '--';
             }
         }
         
@@ -1194,679 +948,93 @@
             document.getElementById('lastUpdate').textContent = `Dernière mise à jour: ${timeString}`;
         }
         
-        function generateBonNumber() {
-            const date = new Date();
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
+        function refreshDashboard() {
+            if (isDemoMode) {
+                loadDemoData();
+                showToast("Dashboard actualisé en mode démo", "success");
+                return;
+            }
             
-            const todayDeliveries = deliveries.filter(d => {
-                const deliveryDate = new Date(d.createdAt || d.date);
-                return deliveryDate.toDateString() === date.toDateString();
-            });
-            
-            const sequence = (todayDeliveries.length + 1).toString().padStart(3, '0');
-            return `BL-${year}${month}${day}-${sequence}`;
+            showToast("Actualisation du dashboard en cours...", "info");
+            loadDeliveries();
         }
         
         // ==================== MODE DÉMO ====================
         
-        function initializeDemoMode() {
-            console.log("🚀 Initialisation du mode démo...");
-            isDemoMode = true;
-            updateConnectionStatus(false);
+        function loadDemoData() {
+            console.log("📊 Chargement des données démo pour le dashboard...");
             
             // Données démo pour les dépôts
             depots = [
-                {
-                    id: "depot1",
-                    name: "Dépôt Principal",
-                    city: "Agadir"
-                },
-                {
-                    id: "depot2", 
-                    name: "Dépôt Secondaire",
-                    city: "Ait Melloul"
-                }
+                { id: "depot1", name: "Dépôt Principal", city: "Agadir" },
+                { id: "depot2", name: "Dépôt Secondaire", city: "Ait Melloul" }
             ];
             
             // Données démo pour les clients
             clients = [
-                {
-                    id: "client1",
-                    name: "Mohamed Ali",
-                    phone: "0612345678",
-                    address: "123 Rue Principale, Agadir"
-                },
-                {
-                    id: "client2",
-                    name: "Fatima Zahra",
-                    phone: "0623456789", 
-                    address: "456 Avenue des Orangers, Ait Melloul"
-                },
-                {
-                    id: "client3",
-                    name: "Karim Bennani",
-                    phone: "0634567890",
-                    address: "789 Boulevard Mohammed V, Inezgane"
-                }
+                { id: "client1", name: "Mohamed Ali", phone: "0612345678", address: "123 Rue Principale, Agadir" },
+                { id: "client2", name: "Fatima Zahra", phone: "0623456789", address: "456 Avenue des Orangers, Ait Melloul" },
+                { id: "client3", name: "Karim Bennani", phone: "0634567890", address: "789 Boulevard Mohammed V, Inezgane" },
+                { id: "client4", name: "Hassan Rami", phone: "0645678901", address: "321 Rue des Palmiers, Agadir" },
+                { id: "client5", name: "Nadia El Amri", phone: "0656789012", address: "654 Avenue Hassan II, Ait Melloul" }
             ];
             
-            // Données démo pour les produits
-            products = [
-                {
-                    id: "prod1",
-                    name: "Ciment 50kg",
-                    price: 85.50,
-                    stock: 100,
-                    unit: "Sac"
-                },
-                {
-                    id: "prod2",
-                    name: "Sable fin",
-                    price: 450.00,
-                    stock: 500,
-                    unit: "M3"
-                },
-                {
-                    id: "prod3",
-                    name: "Gravier 5/15",
-                    price: 520.00,
-                    stock: 300,
-                    unit: "M3"
-                },
-                {
-                    id: "prod4",
-                    name: "Brique 20x40",
-                    price: 3.20,
-                    stock: 5000,
-                    unit: "Unité"
-                },
-                {
-                    id: "prod5",
-                    name: "Tuyau PVC 100mm",
-                    price: 125.00,
-                    stock: 50,
-                    unit: "ML"
-                }
-            ];
+            // Données démo pour les livraisons (générées dynamiquement)
+            const today = new Date();
+            deliveries = [];
             
-            // Données démo pour les livraisons
-            deliveries = [
-                {
-                    id: "del1",
-                    bonNumber: "BL-20240215-001",
-                    bonDate: "2024-02-15",
-                    clientName: "Mohamed Ali",
-                    clientPhone: "0612345678",
-                    clientAddress: "123 Rue Principale, Agadir",
-                    depotId: "depot1",
-                    driver: "Ahmed",
+            // Générer des livraisons pour les 30 derniers jours
+            for (let i = 0; i < 50; i++) {
+                const date = new Date();
+                date.setDate(today.getDate() - Math.floor(Math.random() * 30));
+                
+                const statuses = ['delivered', 'pending', 'processing', 'cancelled'];
+                const status = statuses[Math.floor(Math.random() * statuses.length)];
+                const client = clients[Math.floor(Math.random() * clients.length)];
+                const depot = depots[Math.floor(Math.random() * depots.length)];
+                const amount = 500 + Math.random() * 2000;
+                
+                deliveries.push({
+                    id: "del" + i,
+                    bonNumber: `BL-${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${String(i+1).padStart(3, '0')}`,
+                    bonDate: date.toISOString().split('T')[0],
+                    clientName: client.name,
+                    clientPhone: client.phone,
+                    clientAddress: client.address,
+                    depotId: depot.id,
+                    driver: ["Ahmed", "Hassan", "Karim", "Youssef"][Math.floor(Math.random() * 4)],
                     items: [
-                        {
-                            name: "Ciment 50kg",
-                            quantity: 10,
-                            price: 85.50,
-                            total: 855.00
-                        },
-                        {
-                            name: "Sable fin",
-                            quantity: 2,
-                            price: 450.00,
-                            total: 900.00
-                        }
+                        { name: "Ciment 50kg", quantity: Math.floor(Math.random() * 20) + 1, price: 85.50 },
+                        { name: "Sable fin", quantity: Math.floor(Math.random() * 5) + 1, price: 450.00 }
                     ],
-                    totalAmount: 1755.00,
-                    status: "delivered",
-                    paymentMethod: "cash",
-                    paymentStatus: "paid",
-                    notes: "Livraison urgente",
-                    createdAt: "2024-02-15T10:30:00Z"
-                },
-                {
-                    id: "del2",
-                    bonNumber: "BL-20240214-001",
-                    bonDate: "2024-02-14",
-                    clientName: "Fatima Zahra",
-                    clientPhone: "0623456789",
-                    clientAddress: "456 Avenue des Orangers, Ait Melloul",
-                    depotId: "depot2",
-                    driver: "Hassan",
-                    items: [
-                        {
-                            name: "Brique 20x40",
-                            quantity: 500,
-                            price: 3.20,
-                            total: 1600.00
-                        },
-                        {
-                            name: "Ciment 50kg",
-                            quantity: 5,
-                            price: 85.50,
-                            total: 427.50
-                        }
-                    ],
-                    totalAmount: 2027.50,
-                    status: "processing",
-                    paymentMethod: "check",
-                    paymentStatus: "pending",
+                    totalAmount: amount,
+                    status: status,
+                    paymentMethod: ["cash", "check", "card"][Math.floor(Math.random() * 3)],
+                    paymentStatus: status === 'delivered' ? 'paid' : 'pending',
                     notes: "",
-                    createdAt: "2024-02-14T14:15:00Z"
-                }
-            ];
-            
-            updateDepotSelectors();
-            updateDeliveriesTable();
-            updateStats();
-            updateLastUpdateTime();
-            
-            showToast("Mode démo activé. Vous pouvez tester l'application avec des données locales.", "warning");
-        }
-        
-        // ==================== GESTION DU FORMULAIRE ====================
-
-        function openCreateDelivery() {
-            console.log("🔧 Ouverture du formulaire de création...");
-            
-            // Générer un nouveau numéro de bon
-            document.getElementById('newBonNumber').value = generateBonNumber();
-            
-            // Définir la date d'aujourd'hui
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('newBonDate').value = today;
-            
-            // Réinitialiser le formulaire
-            document.getElementById('clientSearch').value = '';
-            document.getElementById('newClientName').value = '';
-            document.getElementById('newClientPhone').value = '';
-            document.getElementById('newClientAddress').value = '';
-            document.getElementById('newDriver').value = '';
-            document.getElementById('newNotes').value = '';
-            document.getElementById('newPaymentMethod').value = 'cash';
-            document.getElementById('newPaymentStatus').value = 'pending';
-            document.getElementById('newDepotSelect').value = '';
-            
-            // Réinitialiser les articles
-            const itemsContainer = document.getElementById('itemsContainer');
-            itemsContainer.innerHTML = `
-                <div class="form-row item-row">
-                    <div class="form-group" style="flex: 3; position: relative;">
-                        <label>Désignation *</label>
-                        <input type="text" class="form-control item-name" 
-                               placeholder="Cliquez pour rechercher un produit..." 
-                               onclick="openProductSearch(this)" readonly>
-                        <button class="search-btn" onclick="openProductSearch(this)" 
-                                style="left: 5px; top: 35px; width: 35px; height: 35px;">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Quantité *</label>
-                        <input type="number" class="form-control item-quantity" min="1" value="1" required>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Prix Unitaire (DH) *</label>
-                        <input type="number" class="form-control item-price" min="0" step="0.01" value="0" required>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Total (DH)</label>
-                        <input type="text" class="form-control item-total" value="0.00" readonly>
-                    </div>
-                    <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
-                        <button type="button" class="btn btn-outline" onclick="removeItem(this)" style="padding: 12px;">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Réinitialiser le total
-            document.getElementById('totalAmount').textContent = '0.00 DH';
-            
-            // Ajouter les événements de calcul
-            attachItemCalculations();
-            
-            // Ouvrir la modal
-            document.getElementById('createModal').style.display = 'flex';
-            console.log("✅ Formulaire de création ouvert");
-        }
-        
-        function closeCreateModal() {
-            document.getElementById('createModal').style.display = 'none';
-        }
-        
-        function addNewItem() {
-            const itemsContainer = document.getElementById('itemsContainer');
-            const newItem = document.createElement('div');
-            newItem.className = 'form-row item-row';
-            newItem.innerHTML = `
-                <div class="form-group" style="flex: 3; position: relative;">
-                    <label>Désignation *</label>
-                    <input type="text" class="form-control item-name" 
-                           placeholder="Cliquez pour rechercher un produit..." 
-                           onclick="openProductSearch(this)" readonly>
-                    <button class="search-btn" onclick="openProductSearch(this)" 
-                            style="left: 5px; top: 35px; width: 35px; height: 35px;">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Quantité *</label>
-                    <input type="number" class="form-control item-quantity" min="1" value="1" required>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Prix Unitaire (DH) *</label>
-                    <input type="number" class="form-control item-price" min="0" step="0.01" value="0" required>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Total (DH)</label>
-                    <input type="text" class="form-control item-total" value="0.00" readonly>
-                </div>
-                <div class="form-group" style="flex: 0.5; display: flex; align-items: flex-end;">
-                    <button type="button" class="btn btn-outline" onclick="removeItem(this)" style="padding: 12px;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            itemsContainer.appendChild(newItem);
-            attachItemCalculations();
-        }
-        
-        function removeItem(button) {
-            const itemRow = button.closest('.item-row');
-            if (itemRow && document.querySelectorAll('.item-row').length > 1) {
-                itemRow.remove();
-                calculateTotal();
-            } else {
-                showToast("Au moins un article est requis", "warning");
-            }
-        }
-        
-        function attachItemCalculations() {
-            const quantityInputs = document.querySelectorAll('.item-quantity');
-            const priceInputs = document.querySelectorAll('.item-price');
-            
-            quantityInputs.forEach(input => {
-                input.addEventListener('input', calculateItemTotalHandler);
-            });
-            
-            priceInputs.forEach(input => {
-                input.addEventListener('input', calculateItemTotalHandler);
-            });
-            
-            // Calculer les totaux initiaux
-            document.querySelectorAll('.item-row').forEach(row => {
-                calculateItemTotalForRow(row);
-            });
-        }
-        
-        function calculateItemTotalHandler(event) {
-            const itemRow = event.target.closest('.item-row');
-            calculateItemTotalForRow(itemRow);
-        }
-        
-        function calculateItemTotalForRow(itemRow) {
-            if (!itemRow) return;
-            
-            const quantity = parseFloat(itemRow.querySelector('.item-quantity').value) || 0;
-            const price = parseFloat(itemRow.querySelector('.item-price').value) || 0;
-            const total = (quantity * price).toFixed(2);
-            
-            itemRow.querySelector('.item-total').value = total;
-            calculateTotal();
-        }
-        
-        function calculateTotal() {
-            let grandTotal = 0;
-            const itemRows = document.querySelectorAll('.item-row');
-            
-            itemRows.forEach(row => {
-                const totalInput = row.querySelector('.item-total');
-                const itemTotal = parseFloat(totalInput.value) || 0;
-                grandTotal += itemTotal;
-            });
-            
-            document.getElementById('totalAmount').textContent = `${grandTotal.toFixed(2)} DH`;
-        }
-        
-        // ==================== RECHERCHE CLIENTS ET PRODUITS ====================
-        
-        function openClientSearch() {
-            currentSearchType = 'client';
-            document.getElementById('clientSearchModal').style.display = 'flex';
-            document.getElementById('clientSearchInput').value = '';
-            document.getElementById('clientSearchInput').focus();
-            displayAllClients();
-        }
-        
-        function closeClientSearch() {
-            document.getElementById('clientSearchModal').style.display = 'none';
-            currentSearchType = null;
-        }
-        
-        function searchClients(query) {
-            const resultsContainer = document.getElementById('clientSearchResults');
-            
-            if (!query || query.trim() === '') {
-                displayAllClients();
-                return;
-            }
-            
-            query = query.toLowerCase().trim();
-            const filteredClients = clients.filter(client => {
-                const name = (client.name || '').toLowerCase();
-                const phone = (client.phone || '').toLowerCase();
-                const address = (client.address || '').toLowerCase();
-                
-                return name.includes(query) || phone.includes(query) || address.includes(query);
-            });
-            
-            displayClientResults(filteredClients);
-        }
-        
-        function displayAllClients() {
-            displayClientResults(clients);
-        }
-        
-        function displayClientResults(clientsList) {
-            const resultsContainer = document.getElementById('clientSearchResults');
-            
-            if (clientsList.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-user-slash" style="font-size: 48px; margin-bottom: 15px; color: var(--text-light);"></i>
-                        <p>Aucun client trouvé</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            clientsList.forEach(client => {
-                html += `
-                    <div class="search-result-item" onclick="selectClient('${client.id}')">
-                        <div class="client-name">${client.name || 'Nom non spécifié'}</div>
-                        <div class="client-details">
-                            <span><i class="fas fa-phone"></i> ${client.phone || 'Non spécifié'}</span>
-                            ${client.address ? `<span><i class="fas fa-map-marker-alt"></i> ${client.address}</span>` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            resultsContainer.innerHTML = html;
-        }
-        
-        function selectClient(clientId) {
-            const client = clients.find(c => c.id === clientId);
-            if (!client) {
-                showToast("Client non trouvé", "error");
-                return;
-            }
-            
-            document.getElementById('newClientName').value = client.name || '';
-            document.getElementById('newClientPhone').value = client.phone || '';
-            document.getElementById('newClientAddress').value = client.address || '';
-            document.getElementById('clientSearch').value = client.name || '';
-            
-            closeClientSearch();
-            showToast(`Client "${client.name}" sélectionné`, "success");
-        }
-        
-        function openProductSearch(inputElement) {
-            currentSearchType = 'product';
-            currentProductInput = inputElement;
-            document.getElementById('productSearchModal').style.display = 'flex';
-            document.getElementById('productSearchInput').value = '';
-            document.getElementById('productSearchInput').focus();
-            displayAllProducts();
-        }
-        
-        function closeProductSearch() {
-            document.getElementById('productSearchModal').style.display = 'none';
-            currentSearchType = null;
-            currentProductInput = null;
-        }
-        
-        function searchProducts(query) {
-            const resultsContainer = document.getElementById('productSearchResults');
-            
-            if (!query || query.trim() === '') {
-                displayAllProducts();
-                return;
-            }
-            
-            query = query.toLowerCase().trim();
-            const filteredProducts = products.filter(product => {
-                const name = (product.name || '').toLowerCase();
-                const description = (product.description || '').toLowerCase();
-                const code = (product.code || '').toLowerCase();
-                
-                return name.includes(query) || description.includes(query) || code.includes(query);
-            });
-            
-            displayProductResults(filteredProducts);
-        }
-        
-        function displayAllProducts() {
-            displayProductResults(products);
-        }
-        
-        function displayProductResults(productsList) {
-            const resultsContainer = document.getElementById('productSearchResults');
-            
-            if (productsList.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 15px; color: var(--text-light);"></i>
-                        <p>Aucun produit trouvé</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            productsList.forEach(product => {
-                const price = product.price || product.salePrice || 0;
-                const stock = product.stock || 0;
-                const unit = product.unit || '';
-                
-                html += `
-                    <div class="search-result-item" onclick="selectProduct('${product.id}')">
-                        <div class="product-name">${product.name || 'Produit sans nom'}</div>
-                        <div class="product-details">
-                            <div>
-                                ${product.code ? `<span><i class="fas fa-barcode"></i> ${product.code}</span>` : ''}
-                                ${stock > 0 ? `<span><i class="fas fa-cubes"></i> ${stock} ${unit}</span>` : ''}
-                            </div>
-                            <div class="product-price">${price.toFixed(2)} DH</div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            resultsContainer.innerHTML = html;
-        }
-        
-        function selectProduct(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) {
-                showToast("Produit non trouvé", "error");
-                return;
-            }
-            
-            if (!currentProductInput) {
-                showToast("Erreur: aucun champ produit sélectionné", "error");
-                return;
-            }
-            
-            const itemRow = currentProductInput.closest('.item-row');
-            if (!itemRow) {
-                showToast("Erreur: ligne d'article non trouvée", "error");
-                return;
-            }
-            
-            itemRow.querySelector('.item-name').value = product.name || '';
-            itemRow.querySelector('.item-price').value = product.price || product.salePrice || 0;
-            
-            calculateItemTotalForRow(itemRow);
-            closeProductSearch();
-            showToast(`Produit "${product.name}" sélectionné`, "success");
-        }
-        
-        // ==================== ENREGISTREMENT DU BON ====================
-        
-        function saveNewDelivery() {
-            console.log("💾 Enregistrement du bon en cours...");
-            
-            // Validation des champs obligatoires
-            const depotId = document.getElementById('newDepotSelect').value;
-            const clientName = document.getElementById('newClientName').value.trim();
-            const clientPhone = document.getElementById('newClientPhone').value.trim();
-            const clientAddress = document.getElementById('newClientAddress').value.trim();
-            
-            if (!depotId) {
-                showToast("Veuillez sélectionner un dépôt", "error");
-                return;
-            }
-            
-            if (!clientName) {
-                showToast("Veuillez saisir le nom du client", "error");
-                return;
-            }
-            
-            if (!clientPhone) {
-                showToast("Veuillez saisir le téléphone du client", "error");
-                return;
-            }
-            
-            if (!clientAddress) {
-                showToast("Veuillez saisir l'adresse de livraison", "error");
-                return;
-            }
-            
-            // Récupérer les articles
-            const items = [];
-            const itemRows = document.querySelectorAll('.item-row');
-            let hasValidItems = false;
-            
-            itemRows.forEach(row => {
-                const name = row.querySelector('.item-name').value.trim();
-                const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
-                const price = parseFloat(row.querySelector('.item-price').value) || 0;
-                const total = parseFloat(row.querySelector('.item-total').value) || 0;
-                
-                if (name && quantity > 0 && price > 0) {
-                    items.push({
-                        name: name,
-                        quantity: quantity,
-                        price: price,
-                        total: total
-                    });
-                    hasValidItems = true;
-                }
-            });
-            
-            if (!hasValidItems) {
-                showToast("Veuillez ajouter au moins un article valide", "error");
-                return;
-            }
-            
-            // Calculer le total général
-            const totalAmount = items.reduce((sum, item) => sum + item.total, 0);
-            
-            // Récupérer les valeurs de statut
-            const paymentMethod = document.getElementById('newPaymentMethod').value;
-            const paymentStatus = document.getElementById('newPaymentStatus').value;
-            const status = 'pending'; // Statut par défaut pour les nouveaux bons
-            
-            // Préparer les données du bon
-            const bonData = {
-                bonNumber: document.getElementById('newBonNumber').value,
-                bonDate: document.getElementById('newBonDate').value,
-                clientName: clientName,
-                clientPhone: clientPhone,
-                clientAddress: clientAddress,
-                depotId: depotId,
-                driver: document.getElementById('newDriver').value.trim(),
-                items: items,
-                totalAmount: totalAmount,
-                notes: document.getElementById('newNotes').value.trim(),
-                paymentMethod: paymentMethod,
-                paymentStatus: paymentStatus,
-                status: status,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-            
-            console.log("📦 Données du bon:", bonData);
-            
-            if (isDemoMode) {
-                // En mode démo, sauvegarder localement
-                const newId = 'del' + Date.now();
-                deliveries.unshift({
-                    id: newId,
-                    ...bonData
+                    createdAt: date.toISOString()
                 });
-                
-                showToast("Bon de livraison créé en mode démo!", "success");
-                closeCreateModal();
-                refreshData();
-                
-                // Afficher le bon pour impression
-                currentDelivery = { ...bonData, id: newId };
-                setTimeout(() => {
-                    showDeliveryPrint(newId);
-                }, 500);
-            } else {
-                try {
-                    // Enregistrer dans Firebase
-                    const deliveriesRef = database.ref('deliveries');
-                    const newDeliveryRef = deliveriesRef.push();
-                    
-                    newDeliveryRef.set(bonData)
-                        .then(() => {
-                            showToast("Bon de livraison créé avec succès!", "success");
-                            closeCreateModal();
-                            refreshData();
-                            
-                            // Afficher le bon pour impression
-                            currentDelivery = { ...bonData, id: newDeliveryRef.key };
-                            setTimeout(() => {
-                                showDeliveryPrint(newDeliveryRef.key);
-                            }, 500);
-                        })
-                        .catch(error => {
-                            console.error("❌ Erreur d'enregistrement Firebase:", error);
-                            showToast("Erreur lors de l'enregistrement du bon", "error");
-                        });
-                    
-                } catch (error) {
-                    console.error("❌ Erreur dans saveNewDelivery:", error);
-                    showToast("Erreur lors de l'enregistrement du bon", "error");
-                }
             }
+            
+            updateDashboard();
         }
         
-        // ==================== INITIALISATION FIREBASE ====================
+        // ==================== FIREBASE ====================
         
         function initializeFirebase() {
             try {
                 console.log("🔧 Tentative de connexion à Firebase...");
                 
-                // Vérifier si Firebase est disponible
                 if (typeof firebase === 'undefined') {
                     console.error("❌ Firebase SDK non chargé");
                     throw new Error("Firebase SDK non chargé");
                 }
                 
-                // Vérifier la configuration
                 if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
                     console.error("❌ Configuration Firebase manquante");
                     throw new Error("Configuration Firebase manquante");
                 }
                 
-                // Initialiser Firebase
                 if (!firebase.apps.length) {
                     firebase.initializeApp(firebaseConfig);
                     console.log("✅ Firebase initialisé avec succès");
@@ -1886,28 +1054,29 @@
                     if (connected) {
                         console.log("✅ Connecté à Firebase Realtime Database");
                         isDemoMode = false;
-                        loadDepots();
+                        loadData();
                     } else {
                         console.log("❌ Déconnecté de Firebase");
-                        // Basculer en mode démo après 3 secondes
                         setTimeout(() => {
                             if (!isConnected && !isDemoMode) {
                                 console.log("🔄 Passage en mode démo...");
-                                initializeDemoMode();
+                                isDemoMode = true;
+                                loadDemoData();
                             }
                         }, 3000);
                     }
                 }, (error) => {
                     console.error("❌ Erreur de surveillance de connexion:", error);
                     updateConnectionStatus(false);
-                    initializeDemoMode();
+                    isDemoMode = true;
+                    loadDemoData();
                 });
                 
-                // Ajouter un timeout pour la connexion
                 setTimeout(() => {
                     if (!isConnected && !isDemoMode) {
                         console.log("⏱️ Timeout de connexion - Passage en mode démo");
-                        initializeDemoMode();
+                        isDemoMode = true;
+                        loadDemoData();
                     }
                 }, 5000);
                 
@@ -1915,20 +1084,16 @@
                 console.error("❌ Erreur d'initialisation Firebase:", error);
                 updateConnectionStatus(false);
                 showToast("Erreur de connexion Firebase. Mode démo activé.", "error");
-                initializeDemoMode();
+                isDemoMode = true;
+                loadDemoData();
             }
         }
         
-        // ==================== CHARGEMENT DES DONNÉES ====================
+        function loadData() {
+            loadDepots();
+        }
         
         function loadDepots() {
-            if (isDemoMode) {
-                updateDepotSelectors();
-                updateDeliveriesTable();
-                updateStats();
-                return;
-            }
-            
             try {
                 const depotsRef = database.ref('depots');
                 
@@ -1943,34 +1108,18 @@
                                 ...data[key]
                             });
                         });
-                        
                         console.log(`✅ ${depots.length} dépôts chargés`);
-                        updateDepotSelectors();
-                        loadClients();
-                    } else {
-                        console.log("ℹ️ Aucun dépôt trouvé");
-                        showToast("Aucun dépôt trouvé dans la base de données", "warning");
-                        updateDepotSelectors();
-                        loadClients();
                     }
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des dépôts:", error);
-                    showToast("Erreur de chargement des dépôts", "error");
-                    updateDepotSelectors();
                     loadClients();
                 });
                 
             } catch (error) {
                 console.error("❌ Erreur dans loadDepots:", error);
-                updateDepotSelectors();
                 loadClients();
             }
         }
         
         function loadClients() {
-            if (isDemoMode) return;
-            
             try {
                 const clientsRef = database.ref('clients');
                 
@@ -1985,75 +1134,18 @@
                                 ...data[key]
                             });
                         });
-                        
                         console.log(`✅ ${clients.length} clients chargés`);
-                        loadProducts();
-                    } else {
-                        console.log("ℹ️ Aucun client trouvé");
-                        clients = [];
-                        loadProducts();
                     }
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des clients:", error);
-                    clients = [];
-                    loadProducts();
-                });
-                
-            } catch (error) {
-                console.error("❌ Erreur dans loadClients:", error);
-                clients = [];
-                loadProducts();
-            }
-        }
-        
-        function loadProducts() {
-            if (isDemoMode) return;
-            
-            try {
-                const productsRef = database.ref('products');
-                
-                productsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    products = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            products.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        console.log(`✅ ${products.length} produits chargés`);
-                        loadDeliveries();
-                    } else {
-                        console.log("ℹ️ Aucun produit trouvé");
-                        products = [];
-                        loadDeliveries();
-                    }
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des produits:", error);
-                    products = [];
                     loadDeliveries();
                 });
                 
             } catch (error) {
-                console.error("❌ Erreur dans loadProducts:", error);
-                products = [];
+                console.error("❌ Erreur dans loadClients:", error);
                 loadDeliveries();
             }
         }
         
         function loadDeliveries() {
-            if (isDemoMode) {
-                updateDeliveriesTable();
-                updateStats();
-                updateLastUpdateTime();
-                return;
-            }
-            
             try {
                 const deliveriesRef = database.ref('deliveries');
                 
@@ -2069,99 +1161,271 @@
                             });
                         });
                         
-                        deliveries.sort((a, b) => {
-                            const dateA = new Date(a.createdAt || a.date || 0);
-                            const dateB = new Date(b.createdAt || b.date || 0);
-                            return dateB - dateA;
-                        });
-                        
                         console.log(`✅ ${deliveries.length} livraisons chargées`);
-                        updateDeliveriesTable();
-                        updateStats();
-                        updateLastUpdateTime();
-                        
+                        updateDashboard();
                     } else {
-                        showEmptyState();
+                        showToast("Aucune livraison trouvée", "warning");
+                        updateDashboard();
                     }
                     
                 }, (error) => {
                     console.error("❌ Erreur de chargement des livraisons:", error);
                     showToast("Erreur de chargement des livraisons", "error");
-                    showEmptyState();
+                    updateDashboard();
                 });
                 
             } catch (error) {
                 console.error("❌ Erreur dans loadDeliveries:", error);
-                showEmptyState();
+                updateDashboard();
             }
         }
         
-        function updateDepotSelectors() {
-            const depotSelect = document.getElementById('depotSelector');
-            const newDepotSelect = document.getElementById('newDepotSelect');
-            
-            let options = '<option value="">Tous les dépôts</option>';
-            let newOptions = '<option value="">Sélectionner un dépôt</option>';
-            
-            depots.forEach(depot => {
-                const depotName = depot.name || 'Dépôt sans nom';
-                const depotCity = depot.city ? ` - ${depot.city}` : '';
-                options += `<option value="${depot.id}">${depotName}${depotCity}</option>`;
-                newOptions += `<option value="${depot.id}">${depotName}${depotCity}</option>`;
-            });
-            
-            depotSelect.innerHTML = options;
-            if (newDepotSelect) {
-                newDepotSelect.innerHTML = newOptions;
-            }
-        }
+        // ==================== MISE À JOUR DU DASHBOARD ====================
         
-        function showEmptyState() {
-            const tableBody = document.getElementById('deliveriesTableBody');
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-light);">
-                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                        <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucune livraison trouvée</h3>
-                        <p style="color: var(--text-light);">${isDemoMode ? 'Mode démo - Créez un nouveau bon pour tester' : 'Commencez par créer un nouveau bon de livraison'}</p>
-                        <button class="btn btn-primary" onclick="openCreateDelivery()" style="margin-top: 15px;">
-                            <i class="fas fa-plus"></i> Créer un bon
-                        </button>
-                    </td>
-                </tr>
-            `;
+        function updateDashboard() {
+            console.log("📈 Mise à jour du dashboard...");
+            
             updateStats();
+            updateCharts();
+            updateRecentDeliveries();
+            updateTopClients();
+            updateLastUpdateTime();
+            
+            showToast("Dashboard mis à jour", "success");
         }
         
-        // ==================== GESTION DES LIVRAISONS ====================
-        
-        function updateDeliveriesTable() {
-            const tableBody = document.getElementById('deliveriesTableBody');
-            const selectedDepotId = document.getElementById('depotSelector').value;
+        function updateStats() {
+            const totalDeliveries = deliveries.length;
+            const deliveredCount = deliveries.filter(d => d.status === 'delivered').length;
+            const pendingCount = deliveries.filter(d => d.status === 'pending').length;
+            const processingCount = deliveries.filter(d => d.status === 'processing').length;
             
+            const revenue = deliveries.reduce((sum, delivery) => {
+                return sum + (delivery.totalAmount || 0);
+            }, 0);
+            
+            // Calculer les pourcentages de changement (démo)
+            const deliveredChange = isDemoMode ? Math.floor(Math.random() * 20) + 5 : 0;
+            const pendingChange = isDemoMode ? Math.floor(Math.random() * 10) + 1 : 0;
+            const processingChange = isDemoMode ? Math.floor(Math.random() * 15) + 3 : 0;
+            const revenueChange = isDemoMode ? Math.floor(Math.random() * 25) + 10 : 0;
+            
+            // Mettre à jour les stats
+            document.getElementById('deliveredCount').textContent = deliveredCount;
+            document.getElementById('pendingCount').textContent = pendingCount;
+            document.getElementById('processingCount').textContent = processingCount;
+            document.getElementById('revenueAmount').textContent = revenue.toFixed(2) + ' DH';
+            
+            // Mettre à jour les changements
+            updateChangeElement('deliveredChange', deliveredChange, true);
+            updateChangeElement('pendingChange', pendingChange, false);
+            updateChangeElement('processingChange', processingChange, true);
+            updateChangeElement('revenueChange', revenueChange, true);
+            
+            // Mettre à jour les stats du footer
+            document.getElementById('totalStats').textContent = 
+                `${totalDeliveries} livraisons | ${revenue.toFixed(2)} DH`;
+        }
+        
+        function updateChangeElement(elementId, change, isPositive) {
+            const element = document.getElementById(elementId);
+            element.className = `change ${isPositive ? 'positive' : 'negative'}`;
+            element.innerHTML = `
+                <i class="fas fa-arrow-${isPositive ? 'up' : 'down'}"></i>
+                <span>${change}%</span>
+            `;
+        }
+        
+        function updateCharts() {
+            updateDeliveriesChart();
+            updateStatusChart();
+        }
+        
+        function updateDeliveriesChart() {
+            const ctx = document.getElementById('deliveriesChart').getContext('2d');
+            const period = document.getElementById('chartPeriod').value;
+            
+            // Filtrer les données selon la période
+            const now = new Date();
             let filteredDeliveries = deliveries;
-            if (selectedDepotId) {
-                filteredDeliveries = deliveries.filter(delivery => delivery.depotId === selectedDepotId);
+            
+            if (period === 'month') {
+                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                filteredDeliveries = deliveries.filter(d => new Date(d.createdAt) >= startOfMonth);
+            } else if (period === 'quarter') {
+                const quarterStartMonth = Math.floor(now.getMonth() / 3) * 3;
+                const startOfQuarter = new Date(now.getFullYear(), quarterStartMonth, 1);
+                filteredDeliveries = deliveries.filter(d => new Date(d.createdAt) >= startOfQuarter);
+            } else if (period === 'year') {
+                const startOfYear = new Date(now.getFullYear(), 0, 1);
+                filteredDeliveries = deliveries.filter(d => new Date(d.createdAt) >= startOfYear);
             }
             
-            if (filteredDeliveries.length === 0) {
-                showEmptyState();
+            // Grouper par jour/mois selon la période
+            let labels = [];
+            let data = [];
+            
+            if (period === 'month') {
+                // Par jour du mois
+                const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+                data = Array(daysInMonth).fill(0);
+                
+                filteredDeliveries.forEach(delivery => {
+                    const date = new Date(delivery.createdAt);
+                    if (date.getMonth() === now.getMonth()) {
+                        const day = date.getDate() - 1;
+                        data[day]++;
+                    }
+                });
+            } else {
+                // Par mois
+                const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+                labels = months;
+                data = Array(12).fill(0);
+                
+                filteredDeliveries.forEach(delivery => {
+                    const date = new Date(delivery.createdAt);
+                    const month = date.getMonth();
+                    data[month]++;
+                });
+            }
+            
+            // Détruire le chart existant
+            if (deliveriesChart) {
+                deliveriesChart.destroy();
+            }
+            
+            // Créer le nouveau chart
+            deliveriesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Nombre de Livraisons',
+                        data: data,
+                        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--primary').trim(),
+                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--secondary').trim(),
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text').trim()
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--border').trim()
+                            },
+                            ticks: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-light').trim()
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-light').trim()
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateStatusChart() {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            
+            // Compter les livraisons par statut
+            const statusCounts = {
+                delivered: deliveries.filter(d => d.status === 'delivered').length,
+                pending: deliveries.filter(d => d.status === 'pending').length,
+                processing: deliveries.filter(d => d.status === 'processing').length,
+                cancelled: deliveries.filter(d => d.status === 'cancelled').length
+            };
+            
+            // Détruire le chart existant
+            if (statusChart) {
+                statusChart.destroy();
+            }
+            
+            // Créer le nouveau chart
+            statusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Livrées', 'En Attente', 'En Cours', 'Annulées'],
+                    datasets: [{
+                        data: [
+                            statusCounts.delivered,
+                            statusCounts.pending,
+                            statusCounts.processing,
+                            statusCounts.cancelled
+                        ],
+                        backgroundColor: [
+                            getComputedStyle(document.documentElement).getPropertyValue('--success').trim(),
+                            getComputedStyle(document.documentElement).getPropertyValue('--warning').trim(),
+                            getComputedStyle(document.documentElement).getPropertyValue('--info').trim(),
+                            getComputedStyle(document.documentElement).getPropertyValue('--danger').trim()
+                        ],
+                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim(),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text').trim(),
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+        
+        function updateRecentDeliveries() {
+            const tableBody = document.getElementById('recentDeliveries');
+            
+            // Trier par date (les plus récentes d'abord)
+            const recentDeliveries = [...deliveries]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 5);
+            
+            if (recentDeliveries.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
+                            <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucune livraison récente</h3>
+                        </td>
+                    </tr>
+                `;
                 return;
             }
             
             let html = '';
-            filteredDeliveries.forEach(delivery => {
+            recentDeliveries.forEach(delivery => {
                 const depot = depots.find(d => d.id === delivery.depotId);
-                const depotName = depot ? depot.name : 'Non spécifié';
+                const depotName = depot ? depot.name : '--';
                 const date = formatDate(delivery.createdAt || delivery.date);
-                let totalAmount = delivery.totalAmount || 0;
-                
-                if (!totalAmount && delivery.items && Array.isArray(delivery.items)) {
-                    totalAmount = delivery.items.reduce((sum, item) => {
-                        return sum + (item.total || (item.quantity * item.price) || 0);
-                    }, 0);
-                }
-                
+                const amount = delivery.totalAmount || 0;
                 const status = delivery.status || 'pending';
                 const statusClass = `status-${status}`;
                 const statusText = getStatusText(status);
@@ -2171,25 +1435,107 @@
                     <tr>
                         <td><strong style="color: var(--primary);">${bonNumber}</strong></td>
                         <td>${delivery.clientName || '--'}</td>
-                        <td>${delivery.clientPhone || '--'}</td>
                         <td>${date}</td>
                         <td>${depotName}</td>
-                        <td><strong>${totalAmount.toFixed(2)} DH</strong></td>
+                        <td><strong>${amount.toFixed(2)} DH</strong></td>
                         <td>
                             <span class="status-badge ${statusClass}">
                                 ${statusText}
                             </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-primary" onclick="showDeliveryPrint('${delivery.id}')" style="padding: 6px 12px; font-size: 12px;">
-                                <i class="fas fa-eye"></i> Voir
-                            </button>
                         </td>
                     </tr>
                 `;
             });
             
             tableBody.innerHTML = html;
+        }
+        
+        function updateTopClients() {
+            const tableBody = document.getElementById('topClients');
+            
+            // Grouper les livraisons par client
+            const clientStats = {};
+            
+            deliveries.forEach(delivery => {
+                const clientName = delivery.clientName;
+                if (!clientName) return;
+                
+                if (!clientStats[clientName]) {
+                    clientStats[clientName] = {
+                        name: clientName,
+                        phone: delivery.clientPhone || '--',
+                        count: 0,
+                        total: 0,
+                        lastOrder: new Date(0)
+                    };
+                }
+                
+                clientStats[clientName].count++;
+                clientStats[clientName].total += delivery.totalAmount || 0;
+                
+                const orderDate = new Date(delivery.createdAt || delivery.date);
+                if (orderDate > clientStats[clientName].lastOrder) {
+                    clientStats[clientName].lastOrder = orderDate;
+                }
+            });
+            
+            // Convertir en tableau et trier
+            const topClients = Object.values(clientStats)
+                .sort((a, b) => b.total - a.total)
+                .slice(0, 5);
+            
+            if (topClients.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-light);">
+                            <i class="fas fa-users" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun client trouvé</h3>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            topClients.forEach((client, index) => {
+                const lastOrder = client.lastOrder > new Date(0) ? 
+                    formatDate(client.lastOrder) : '--';
+                
+                html += `
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--light); display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                    ${index + 1}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600;">${client.name}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${client.phone}</td>
+                        <td>${client.count}</td>
+                        <td><strong>${client.total.toFixed(2)} DH</strong></td>
+                        <td>${lastOrder}</td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '--';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+            } catch (e) {
+                return '--';
+            }
         }
         
         function getStatusText(status) {
@@ -2202,304 +1548,14 @@
             }
         }
         
-        function updateStats() {
-            const selectedDepotId = document.getElementById('depotSelector').value;
-            let filteredDeliveries = deliveries;
-            
-            if (selectedDepotId) {
-                filteredDeliveries = deliveries.filter(delivery => delivery.depotId === selectedDepotId);
-            }
-            
-            const totalDeliveries = filteredDeliveries.length;
-            const totalAmount = filteredDeliveries.reduce((sum, delivery) => {
-                return sum + (delivery.totalAmount || 0);
-            }, 0);
-            
-            const pendingCount = filteredDeliveries.filter(d => d.status === 'pending').length;
-            const deliveredCount = filteredDeliveries.filter(d => d.status === 'delivered').length;
-            
-            document.getElementById('statsInfo').innerHTML = `
-                <span><i class="fas fa-box"></i> ${totalDeliveries} livraisons</span> |
-                <span><i class="fas fa-money-bill-wave"></i> ${totalAmount.toFixed(2)} DH</span> |
-                <span><i class="fas fa-clock"></i> ${pendingCount} en attente</span> |
-                <span><i class="fas fa-check-circle"></i> ${deliveredCount} livrées</span>
-            `;
+        // Fonctions pour les boutons d'action
+        function openClientSearch() {
+            showToast("Fonctionnalité en développement", "info");
         }
         
-        // ==================== AFFICHAGE ET IMPRESSION ====================
-        
-        function showDeliveryPrint(deliveryId) {
-            let delivery;
-            
-            if (typeof deliveryId === 'string') {
-                delivery = deliveries.find(d => d.id === deliveryId);
-            } else {
-                delivery = currentDelivery;
-            }
-            
-            if (!delivery) {
-                showToast("Livraison non trouvée", "error");
-                return;
-            }
-            
-            currentDelivery = delivery;
-            
-            const depot = depots.find(d => d.id === delivery.depotId);
-            const depotName = depot ? depot.name : 'Non spécifié';
-            const depotCity = depot ? depot.city : '';
-            
-            const container = document.getElementById('a5DeliveryNote');
-            const items = delivery.items || [];
-            
-            let grandTotal = 0;
-            items.forEach(item => {
-                const quantity = item.quantity || 0;
-                const price = item.price || 0;
-                const total = item.total || (quantity * price);
-                grandTotal += total;
-            });
-            
-            const bonNumber = delivery.deliveryNumber || delivery.bonNumber || delivery.id.substring(0, 8).toUpperCase();
-            const creationDate = delivery.createdAt ? new Date(delivery.createdAt) : new Date();
-            const formattedDate = creationDate.toLocaleDateString('fr-FR');
-            const formattedTime = creationDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            
-            // إنشاء أسطر الجدول بدون أسطر فارغة
-            let itemsHtml = '';
-            const totalItems = items.length;
-            
-            for (let i = 0; i < totalItems; i++) {
-                const item = items[i];
-                const quantity = item.quantity || 0;
-                const price = item.price || 0;
-                const total = item.total || (quantity * price);
-                
-                itemsHtml += `
-                    <tr>
-                        <td>${i + 1}</td>
-                        <td style="text-align:left; padding-left: 5px !important;">${item.name || 'Produit sans nom'}</td>
-                        <td>${quantity}</td>
-                        <td>${price.toFixed(2)}</td>
-                        <td>${total.toFixed(2)}</td>
-                    </tr>
-                `;
-            }
-            
-            container.innerHTML = `
-                <div class="print-header">
-                    <div style="text-align:left; flex: 1;">
-                        <h3 style="margin:0; color: var(--primary); font-size: 18px; line-height: 1.2;">ETTIJARA ALAAMA SOUSS</h3>
-                        <p style="font-size:9px; margin: 2px 0;">Tél: 0525265980 | Email: ettijaraalaamasouss@gmail.com</p>
-                        <p style="font-size:9px; margin-top: 5px;">
-                            <strong>Dépôt:</strong> ${depotName} ${depotCity ? '- ' + depotCity : ''}
-                        </p>
-                    </div>
-                    <div style="text-align:right; font-size:10px;">
-                        <div style="border: 1px solid #000; padding: 6px; border-radius: 4px;">
-                            <p style="margin: 1px 0;"><strong>N° BON:</strong> ${bonNumber}</p>
-                            <p style="margin: 1px 0;"><strong>DATE:</strong> ${formattedDate}</p>
-                            <p style="margin: 1px 0;"><strong>HEURE:</strong> ${formattedTime}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="print-title">
-                    <h2>BON DE LIVRAISON</h2>
-                </div>
-
-                <!-- Informations client en horizontal -->
-                <div class="client-info-horizontal">
-                    <div class="client-info-column">
-                        <p style="font-weight: bold; font-size: 10px;">INFORMATIONS CLIENT</p>
-                        <p><strong>Nom:</strong> ${delivery.clientName || 'Non spécifié'}</p>
-                        <p><strong>Tél:</strong> ${delivery.clientPhone || 'Non spécifié'}</p>
-                    </div>
-                    <div class="client-info-column">
-                        <p><strong>Adresse:</strong></p>
-                        <p>${delivery.clientAddress || 'Non spécifiée'}</p>
-                    </div>
-                    <div class="client-info-column">
-                        ${delivery.driver ? `<p><strong>Livreur:</strong> ${delivery.driver}</p>` : ''}
-                        ${delivery.paymentMethod ? `
-                            <p><strong>Paiement:</strong> ${delivery.paymentMethod === 'cash' ? 'Espèces' : 
-                                                           delivery.paymentMethod === 'check' ? 'Chèque' : 
-                                                           delivery.paymentMethod === 'card' ? 'Carte Bancaire' : 
-                                                           delivery.paymentMethod === 'transfer' ? 'Virement' : delivery.paymentMethod}
-                            </p>
-                        ` : ''}
-                    </div>
-                </div>
-
-                <div class="print-table-container">
-                    <table class="print-table">
-                        <thead>
-                            <tr>
-                                <th width="7%">N°</th>
-                                <th width="53%">Désignation</th>
-                                <th width="10%">Qté</th>
-                                <th width="15%">Prix Unitaire (DH)</th>
-                                <th width="15%">Total (DH)</th>
-                            </tr>
-                        </thead>
-                        <tbody>${itemsHtml}</tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="4" style="text-align: right; border: none; padding-top: 8px; font-weight: bold; font-size: 10px;">
-                                    TOTAL GÉNÉRAL (DH) :
-                                </td>
-                                <td style="border: 2.5px solid #000; padding-top: 8px; background: #f9f9f9; font-weight: bold; font-size: 11px;">
-                                    ${grandTotal.toFixed(2)}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                
-                ${delivery.notes ? `
-                <div style="margin-top: 8px; padding: 5px; border: 1px solid #ddd; border-radius: 3px; font-size: 9px;">
-                    <strong>Remarques:</strong> ${delivery.notes}
-                </div>
-                ` : ''}
-
-                <div class="print-footer">
-                    <div style="text-align: center;">
-                        <p style="font-size: 10px; margin-bottom: 3px;">Le client</p>
-                        <div class="sig-box">
-                            Signature
-                        </div>
-                    </div>
-
-                    <div class="round-stamp">
-                        <div class="comp-name">ETTIJARA ALAAMA SOUSS</div>
-                        <div class="depo-label">DÉPÔT</div>
-                        <div class="depo-name">${depotName}</div>
-                    </div>
-
-                    <div style="text-align: center;">
-                        <p style="font-size: 10px; margin-bottom: 3px;">La société</p>
-                        <div class="sig-box">
-                            Signature & Cachet
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 20px; font-size: 7px; text-align: center; color: #666; border-top: 1px dashed #ddd; padding-top: 8px;">
-                    <p>
-                        <strong>ETTIJARA ALAAMA SOUSS</strong> | Tél: 0525265980 | Email: ettijaraalaamasouss@gmail.com
-                    </p>
-                    <p>
-                        Document généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} 
-                        | ETTIJARA ALAAMA SOUSS © ${new Date().getFullYear()} | Ce document est émis par ordinateur, signature non requise.
-                    </p>
-                </div>
-            `;
-            
-            document.getElementById('printModal').style.display = 'flex';
+        function openProductSearch() {
+            showToast("Fonctionnalité en développement", "info");
         }
-        
-        function printDeliveryNote() {
-            if (!currentDelivery) {
-                showToast("Aucun bon à imprimer", "error");
-                return;
-            }
-            
-            window.print();
-        }
-        
-        function closeModal() {
-            document.getElementById('printModal').style.display = 'none';
-            currentDelivery = null;
-        }
-        
-        // ==================== UTILITAIRES ====================
-        
-        function refreshData() {
-            if (isDemoMode) {
-                showToast("Mode démo - Données locales actualisées", "info");
-                updateDeliveriesTable();
-                updateStats();
-                updateLastUpdateTime();
-                return;
-            }
-            
-            document.getElementById('deliveriesTableBody').innerHTML = `
-                <tr>
-                    <td colspan="8" class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Actualisation des données en cours...</p>
-                    </td>
-                </tr>
-            `;
-            
-            loadDepots();
-            showToast("Données actualisées avec succès", "success");
-        }
-        
-        // ==================== INITIALISATION ====================
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("🚀 Application en cours de démarrage...");
-            
-            // Initialiser le thème
-            initTheme();
-            
-            // Essayer de se connecter à Firebase
-            initializeFirebase();
-            
-            // Configurer les écouteurs d'événements
-            document.getElementById('depotSelector').addEventListener('change', function() {
-                updateDeliveriesTable();
-                updateStats();
-            });
-            
-            // Raccourcis clavier
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeModal();
-                    closeCreateModal();
-                    closeClientSearch();
-                    closeProductSearch();
-                }
-                
-                if (e.ctrlKey && e.key === 'r') {
-                    e.preventDefault();
-                    refreshData();
-                }
-                
-                if (e.ctrlKey && e.key === 'n') {
-                    e.preventDefault();
-                    openCreateDelivery();
-                }
-
-                if (e.ctrlKey && e.key === 'd') {
-                    e.preventDefault();
-                    document.getElementById('themeToggle').click();
-                }
-            });
-            
-            // Fermer les modals en cliquant en dehors
-            window.addEventListener('click', function(event) {
-                const modals = ['printModal', 'createModal', 'clientSearchModal', 'productSearchModal'];
-                
-                modals.forEach(modalId => {
-                    const modal = document.getElementById(modalId);
-                    if (event.target === modal) {
-                        if (modalId === 'printModal') closeModal();
-                        if (modalId === 'createModal') closeCreateModal();
-                        if (modalId === 'clientSearchModal') closeClientSearch();
-                        if (modalId === 'productSearchModal') closeProductSearch();
-                    }
-                });
-            });
-            
-            // Vérifier la connexion après 2 secondes
-            setTimeout(() => {
-                if (!isConnected && !isDemoMode) {
-                    console.log("🔄 Passage automatique en mode démo...");
-                    initializeDemoMode();
-                }
-            }, 2000);
-        });
     </script>
 </body>
 </html>
