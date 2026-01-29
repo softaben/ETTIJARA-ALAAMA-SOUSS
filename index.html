@@ -501,205 +501,6 @@
             color: var(--primary);
         }
 
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: var(--card-bg);
-            border-radius: 15px;
-            width: 100%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            border: 1px solid var(--border);
-        }
-
-        .modal-header {
-            padding: 20px 30px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .modal-header h3 {
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .close-modal {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .close-modal:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text);
-            font-size: 14px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--card-bg);
-            color: var(--text);
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
-        }
-
-        .btn-secondary {
-            background: var(--light);
-            color: var(--text);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border);
-        }
-
-        .products-section {
-            margin-top: 30px;
-        }
-
-        .product-item {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border);
-        }
-
-        .product-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .remove-product {
-            background: var(--danger);
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .add-product-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .header { 
@@ -742,10 +543,6 @@
                 width: 35px;
                 height: 35px;
             }
-
-            .modal {
-                max-height: 95vh;
-            }
         }
 
         @media (max-width: 480px) {
@@ -768,10 +565,6 @@
             .recent-section {
                 padding: 15px;
             }
-
-            .modal-body {
-                padding: 20px;
-            }
         }
     </style>
 </head>
@@ -783,7 +576,7 @@
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <nav class="nav">
-                <a href="deliveries.html" class="nav-item">
+                <a href="index.html" class="nav-item">
                     <i class="fas fa-truck"></i>
                     Livraisons
                 </a>
@@ -827,7 +620,7 @@
 
         <!-- Quick Actions -->
         <div class="quick-actions">
-            <div class="action-card" id="openNewDeliveryModal">
+            <div class="action-card" onclick="window.location.href='index.html'">
                 <div class="action-icon">
                     <i class="fas fa-plus-circle"></i>
                 </div>
@@ -1012,123 +805,6 @@
         </div>
     </main>
 
-    <!-- Modal pour Nouveau Bon de Livraison -->
-    <div class="modal-overlay" id="newDeliveryModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3><i class="fas fa-plus-circle"></i> Nouveau Bon de Livraison</h3>
-                <button class="close-modal" id="closeModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="deliveryForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="clientName">Nom du Client *</label>
-                            <input type="text" id="clientName" class="form-control" required placeholder="Saisir le nom du client">
-                        </div>
-                        <div class="form-group">
-                            <label for="clientPhone">Téléphone *</label>
-                            <input type="tel" id="clientPhone" class="form-control" required placeholder="Ex: 0612345678">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="clientAddress">Adresse de Livraison *</label>
-                        <input type="text" id="clientAddress" class="form-control" required placeholder="Adresse complète du client">
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="deliveryDate">Date de Livraison *</label>
-                            <input type="date" id="deliveryDate" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="depot">Dépôt *</label>
-                            <select id="depot" class="form-control" required>
-                                <option value="">Sélectionner un dépôt</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="driver">Chauffeur</label>
-                            <input type="text" id="driver" class="form-control" placeholder="Nom du chauffeur">
-                        </div>
-                        <div class="form-group">
-                            <label for="paymentMethod">Mode de Paiement</label>
-                            <select id="paymentMethod" class="form-control">
-                                <option value="cash">Espèces</option>
-                                <option value="check">Chèque</option>
-                                <option value="card">Carte</option>
-                                <option value="transfer">Virement</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Section Produits -->
-                    <div class="products-section">
-                        <h4 style="margin-bottom: 20px; color: var(--text);">Produits</h4>
-                        <div id="productsContainer">
-                            <!-- Les produits seront ajoutés ici dynamiquement -->
-                            <div class="product-item">
-                                <div class="product-header">
-                                    <h5 style="color: var(--text); margin: 0;">Produit #1</h5>
-                                    <button type="button" class="remove-product" onclick="removeProduct(this)">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Nom du Produit</label>
-                                        <input type="text" class="form-control product-name" placeholder="Nom du produit" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Quantité</label>
-                                        <input type="number" class="form-control product-quantity" placeholder="Quantité" min="1" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Prix Unitaire (DH)</label>
-                                        <input type="number" class="form-control product-price" placeholder="Prix" step="0.01" required>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <button type="button" class="add-product-btn" onclick="addProduct()">
-                            <i class="fas fa-plus"></i>
-                            Ajouter un Produit
-                        </button>
-                        
-                        <div style="margin-top: 20px; padding: 15px; background: var(--light); border-radius: 8px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <h5 style="margin: 0; color: var(--text);">Total</h5>
-                                <h3 style="margin: 0; color: var(--primary);" id="totalAmount">0.00 DH</h3>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="notes">Notes</label>
-                        <textarea id="notes" class="form-control" rows="3" placeholder="Notes supplémentaires..."></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" id="cancelForm">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer le Bon
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <script>
         // ==================== GESTION DU THEME ====================
         function initTheme() {
@@ -1169,7 +845,6 @@
         let products = [];
         let deliveriesChart = null;
         let statusChart = null;
-        let productCount = 1;
         
         // ==================== INITIALISATION ====================
         document.addEventListener('DOMContentLoaded', function() {
@@ -1183,12 +858,6 @@
             
             // Initialiser Firebase
             initializeFirebase();
-            
-            // Initialiser le modal
-            initModal();
-            
-            // Initialiser le formulaire
-            initDeliveryForm();
             
             // Raccourcis clavier
             document.addEventListener('keydown', function(e) {
@@ -1204,20 +873,12 @@
                 
                 if (e.ctrlKey && e.key === 'n') {
                     e.preventDefault();
-                    openNewDeliveryModal();
-                }
-                
-                if (e.key === 'Escape') {
-                    closeNewDeliveryModal();
+                    window.location.href = 'index.html';
                 }
             });
             
             // Actualiser la date chaque minute
             setInterval(updateCurrentDate, 60000);
-            
-            // Mettre la date d'aujourd'hui par défaut
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('deliveryDate').value = today;
         });
         
         function updateCurrentDate() {
@@ -1228,275 +889,6 @@
             document.getElementById('currentDay').textContent = now.getDate();
             document.getElementById('currentDate').textContent = 
                 `${days[now.getDay()]} ${months[now.getMonth()]} ${now.getFullYear()}`;
-        }
-        
-        // ==================== GESTION DU MODAL ====================
-        function initModal() {
-            const modal = document.getElementById('newDeliveryModal');
-            const openBtn = document.getElementById('openNewDeliveryModal');
-            const closeBtn = document.getElementById('closeModal');
-            const cancelBtn = document.getElementById('cancelForm');
-            
-            openBtn.addEventListener('click', openNewDeliveryModal);
-            closeBtn.addEventListener('click', closeNewDeliveryModal);
-            cancelBtn.addEventListener('click', closeNewDeliveryModal);
-            
-            // Fermer le modal en cliquant à l'extérieur
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeNewDeliveryModal();
-                }
-            });
-        }
-        
-        function openNewDeliveryModal() {
-            const modal = document.getElementById('newDeliveryModal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Réinitialiser le formulaire
-            document.getElementById('deliveryForm').reset();
-            productCount = 1;
-            document.getElementById('productsContainer').innerHTML = `
-                <div class="product-item">
-                    <div class="product-header">
-                        <h5 style="color: var(--text); margin: 0;">Produit #1</h5>
-                        <button type="button" class="remove-product" onclick="removeProduct(this)">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nom du Produit</label>
-                            <input type="text" class="form-control product-name" placeholder="Nom du produit" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Quantité</label>
-                            <input type="number" class="form-control product-quantity" placeholder="Quantité" min="1" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Prix Unitaire (DH)</label>
-                            <input type="number" class="form-control product-price" placeholder="Prix" step="0.01" required>
-                        </div>
-                    </div>
-                </div>
-            `;
-            updateTotalAmount();
-            
-            // Mettre à jour la liste des dépôts
-            updateDepotList();
-            
-            // Mettre la date d'aujourd'hui
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('deliveryDate').value = today;
-        }
-        
-        function closeNewDeliveryModal() {
-            const modal = document.getElementById('newDeliveryModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        // ==================== GESTION DU FORMULAIRE ====================
-        function initDeliveryForm() {
-            const form = document.getElementById('deliveryForm');
-            
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                saveDelivery();
-            });
-            
-            // Écouter les changements dans les produits pour mettre à jour le total
-            document.getElementById('productsContainer').addEventListener('input', function() {
-                updateTotalAmount();
-            });
-        }
-        
-        function addProduct() {
-            productCount++;
-            const productsContainer = document.getElementById('productsContainer');
-            
-            const productDiv = document.createElement('div');
-            productDiv.className = 'product-item';
-            productDiv.innerHTML = `
-                <div class="product-header">
-                    <h5 style="color: var(--text); margin: 0;">Produit #${productCount}</h5>
-                    <button type="button" class="remove-product" onclick="removeProduct(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nom du Produit</label>
-                        <input type="text" class="form-control product-name" placeholder="Nom du produit" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Quantité</label>
-                        <input type="number" class="form-control product-quantity" placeholder="Quantité" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Prix Unitaire (DH)</label>
-                        <input type="number" class="form-control product-price" placeholder="Prix" step="0.01" required>
-                    </div>
-                </div>
-            `;
-            
-            productsContainer.appendChild(productDiv);
-            
-            // Ajouter l'écouteur d'événement pour le nouveau produit
-            productDiv.addEventListener('input', updateTotalAmount);
-        }
-        
-        function removeProduct(button) {
-            const productItem = button.closest('.product-item');
-            productItem.remove();
-            updateTotalAmount();
-            productCount--;
-            
-            // Renumérotation des produits
-            const productItems = document.querySelectorAll('.product-item');
-            productItems.forEach((item, index) => {
-                const header = item.querySelector('h5');
-                header.textContent = `Produit #${index + 1}`;
-            });
-            productCount = productItems.length;
-        }
-        
-        function updateTotalAmount() {
-            let total = 0;
-            const productItems = document.querySelectorAll('.product-item');
-            
-            productItems.forEach(item => {
-                const quantity = parseFloat(item.querySelector('.product-quantity').value) || 0;
-                const price = parseFloat(item.querySelector('.product-price').value) || 0;
-                total += quantity * price;
-            });
-            
-            document.getElementById('totalAmount').textContent = total.toFixed(2) + ' DH';
-        }
-        
-        function updateDepotList() {
-            const depotSelect = document.getElementById('depot');
-            depotSelect.innerHTML = '<option value="">Sélectionner un dépôt</option>';
-            
-            if (depots.length > 0) {
-                depots.forEach(depot => {
-                    const option = document.createElement('option');
-                    option.value = depot.id;
-                    option.textContent = `${depot.name} - ${depot.city || ''}`;
-                    depotSelect.appendChild(option);
-                });
-            } else {
-                // Options par défaut si pas de dépôts chargés
-                const defaultDepots = [
-                    { id: 'depot1', name: 'Dépôt Principal', city: 'Agadir' },
-                    { id: 'depot2', name: 'Dépôt Secondaire', city: 'Ait Melloul' }
-                ];
-                
-                defaultDepots.forEach(depot => {
-                    const option = document.createElement('option');
-                    option.value = depot.id;
-                    option.textContent = `${depot.name} - ${depot.city}`;
-                    depotSelect.appendChild(option);
-                });
-            }
-        }
-        
-        function saveDelivery() {
-            // Récupérer les données du formulaire
-            const formData = {
-                clientName: document.getElementById('clientName').value,
-                clientPhone: document.getElementById('clientPhone').value,
-                clientAddress: document.getElementById('clientAddress').value,
-                deliveryDate: document.getElementById('deliveryDate').value,
-                depotId: document.getElementById('depot').value,
-                driver: document.getElementById('driver').value,
-                paymentMethod: document.getElementById('paymentMethod').value,
-                notes: document.getElementById('notes').value,
-                status: 'pending',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-            
-            // Récupérer les produits
-            const productItems = document.querySelectorAll('.product-item');
-            const items = [];
-            let totalAmount = 0;
-            
-            productItems.forEach(item => {
-                const name = item.querySelector('.product-name').value;
-                const quantity = parseFloat(item.querySelector('.product-quantity').value);
-                const price = parseFloat(item.querySelector('.product-price').value);
-                
-                if (name && quantity && price) {
-                    const itemTotal = quantity * price;
-                    totalAmount += itemTotal;
-                    
-                    items.push({
-                        name: name,
-                        quantity: quantity,
-                        price: price,
-                        total: itemTotal
-                    });
-                }
-            });
-            
-            formData.items = items;
-            formData.totalAmount = totalAmount;
-            
-            // Générer un numéro de bon
-            const now = new Date();
-            const dateStr = now.toISOString().split('T')[0].replace(/-/g, '');
-            const randomNum = Math.floor(Math.random() * 1000);
-            formData.bonNumber = `BL-${dateStr}-${String(randomNum).padStart(3, '0')}`;
-            
-            console.log('Données à sauvegarder:', formData);
-            
-            if (isDemoMode) {
-                // Mode démo - simuler la sauvegarde
-                showToast("Bon de livraison créé avec succès (mode démo)", "success");
-                closeNewDeliveryModal();
-                
-                // Ajouter à la liste des livraisons locales
-                formData.id = 'demo-' + Date.now();
-                deliveries.unshift(formData);
-                updateDashboard();
-            } else {
-                // Mode Firebase
-                saveToFirebase(formData);
-            }
-        }
-        
-        function saveToFirebase(deliveryData) {
-            if (!database) {
-                showToast("Erreur: Base de données non connectée", "error");
-                return;
-            }
-            
-            showToast("Enregistrement en cours...", "info");
-            
-            try {
-                const newDeliveryRef = database.ref('deliveries').push();
-                deliveryData.id = newDeliveryRef.key;
-                
-                newDeliveryRef.set(deliveryData)
-                    .then(() => {
-                        showToast("Bon de livraison créé avec succès!", "success");
-                        closeNewDeliveryModal();
-                        
-                        // Ajouter à la liste locale
-                        deliveries.unshift(deliveryData);
-                        updateDashboard();
-                    })
-                    .catch((error) => {
-                        console.error("Erreur d'enregistrement:", error);
-                        showToast("Erreur lors de l'enregistrement", "error");
-                    });
-                    
-            } catch (error) {
-                console.error("Erreur:", error);
-                showToast("Erreur lors de l'enregistrement", "error");
-            }
         }
         
         // ==================== FONCTIONS UTILITAIRES ====================
@@ -2154,6 +1546,15 @@
                 case 'cancelled': return 'Annulé';
                 default: return 'Inconnu';
             }
+        }
+        
+        // Fonctions pour les boutons d'action
+        function openClientSearch() {
+            window.location.href = 'clients.html';
+        }
+        
+        function openProductSearch() {
+            window.location.href = 'products.html';
         }
     </script>
 </body>
