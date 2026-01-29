@@ -584,15 +584,15 @@
                     <i class="fas fa-chart-pie"></i>
                     Dashboard
                 </a>
-                <a href="#" class="nav-item">
+                <a href="clients.html" class="nav-item">
                     <i class="fas fa-users"></i>
                     Clients
                 </a>
-                <a href="#" class="nav-item">
+                <a href="products.html" class="nav-item">
                     <i class="fas fa-boxes"></i>
                     Produits
                 </a>
-                <a href="#" class="nav-item">
+                <a href="settings.html" class="nav-item">
                     <i class="fas fa-cog"></i>
                     Paramètres
                 </a>
@@ -628,7 +628,7 @@
                 <p>Créer un nouveau bon de livraison</p>
             </div>
             
-            <div class="action-card" onclick="openClientSearch()">
+            <div class="action-card" onclick="window.location.href='clients.html'">
                 <div class="action-icon">
                     <i class="fas fa-user-plus"></i>
                 </div>
@@ -636,7 +636,7 @@
                 <p>Enregistrer un nouveau client</p>
             </div>
             
-            <div class="action-card" onclick="openProductSearch()">
+            <div class="action-card" onclick="window.location.href='products.html'">
                 <div class="action-icon">
                     <i class="fas fa-box"></i>
                 </div>
@@ -742,7 +742,7 @@
         <div class="recent-section">
             <div class="section-header">
                 <h3><i class="fas fa-history"></i> Livraisons Récentes</h3>
-                <a href="index.html" class="view-all">
+                <a href="deliveries.html" class="view-all">
                     Voir toutes
                     <i class="fas fa-arrow-left"></i>
                 </a>
@@ -1550,11 +1550,11 @@
         
         // Fonctions pour les boutons d'action
         function openClientSearch() {
-            showToast("Fonctionnalité en développement", "info");
+            window.location.href = 'clients.html';
         }
         
         function openProductSearch() {
-            showToast("Fonctionnalité en développement", "info");
+            window.location.href = 'products.html';
         }
     </script>
 </body>
