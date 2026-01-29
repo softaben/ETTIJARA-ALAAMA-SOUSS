@@ -1752,6 +1752,9 @@
         let confirmAction = null;
         let confirmData = null;
         
+        // Références pour détacher les écouteurs Firebase
+        let firebaseListeners = [];
+        
         // ==================== INITIALISATION ====================
         document.addEventListener('DOMContentLoaded', function() {
             console.log("🚀 Page Produits en cours de démarrage...");
@@ -1802,6 +1805,9 @@
                     refreshProducts();
                 }
             });
+            
+            // Ajouter un bouton de debug (optionnel)
+            addDebugButton();
         });
         
         function initTheme() {
@@ -1902,6 +1908,50 @@
             // Filtres
             document.getElementById('categoryFilter').addEventListener('change', searchProducts);
             document.getElementById('stockFilter').addEventListener('change', searchProducts);
+        }
+        
+        function addDebugButton() {
+            const debugButton = document.createElement('button');
+            debugButton.innerHTML = '<i class="fas fa-bug"></i> Debug';
+            debugButton.className = 'btn btn-warning btn-small';
+            debugButton.style.position = 'fixed';
+            debugButton.style.bottom = '20px';
+            debugButton.style.left = '20px';
+            debugButton.style.zIndex = '1000';
+            debugButton.style.display = 'none'; // Caché par défaut
+            debugButton.onclick = function() {
+                console.log('=== DEBUG INFORMATION ===');
+                console.log('isConnected:', isConnected);
+                console.log('isDemoMode:', isDemoMode);
+                console.log('database:', database ? 'Connected' : 'Not connected');
+                console.log('Products count:', products.length);
+                console.log('Categories count:', categories.length);
+                console.log('Movements count:', stockMovements.length);
+                console.log('Firebase listeners:', firebaseListeners.length);
+                console.log('=========================');
+                
+                // Tester la connexion Firebase
+                if (database) {
+                    console.log('Testing Firebase connection...');
+                    database.ref('.info/connected').once('value')
+                        .then(snapshot => {
+                            console.log('Firebase connection test:', snapshot.val() ? 'Connected' : 'Disconnected');
+                        })
+                        .catch(error => {
+                            console.error('Firebase test error:', error);
+                        });
+                }
+                
+                // Forcer le chargement des mouvements
+                console.log('Forcing movements reload...');
+                loadStockMovements();
+            };
+            document.body.appendChild(debugButton);
+            
+            // Afficher le bouton debug seulement en mode développement
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                debugButton.style.display = 'block';
+            }
         }
         
         function closeAllModals() {
@@ -2089,9 +2139,7 @@
                 <span>${message}</span>
             `;
             
-            document.body.addEventListener('DOMContentLoaded', function() {
-                document.body.appendChild(toast);
-            });
+            document.body.appendChild(toast);
             
             setTimeout(() => {
                 if (toast.parentNode) {
@@ -2147,7 +2195,10 @@
             });
             
             // Ajouter la classe selected à la couleur choisie
-            document.querySelector(`.color-option[data-color="${color}"]`).classList.add('selected');
+            const selectedOption = document.querySelector(`.color-option[data-color="${color}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
             
             // Mettre à jour la valeur cachée
             document.getElementById('categoryColor').value = color;
@@ -2432,7 +2483,7 @@
         
         function updateProductQuantity(productId, quantityChange, type, reference = '') {
             const product = products.find(p => p.id === productId);
-            if (!product) return;
+            if (!product) return false;
             
             const newStock = (product.stock || 0) + quantityChange;
             
@@ -2500,6 +2551,11 @@
         // ==================== AFFICHAGE DES DONNÉES ====================
         function displayProducts(productsList) {
             const tableBody = document.getElementById('productsTable');
+            
+            if (!tableBody) {
+                console.error("❌ Table body non trouvé pour les produits");
+                return;
+            }
             
             if (productsList.length === 0) {
                 tableBody.innerHTML = `
@@ -2576,11 +2632,19 @@
             tableBody.innerHTML = html;
             
             // Mettre à jour le compteur
-            document.getElementById('productsCount').textContent = `${productsList.length} produits trouvés`;
+            const productsCountElement = document.getElementById('productsCount');
+            if (productsCountElement) {
+                productsCountElement.textContent = `${productsList.length} produits trouvés`;
+            }
         }
         
         function displayStockMovements(movementsList) {
             const tableBody = document.getElementById('movementsTable');
+            
+            if (!tableBody) {
+                console.error("❌ Table body non trouvé pour les mouvements");
+                return;
+            }
             
             if (movementsList.length === 0) {
                 tableBody.innerHTML = `
@@ -2597,30 +2661,39 @@
             
             let html = '';
             movementsList.forEach(movement => {
-                const date = new Date(movement.date || movement.createdAt);
-                const dateStr = date.toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                const typeClass = movement.type === 'in' ? 'movement-in' : 'movement-out';
-                const typeText = movement.type === 'in' ? 'ENTRÉE' : 'SORTIE';
-                
-                html += `
-                    <tr>
-                        <td>${dateStr}</td>
-                        <td>${movement.productName}</td>
-                        <td><span class="movement-type ${typeClass}">${typeText}</span></td>
-                        <td>${movement.quantity} ${movement.unit || 'unité'}</td>
-                        <td>${movement.unitPrice.toFixed(2)} DH</td>
-                        <td><strong style="color: ${movement.type === 'in' ? 'var(--success)' : 'var(--danger)'};">${movement.total.toFixed(2)} DH</strong></td>
-                        <td>${movement.reference || '--'}</td>
-                        <td>${movement.user || 'Système'}</td>
-                    </tr>
-                `;
+                try {
+                    const date = new Date(movement.date || movement.createdAt || Date.now());
+                    const dateStr = date.toLocaleDateString('fr-FR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    const typeClass = movement.type === 'in' ? 'movement-in' : 'movement-out';
+                    const typeText = movement.type === 'in' ? 'ENTRÉE' : 'SORTIE';
+                    
+                    // Formater les nombres
+                    const quantity = parseFloat(movement.quantity) || 0;
+                    const unitPrice = parseFloat(movement.unitPrice) || 0;
+                    const total = parseFloat(movement.total) || 0;
+                    
+                    html += `
+                        <tr>
+                            <td>${dateStr}</td>
+                            <td>${movement.productName || 'Produit inconnu'}</td>
+                            <td><span class="movement-type ${typeClass}">${typeText}</span></td>
+                            <td>${quantity.toFixed(2)} ${movement.unit || 'unité'}</td>
+                            <td>${unitPrice.toFixed(2)} DH</td>
+                            <td><strong style="color: ${movement.type === 'in' ? 'var(--success)' : 'var(--danger)'};">${total.toFixed(2)} DH</strong></td>
+                            <td>${movement.reference || movement.supplier || '--'}</td>
+                            <td>${movement.user || 'Système'}</td>
+                        </tr>
+                    `;
+                } catch (error) {
+                    console.error("❌ Erreur d'affichage du mouvement:", movement, error);
+                }
             });
             
             tableBody.innerHTML = html;
@@ -2628,6 +2701,12 @@
         
         function displayStockAlerts() {
             const alertsContainer = document.getElementById('alertsContainer');
+            
+            if (!alertsContainer) {
+                console.error("❌ Container des alertes non trouvé");
+                return;
+            }
+            
             const lowStockProducts = products.filter(p => {
                 const stock = p.stock || 0;
                 const minStock = p.minStock || 10;
@@ -2677,6 +2756,11 @@
         
         function displayCategories() {
             const categoriesContainer = document.getElementById('categoriesContainer');
+            
+            if (!categoriesContainer) {
+                console.error("❌ Container des catégories non trouvé");
+                return;
+            }
             
             if (categories.length === 0) {
                 categoriesContainer.innerHTML = `
@@ -2731,11 +2815,21 @@
             html += '</div>';
             
             categoriesContainer.innerHTML = html;
-            document.getElementById('categoriesCountDisplay').textContent = `${categories.length} catégories`;
+            
+            const categoriesCountDisplay = document.getElementById('categoriesCountDisplay');
+            if (categoriesCountDisplay) {
+                categoriesCountDisplay.textContent = `${categories.length} catégories`;
+            }
         }
         
         function displayUncategorizedProducts() {
             const tableBody = document.getElementById('uncategorizedTable');
+            
+            if (!tableBody) {
+                console.error("❌ Table body non trouvé pour les produits non catégorisés");
+                return;
+            }
+            
             const uncategorizedProducts = products.filter(p => !p.category || p.category === '');
             
             if (uncategorizedProducts.length === 0) {
@@ -2748,7 +2842,11 @@
                         </td>
                     </tr>
                 `;
-                document.getElementById('uncategorizedCount').textContent = '0 produits';
+                
+                const uncategorizedCount = document.getElementById('uncategorizedCount');
+                if (uncategorizedCount) {
+                    uncategorizedCount.textContent = '0 produits';
+                }
                 return;
             }
             
@@ -2783,7 +2881,11 @@
             });
             
             tableBody.innerHTML = html;
-            document.getElementById('uncategorizedCount').textContent = `${uncategorizedProducts.length} produit${uncategorizedProducts.length !== 1 ? 's' : ''}`;
+            
+            const uncategorizedCount = document.getElementById('uncategorizedCount');
+            if (uncategorizedCount) {
+                uncategorizedCount.textContent = `${uncategorizedProducts.length} produit${uncategorizedProducts.length !== 1 ? 's' : ''}`;
+            }
         }
         
         // ==================== FONCTIONS D'INTERACTION ====================
@@ -2864,6 +2966,11 @@
         }
         
         function exportProducts() {
+            if (products.length === 0) {
+                showToast("Aucun produit à exporter", "warning");
+                return;
+            }
+            
             const data = products.map(p => ({
                 'Nom': p.name,
                 'Catégorie': p.category || '',
@@ -2875,17 +2982,25 @@
             }));
             
             const csv = convertToCSV(data);
-            const blob = new Blob([csv], { type: 'text/csv' });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = `produits_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
             
             showToast("Export CSV terminé", "success");
         }
         
         function exportCategories() {
+            if (categories.length === 0) {
+                showToast("Aucune catégorie à exporter", "warning");
+                return;
+            }
+            
             const data = categories.map(c => ({
                 'Nom': c.name,
                 'Description': c.description || '',
@@ -2895,21 +3010,29 @@
             }));
             
             const csv = convertToCSV(data);
-            const blob = new Blob([csv], { type: 'text/csv' });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = `categories_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
             
             showToast("Export CSV des catégories terminé", "success");
         }
         
         function convertToCSV(data) {
+            if (data.length === 0) return '';
+            
             const headers = Object.keys(data[0]);
             const csvRows = [
                 headers.join(','),
-                ...data.map(row => headers.map(header => JSON.stringify(row[header] || '')).join(','))
+                ...data.map(row => headers.map(header => {
+                    const cell = row[header] !== null && row[header] !== undefined ? row[header] : '';
+                    return JSON.stringify(cell);
+                }).join(','))
             ];
             return csvRows.join('\n');
         }
@@ -2998,6 +3121,8 @@
             
             // Mettre à jour le filtre de catégorie dans l'onglet produits
             const categoryFilter = document.getElementById('categoryFilter');
+            if (!categoryFilter) return;
+            
             const currentValue = categoryFilter.value;
             categoryFilter.innerHTML = '<option value="">Toutes catégories</option>';
             
@@ -3087,12 +3212,21 @@
                 });
             }
             
+            // Trier les mouvements par date (du plus récent au plus ancien)
+            stockMovements.sort((a, b) => {
+                const dateA = new Date(a.date || a.createdAt || 0);
+                const dateB = new Date(b.date || b.createdAt || 0);
+                return dateB - dateA;
+            });
+            
             updateDashboard();
             displayProducts(products);
-            loadStockMovements();
+            displayStockMovements(stockMovements);
             checkStockAlerts();
             displayCategories();
             displayUncategorizedProducts();
+            
+            showToast("Données démo chargées avec succès", "success");
         }
         
         // ==================== FIREBASE ====================
@@ -3111,11 +3245,13 @@
                     throw new Error("Configuration Firebase manquante");
                 }
                 
+                // Vérifier si Firebase est déjà initialisé
                 if (!firebase.apps.length) {
                     firebase.initializeApp(firebaseConfig);
                     console.log("✅ Firebase initialisé avec succès");
                 } else {
                     console.log("ℹ️ Firebase déjà initialisé");
+                    firebase.app(); // Utiliser l'instance existante
                 }
                 
                 database = firebase.database();
@@ -3123,7 +3259,7 @@
                 // Tester la connexion
                 const testRef = database.ref('.info/connected');
                 
-                testRef.on('value', (snapshot) => {
+                const connectionListener = testRef.on('value', (snapshot) => {
                     const connected = snapshot.val() === true;
                     updateConnectionStatus(connected);
                     
@@ -3148,6 +3284,10 @@
                     loadDemoData();
                 });
                 
+                // Stocker la référence pour pouvoir la détacher plus tard
+                firebaseListeners.push({ ref: testRef, listener: connectionListener });
+                
+                // Timeout de connexion
                 setTimeout(() => {
                     if (!isConnected && !isDemoMode) {
                         console.log("⏱️ Timeout de connexion - Passage en mode démo");
@@ -3166,33 +3306,205 @@
         }
         
         function loadData() {
+            console.log("📥 Chargement des données depuis Firebase...");
+            
+            // Initialiser les tableaux vides
+            products = [];
+            categories = [];
+            stockMovements = [];
+            
+            // Afficher l'état de chargement
+            const productsTable = document.getElementById('productsTable');
+            const movementsTable = document.getElementById('movementsTable');
+            
+            if (productsTable) {
+                productsTable.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Chargement des produits depuis Firebase...</p>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            if (movementsTable) {
+                movementsTable.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Chargement des mouvements depuis Firebase...</p>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            // Charger d'abord les catégories, puis les produits, puis les mouvements
             loadCategoriesFromFirebase();
         }
         
         function loadCategoriesFromFirebase() {
+            if (!database) {
+                console.error("❌ Base de données non disponible");
+                loadProducts();
+                return;
+            }
+            
             try {
                 const categoriesRef = database.ref('categories');
                 
-                categoriesRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    categories = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            categories.push({
-                                id: key,
-                                ...data[key]
+                // Utiliser once() pour une seule lecture
+                categoriesRef.once('value')
+                    .then((snapshot) => {
+                        const data = snapshot.val();
+                        categories = [];
+                        
+                        if (data) {
+                            Object.keys(data).forEach(key => {
+                                categories.push({
+                                    id: key,
+                                    ...data[key]
+                                });
                             });
-                        });
-                        console.log(`✅ ${categories.length} catégories chargées`);
-                    }
+                            console.log(`✅ ${categories.length} catégories chargées`);
+                        } else {
+                            console.log("ℹ️ Aucune catégorie trouvée dans Firebase");
+                        }
+                        
+                        // Charger les produits après les catégories
+                        loadProducts();
+                    })
+                    .catch((error) => {
+                        console.error("❌ Erreur de chargement des catégories:", error);
+                        loadProducts(); // Continuer avec les produits même en cas d'erreur
+                    });
                     
-                    loadProducts();
-                });
-                
             } catch (error) {
                 console.error("❌ Erreur dans loadCategories:", error);
                 loadProducts();
+            }
+        }
+        
+        function loadProducts() {
+            if (!database) {
+                console.error("❌ Base de données non disponible");
+                loadStockMovements();
+                return;
+            }
+            
+            try {
+                const productsRef = database.ref('products');
+                
+                productsRef.once('value')
+                    .then((snapshot) => {
+                        const data = snapshot.val();
+                        products = [];
+                        
+                        if (data) {
+                            Object.keys(data).forEach(key => {
+                                const product = {
+                                    id: key,
+                                    ...data[key]
+                                };
+                                // Convertir les champs numériques
+                                product.price = parseFloat(product.price) || 0;
+                                product.cost = parseFloat(product.cost) || 0;
+                                product.stock = parseFloat(product.stock) || 0;
+                                product.minStock = parseFloat(product.minStock) || 10;
+                                products.push(product);
+                            });
+                            
+                            console.log(`✅ ${products.length} produits chargés`);
+                            updateDashboard();
+                            displayProducts(products);
+                            checkStockAlerts();
+                            displayCategories();
+                            displayUncategorizedProducts();
+                        } else {
+                            console.log("ℹ️ Aucun produit trouvé dans Firebase");
+                            updateDashboard();
+                            displayProducts([]);
+                            displayCategories();
+                            displayUncategorizedProducts();
+                        }
+                        
+                        // Charger les mouvements après les produits
+                        loadStockMovements();
+                    })
+                    .catch((error) => {
+                        console.error("❌ Erreur de chargement des produits:", error);
+                        showToast("Erreur de chargement des produits", "error");
+                        updateDashboard();
+                        displayProducts([]);
+                        loadStockMovements(); // Charger les mouvements même en cas d'erreur
+                    });
+                    
+            } catch (error) {
+                console.error("❌ Erreur dans loadProducts:", error);
+                updateDashboard();
+                displayProducts([]);
+                loadStockMovements();
+            }
+        }
+        
+        function loadStockMovements() {
+            if (isDemoMode) {
+                // Mode démo - afficher les mouvements déjà chargés
+                displayStockMovements(stockMovements);
+                return;
+            }
+            
+            if (!database) {
+                console.error("❌ Base de données non disponible");
+                displayStockMovements([]);
+                return;
+            }
+            
+            try {
+                const movementsRef = database.ref('stockMovements');
+                
+                movementsRef.once('value')
+                    .then((snapshot) => {
+                        const data = snapshot.val();
+                        stockMovements = [];
+                        
+                        if (data) {
+                            Object.keys(data).forEach(key => {
+                                const movement = {
+                                    id: key,
+                                    ...data[key]
+                                };
+                                // S'assurer que les champs numériques sont correctement convertis
+                                movement.quantity = parseFloat(movement.quantity) || 0;
+                                movement.unitPrice = parseFloat(movement.unitPrice) || 0;
+                                movement.total = parseFloat(movement.total) || 0;
+                                stockMovements.push(movement);
+                            });
+                            
+                            // Trier par date (du plus récent au plus ancien)
+                            stockMovements.sort((a, b) => {
+                                const dateA = new Date(a.date || a.createdAt || 0);
+                                const dateB = new Date(b.date || b.createdAt || 0);
+                                return dateB - dateA;
+                            });
+                            
+                            console.log(`✅ ${stockMovements.length} mouvements chargés`);
+                            displayStockMovements(stockMovements);
+                        } else {
+                            console.log("ℹ️ Aucun mouvement trouvé dans Firebase");
+                            displayStockMovements([]);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("❌ Erreur de chargement des mouvements:", error);
+                        showToast("Erreur de chargement des mouvements", "error");
+                        displayStockMovements([]);
+                    });
+                    
+            } catch (error) {
+                console.error("❌ Erreur dans loadStockMovements:", error);
+                showToast("Erreur de chargement des mouvements", "error");
+                displayStockMovements([]);
             }
         }
         
@@ -3221,84 +3533,6 @@
                 } catch (error) {
                     console.error("❌ Erreur sauvegarde catégories:", error);
                 }
-            }
-        }
-        
-        function loadProducts() {
-            try {
-                const productsRef = database.ref('products');
-                
-                productsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    products = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            products.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        console.log(`✅ ${products.length} produits chargés`);
-                        updateDashboard();
-                        displayProducts(products);
-                        loadStockMovements();
-                        checkStockAlerts();
-                        displayCategories();
-                        displayUncategorizedProducts();
-                    } else {
-                        showToast("Aucun produit trouvé", "warning");
-                        updateDashboard();
-                        displayProducts([]);
-                        displayCategories();
-                        displayUncategorizedProducts();
-                    }
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des produits:", error);
-                    showToast("Erreur de chargement des produits", "error");
-                    updateDashboard();
-                    displayProducts([]);
-                });
-                
-            } catch (error) {
-                console.error("❌ Erreur dans loadProducts:", error);
-                updateDashboard();
-                displayProducts([]);
-            }
-        }
-        
-        function loadStockMovements() {
-            try {
-                const movementsRef = database.ref('stockMovements');
-                
-                movementsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    stockMovements = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            stockMovements.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        
-                        console.log(`✅ ${stockMovements.length} mouvements chargés`);
-                        displayStockMovements(stockMovements);
-                    } else {
-                        displayStockMovements([]);
-                    }
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des mouvements:", error);
-                    displayStockMovements([]);
-                });
-                
-            } catch (error) {
-                console.error("❌ Erreur dans loadStockMovements:", error);
-                displayStockMovements([]);
             }
         }
         
@@ -3411,12 +3645,12 @@
                     })
                     .catch((error) => {
                         console.error("❌ Erreur d'ajout du produit:", error);
-                        showToast("Erreur lors de l'ajout du produit", "error");
+                        showToast("Erreur lors de l'ajout du produit: " + error.message, "error");
                     });
                     
             } catch (error) {
                 console.error("❌ Erreur:", error);
-                showToast("Erreur lors de l'ajout du produit", "error");
+                showToast("Erreur lors de l'ajout du produit: " + error.message, "error");
             }
         }
         
@@ -3447,12 +3681,12 @@
                     })
                     .catch((error) => {
                         console.error("❌ Erreur de mise à jour du produit:", error);
-                        showToast("Erreur lors de la mise à jour du produit", "error");
+                        showToast("Erreur lors de la mise à jour du produit: " + error.message, "error");
                     });
                     
             } catch (error) {
                 console.error("❌ Erreur:", error);
-                showToast("Erreur lors de la mise à jour du produit", "error");
+                showToast("Erreur lors de la mise à jour du produit: " + error.message, "error");
             }
         }
         
@@ -3480,12 +3714,12 @@
                     })
                     .catch((error) => {
                         console.error("❌ Erreur de suppression du produit:", error);
-                        showToast("Erreur lors de la suppression du produit", "error");
+                        showToast("Erreur lors de la suppression du produit: " + error.message, "error");
                     });
                     
             } catch (error) {
                 console.error("❌ Erreur:", error);
-                showToast("Erreur lors de la suppression du produit", "error");
+                showToast("Erreur lors de la suppression du produit: " + error.message, "error");
             }
         }
         
@@ -3515,12 +3749,12 @@
                     })
                     .catch((error) => {
                         console.error("❌ Erreur d'ajout de la catégorie:", error);
-                        showToast("Erreur lors de l'ajout de la catégorie", "error");
+                        showToast("Erreur lors de l'ajout de la catégorie: " + error.message, "error");
                     });
                     
             } catch (error) {
                 console.error("❌ Erreur:", error);
-                showToast("Erreur lors de l'ajout de la catégorie", "error");
+                showToast("Erreur lors de l'ajout de la catégorie: " + error.message, "error");
             }
         }
         
@@ -3578,12 +3812,12 @@
                     })
                     .catch((error) => {
                         console.error("❌ Erreur de mise à jour de la catégorie:", error);
-                        showToast("Erreur lors de la mise à jour de la catégorie", "error");
+                        showToast("Erreur lors de la mise à jour de la catégorie: " + error.message, "error");
                     });
                     
             } catch (error) {
                 console.error("❌ Erreur:", error);
-                showToast("Erreur lors de la mise à jour de la catégorie", "error");
+                showToast("Erreur lors de la mise à jour de la catégorie: " + error.message, "error");
             }
         }
         
@@ -3635,12 +3869,12 @@
                     })
                     .catch((error) => {
                         console.error("❌ Erreur de suppression de la catégorie:", error);
-                        showToast("Erreur lors de la suppression de la catégorie", "error");
+                        showToast("Erreur lors de la suppression de la catégorie: " + error.message, "error");
                     });
                     
             } catch (error) {
                 console.error("❌ Erreur:", error);
-                showToast("Erreur lors de la suppression de la catégorie", "error");
+                showToast("Erreur lors de la suppression de la catégorie: " + error.message, "error");
             }
         }
         
@@ -3653,15 +3887,32 @@
             showToast("Enregistrement en cours...", "info");
             
             try {
+                // Préparer les données du mouvement
+                const movementToSave = {
+                    productId: movementData.productId,
+                    productName: movementData.productName,
+                    type: movementData.type,
+                    quantity: parseFloat(movementData.quantity) || 0,
+                    unitPrice: parseFloat(movementData.unitPrice) || 0,
+                    total: parseFloat(movementData.total) || 0,
+                    date: movementData.date || new Date().toISOString(),
+                    supplier: movementData.supplier || '',
+                    reference: movementData.reference || '',
+                    notes: movementData.notes || '',
+                    reason: movementData.reason || '',
+                    createdAt: new Date().toISOString(),
+                    user: movementData.user || 'Administrateur'
+                };
+                
                 // Enregistrer le mouvement
                 const movementRef = database.ref('stockMovements').push();
-                movementData.id = movementRef.key;
+                movementToSave.id = movementRef.key;
                 
-                movementRef.set(movementData)
+                movementRef.set(movementToSave)
                     .then(() => {
                         // Mettre à jour le stock du produit
                         const productRef = database.ref('products/' + productId + '/stock');
-                        return productRef.set(newStock);
+                        return productRef.set(parseFloat(newStock) || 0);
                     })
                     .then(() => {
                         const message = movementData.type === 'in' 
@@ -3681,12 +3932,12 @@
                     })
                     .catch((error) => {
                         console.error("❌ Erreur d'enregistrement:", error);
-                        showToast("Erreur lors de l'enregistrement", "error");
+                        showToast("Erreur lors de l'enregistrement: " + error.message, "error");
                     });
                     
             } catch (error) {
                 console.error("❌ Erreur:", error);
-                showToast("Erreur lors de l'enregistrement", "error");
+                showToast("Erreur lors de l'enregistrement: " + error.message, "error");
             }
         }
         
@@ -3713,13 +3964,13 @@
                     })
                     .catch((error) => {
                         console.error("❌ Erreur mise à jour stock:", error);
-                        showToast("Erreur lors de la mise à jour du stock", "error");
+                        showToast("Erreur lors de la mise à jour du stock: " + error.message, "error");
                         return false;
                     });
                     
             } catch (error) {
                 console.error("❌ Erreur:", error);
-                showToast("Erreur lors de la mise à jour du stock", "error");
+                showToast("Erreur lors de la mise à jour du stock: " + error.message, "error");
                 return false;
             }
         }
@@ -3767,24 +4018,17 @@
             }
         });
         
-        // ==================== ÉCOUTEUR POUR LES LIVRAISONS ====================
-        function handleDeliveryCreated(deliveryData) {
-            console.log("📦 Livraison créée, mise à jour des stocks...");
-            
-            if (deliveryData.items && Array.isArray(deliveryData.items)) {
-                deliveryData.items.forEach(item => {
-                    if (item.productId) {
-                        // Diminuer le stock pour ce produit
-                        updateProductQuantity(item.productId, -item.quantity, 'out', deliveryData.bonNumber);
-                        showToast(`Stock diminué pour ${item.name}: -${item.quantity}`, "info");
-                    }
-                });
-            }
-        }
+        // ==================== NETTOYAGE ====================
         
-        function updateStockFromDelivery(productId, quantity, reference) {
-            return updateProductQuantity(productId, -quantity, 'out', reference);
-        }
+        // Détacher les écouteurs Firebase quand la page se ferme
+        window.addEventListener('beforeunload', function() {
+            firebaseListeners.forEach(listenerInfo => {
+                if (listenerInfo.ref && listenerInfo.listener) {
+                    listenerInfo.ref.off('value', listenerInfo.listener);
+                }
+            });
+            firebaseListeners = [];
+        });
     </script>
 </body>
 </html>
