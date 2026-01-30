@@ -1331,9 +1331,9 @@
                     <i class="fas fa-money-bill-wave"></i>
                     Paiements
                 </a>
-                <a href="products.html" class="nav-item">
-                    <i class="fas fa-boxes"></i>
-                    Produits
+                <a href="achats.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    Achats
                 </a>
                 <a href="stock.html" class="nav-item">
                     <i class="fas fa-warehouse"></i>
@@ -1387,6 +1387,10 @@
                 <button class="btn btn-success" onclick="openNewPaymentModal()">
                     <i class="fas fa-plus-circle"></i>
                     Nouveau Paiement
+                </button>
+                <button class="btn btn-danger" onclick="showUnpaidClientsModal()">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Clients Non Payés
                 </button>
                 <button class="btn btn-info" onclick="generateReport()">
                     <i class="fas fa-file-export"></i>
@@ -2189,7 +2193,7 @@
             // Mettre à jour les informations du paiement
             document.getElementById('detailPaymentNumber').textContent = payment.paymentNumber || payment.id.substring(0, 8);
             document.getElementById('detailPaymentDate').textContent = formatDate(payment.paymentDate);
-            document.getElementById('detailPaymentAmount').textContent = `${payment.amount.toFixed(2)} DH`;
+            document.getElementById('detailPaymentAmount').textContent = `${payment.amount ? payment.amount.toFixed(2) : '0.00'} DH`;
             document.getElementById('detailPaymentMethod').textContent = getPaymentMethodText(payment.paymentMethod);
             document.getElementById('detailPaymentStatus').textContent = getPaymentStatusText(payment.status);
             document.getElementById('detailCreatedBy').textContent = payment.createdBy || 'Administrateur';
@@ -2212,18 +2216,18 @@
             if (delivery) {
                 document.getElementById('detailDeliveryNumber').textContent = delivery.bonNumber || delivery.id.substring(0, 8);
                 document.getElementById('detailDeliveryDate').textContent = formatDate(delivery.deliveryDate);
-                document.getElementById('detailDeliveryTotal').textContent = `${delivery.totalAmount.toFixed(2)} DH`;
+                document.getElementById('detailDeliveryTotal').textContent = `${delivery.totalAmount ? delivery.totalAmount.toFixed(2) : '0.00'} DH`;
                 
                 // Calculer les paiements pour ce bon
                 const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
-                const totalPaid = deliveryPayments.reduce((sum, p) => sum + p.amount, 0);
-                const remaining = delivery.totalAmount - totalPaid;
+                const totalPaid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                const remaining = (delivery.totalAmount || 0) - totalPaid;
                 
                 document.getElementById('detailDeliveryPaid').textContent = `${totalPaid.toFixed(2)} DH`;
                 document.getElementById('detailDeliveryRemaining').textContent = `${remaining.toFixed(2)} DH`;
                 
                 // Barre de progression
-                const progress = (totalPaid / delivery.totalAmount) * 100;
+                const progress = delivery.totalAmount > 0 ? (totalPaid / delivery.totalAmount) * 100 : 0;
                 document.getElementById('detailProgressBar').style.width = `${progress}%`;
                 document.getElementById('detailProgressText').textContent = `${progress.toFixed(1)}%`;
                 
@@ -2391,38 +2395,87 @@
         
         function loadInitialData() {
             console.log("📊 Chargement des données initiales...");
-            loadDeliveries();
+            loadPayments();
         }
         
-        function loadDeliveries() {
+        function loadPayments() {
+            try {
+                const paymentsRef = database.ref('payments');
+                paymentsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    payments = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            const payment = {
+                                id: key,
+                                ...data[key]
+                            };
+                            
+                            // S'assurer que les montants sont des nombres
+                            if (payment.amount) {
+                                payment.amount = parseFloat(payment.amount);
+                            }
+                            
+                            payments.push(payment);
+                        });
+                        console.log(`✅ ${payments.length} paiements chargés`);
+                    } else {
+                        console.log("ℹ️ Aucun paiement trouvé dans la base de données");
+                    }
+                    
+                    // Maintenant charger les livraisons et clients
+                    loadDeliveriesForPayments();
+                    
+                }, (error) => {
+                    console.error("❌ Erreur de chargement des paiements:", error);
+                    loadDeliveriesForPayments();
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur dans loadPayments:", error);
+                loadDeliveriesForPayments();
+            }
+        }
+        
+        function loadDeliveriesForPayments() {
             try {
                 const deliveriesRef = database.ref('deliveries');
-                deliveriesRef.on('value', (snapshot) => {
+                deliveriesRef.once('value').then((snapshot) => {
                     const data = snapshot.val();
                     deliveries = [];
                     
                     if (data) {
                         Object.keys(data).forEach(key => {
-                            deliveries.push({
+                            const delivery = {
                                 id: key,
                                 ...data[key]
-                            });
+                            };
+                            
+                            // S'assurer que les montants sont des nombres
+                            if (delivery.totalAmount) {
+                                delivery.totalAmount = parseFloat(delivery.totalAmount);
+                            }
+                            
+                            deliveries.push(delivery);
                         });
                         console.log(`✅ ${deliveries.length} livraisons chargées`);
                     }
-                    loadClients();
+                    
+                    // Charger les clients
+                    loadClientsForPayments();
                 });
                 
             } catch (error) {
                 console.error("❌ Erreur de chargement des livraisons:", error);
-                loadClients();
+                loadClientsForPayments();
             }
         }
         
-        function loadClients() {
+        function loadClientsForPayments() {
             try {
                 const clientsRef = database.ref('clients');
-                clientsRef.on('value', (snapshot) => {
+                clientsRef.once('value').then((snapshot) => {
                     const data = snapshot.val();
                     clients = [];
                     
@@ -2435,41 +2488,12 @@
                         });
                         console.log(`✅ ${clients.length} clients chargés`);
                     }
-                    loadPayments();
+                    
+                    updatePaymentsUI();
                 });
                 
             } catch (error) {
                 console.error("❌ Erreur de chargement des clients:", error);
-                loadPayments();
-            }
-        }
-        
-        function loadPayments() {
-            try {
-                const paymentsRef = database.ref('payments');
-                paymentsRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    payments = [];
-                    
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            payments.push({
-                                id: key,
-                                ...data[key]
-                            });
-                        });
-                        console.log(`✅ ${payments.length} paiements chargés`);
-                    }
-                    
-                    updatePaymentsUI();
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des paiements:", error);
-                    updatePaymentsUI();
-                });
-                
-            } catch (error) {
-                console.error("❌ Erreur dans loadPayments:", error);
                 updatePaymentsUI();
             }
         }
@@ -2538,13 +2562,13 @@
             clientDeliveries.forEach(delivery => {
                 // Calculer les paiements pour ce bon
                 const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
-                const totalPaid = deliveryPayments.reduce((sum, p) => sum + p.amount, 0);
-                const remaining = delivery.totalAmount - totalPaid;
+                const totalPaid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                const remaining = (delivery.totalAmount || 0) - totalPaid;
                 
                 if (remaining > 0) {
                     const option = document.createElement('option');
                     option.value = delivery.id;
-                    option.textContent = `${delivery.bonNumber || delivery.id.substring(0, 8)} - ${delivery.totalAmount.toFixed(2)} DH (Reste: ${remaining.toFixed(2)} DH)`;
+                    option.textContent = `${delivery.bonNumber || delivery.id.substring(0, 8)} - ${delivery.totalAmount ? delivery.totalAmount.toFixed(2) : '0.00'} DH (Reste: ${remaining.toFixed(2)} DH)`;
                     deliverySelect.appendChild(option);
                 }
             });
@@ -2570,13 +2594,13 @@
             
             // Calculer les paiements pour ce bon
             const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
-            const totalPaid = deliveryPayments.reduce((sum, p) => sum + p.amount, 0);
-            const remaining = delivery.totalAmount - totalPaid;
+            const totalPaid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+            const remaining = (delivery.totalAmount || 0) - totalPaid;
             
             // Mettre à jour les détails
             document.getElementById('deliveryNumber').textContent = delivery.bonNumber || delivery.id.substring(0, 8);
             document.getElementById('deliveryDate').textContent = formatDate(delivery.deliveryDate);
-            document.getElementById('deliveryTotal').textContent = `${delivery.totalAmount.toFixed(2)} DH`;
+            document.getElementById('deliveryTotal').textContent = `${delivery.totalAmount ? delivery.totalAmount.toFixed(2) : '0.00'} DH`;
             document.getElementById('deliveryPaid').textContent = `${totalPaid.toFixed(2)} DH`;
             document.getElementById('deliveryRemaining').textContent = `${remaining.toFixed(2)} DH`;
             
@@ -2604,17 +2628,38 @@
             const paymentDate = document.getElementById('paymentDate').value;
             const paymentMethod = document.getElementById('paymentMethod').value;
             const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
-            const paymentStatus = document.getElementById('paymentStatus').value;
+            let paymentStatus = document.getElementById('paymentStatus').value;
             
             if (!clientId || !paymentDate || !paymentMethod || !paymentAmount || paymentAmount <= 0) {
                 showToast("Veuillez remplir tous les champs obligatoires", "error");
                 return;
             }
             
+            // Vérifier si le montant ne dépasse pas le reste à payer
+            if (deliveryId) {
+                const delivery = deliveries.find(d => d.id === deliveryId);
+                if (delivery) {
+                    const deliveryPayments = payments.filter(p => p.deliveryId === deliveryId && p.id !== paymentId);
+                    const totalPaid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                    const remaining = (delivery.totalAmount || 0) - totalPaid;
+                    
+                    if (paymentAmount > remaining) {
+                        showToast(`Le montant dépasse le reste à payer (${remaining.toFixed(2)} DH)`, "warning");
+                        return;
+                    }
+                    
+                    // Mettre à jour automatiquement le statut si le paiement couvre le reste
+                    if (paymentAmount >= remaining - 0.01) { // Tolérance de 0.01 pour les arrondis
+                        paymentStatus = 'paid';
+                        document.getElementById('paymentStatus').value = 'paid';
+                    }
+                }
+            }
+            
             // Préparer les données
             const paymentData = {
                 clientId: clientId,
-                deliveryId: deliveryId,
+                deliveryId: deliveryId || null,
                 paymentDate: paymentDate,
                 paymentMethod: paymentMethod,
                 amount: paymentAmount,
@@ -2661,6 +2706,11 @@
                 
                 closePaymentModal();
                 
+                // Recharger les données
+                setTimeout(() => {
+                    loadPayments();
+                }, 500);
+                
             } catch (error) {
                 console.error("Erreur d'enregistrement:", error);
                 showToast("Erreur lors de l'enregistrement: " + error.message, "error");
@@ -2693,49 +2743,50 @@
         }
         
         function updateStats() {
-            // Calculer les totaux
-            let totalAmount = 0;
-            let paidAmount = 0;
-            let pendingAmount = 0;
-            let overdueAmount = 0;
+            // Calculer les totaux des livraisons
+            let totalDeliveryAmount = deliveries.reduce((sum, d) => sum + (d.totalAmount || 0), 0);
             
+            // Calculer les paiements par statut
+            let paidAmount = payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + (p.amount || 0), 0);
+            let pendingAmount = payments.filter(p => p.status === 'pending').reduce((sum, p) => sum + (p.amount || 0), 0);
+            let partialAmount = payments.filter(p => p.status === 'partial').reduce((sum, p) => sum + (p.amount || 0), 0);
+            
+            // Calculer les montants en retard
+            let overdueAmount = 0;
             deliveries.forEach(delivery => {
-                const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
-                const totalPaid = deliveryPayments.reduce((sum, p) => sum + p.amount, 0);
-                const remaining = delivery.totalAmount - totalPaid;
-                
-                totalAmount += delivery.totalAmount;
-                paidAmount += totalPaid;
-                
-                if (remaining > 0) {
-                    pendingAmount += remaining;
+                if (delivery.clientId && delivery.totalAmount) {
+                    const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
+                    const totalPaidForDelivery = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                    const remaining = delivery.totalAmount - totalPaidForDelivery;
                     
-                    // Vérifier si en retard (supposons 30 jours pour l'exemple)
-                    const deliveryDate = new Date(delivery.deliveryDate);
-                    const today = new Date();
-                    const diffTime = Math.abs(today - deliveryDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    
-                    if (diffDays > 30) {
-                        overdueAmount += remaining;
+                    if (remaining > 0 && delivery.deliveryDate) {
+                        const deliveryDate = new Date(delivery.deliveryDate);
+                        const today = new Date();
+                        const diffTime = today.getTime() - deliveryDate.getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
+                        
+                        if (diffDays > 30) {
+                            overdueAmount += remaining;
+                        }
                     }
                 }
             });
             
             // Mettre à jour les stats
-            document.getElementById('totalAmount').textContent = `${totalAmount.toFixed(2)} DH`;
+            document.getElementById('totalAmount').textContent = `${totalDeliveryAmount.toFixed(2)} DH`;
             document.getElementById('paidAmount').textContent = `${paidAmount.toFixed(2)} DH`;
             document.getElementById('pendingAmount').textContent = `${pendingAmount.toFixed(2)} DH`;
             document.getElementById('overdueAmount').textContent = `${overdueAmount.toFixed(2)} DH`;
             
-            // Calculer les pourcentages (exemple)
-            const paidPercentage = totalAmount > 0 ? (paidAmount / totalAmount * 100).toFixed(1) : 0;
-            const pendingPercentage = totalAmount > 0 ? (pendingAmount / totalAmount * 100).toFixed(1) : 0;
+            // Calculer les pourcentages
+            const paidPercentage = totalDeliveryAmount > 0 ? (paidAmount / totalDeliveryAmount * 100).toFixed(1) : '0';
+            const pendingPercentage = totalDeliveryAmount > 0 ? (pendingAmount / totalDeliveryAmount * 100).toFixed(1) : '0';
+            const overduePercentage = totalDeliveryAmount > 0 ? (overdueAmount / totalDeliveryAmount * 100).toFixed(1) : '0';
             
-            document.getElementById('totalChange').textContent = '0%';
+            document.getElementById('totalChange').textContent = '100%';
             document.getElementById('paidChange').textContent = `${paidPercentage}%`;
             document.getElementById('pendingChange').textContent = `${pendingPercentage}%`;
-            document.getElementById('overdueChange').textContent = '0%';
+            document.getElementById('overdueChange').textContent = `${overduePercentage}%`;
         }
         
         function updateStatusSummary() {
@@ -2748,14 +2799,14 @@
             let overdueCount = 0;
             deliveries.forEach(delivery => {
                 const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
-                const totalPaid = deliveryPayments.reduce((sum, p) => sum + p.amount, 0);
-                const remaining = delivery.totalAmount - totalPaid;
+                const totalPaid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                const remaining = (delivery.totalAmount || 0) - totalPaid;
                 
-                if (remaining > 0) {
+                if (remaining > 0 && delivery.deliveryDate) {
                     const deliveryDate = new Date(delivery.deliveryDate);
                     const today = new Date();
-                    const diffTime = Math.abs(today - deliveryDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const diffTime = today.getTime() - deliveryDate.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
                     
                     if (diffDays > 30) {
                         overdueCount++;
@@ -2803,13 +2854,15 @@
                 pendingData = Array(daysInMonth).fill(0);
                 
                 payments.forEach(payment => {
-                    const date = new Date(payment.paymentDate);
-                    if (date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()) {
-                        const day = date.getDate() - 1;
-                        if (payment.status === 'paid') {
-                            paidData[day] += payment.amount;
-                        } else if (payment.status === 'pending') {
-                            pendingData[day] += payment.amount;
+                    if (payment.paymentDate) {
+                        const date = new Date(payment.paymentDate);
+                        if (date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()) {
+                            const day = date.getDate() - 1;
+                            if (payment.status === 'paid') {
+                                paidData[day] += (payment.amount || 0);
+                            } else if (payment.status === 'pending') {
+                                pendingData[day] += (payment.amount || 0);
+                            }
                         }
                     }
                 });
@@ -2826,16 +2879,18 @@
                 }
                 
                 payments.forEach(payment => {
-                    const date = new Date(payment.paymentDate);
-                    const paymentMonth = date.getMonth();
-                    const paymentYear = date.getFullYear();
-                    
-                    if (paymentYear === now.getFullYear() && paymentMonth >= quarterStartMonth && paymentMonth < quarterStartMonth + 3) {
-                        const monthIndex = paymentMonth - quarterStartMonth;
-                        if (payment.status === 'paid') {
-                            paidData[monthIndex] += payment.amount;
-                        } else if (payment.status === 'pending') {
-                            pendingData[monthIndex] += payment.amount;
+                    if (payment.paymentDate) {
+                        const date = new Date(payment.paymentDate);
+                        const paymentMonth = date.getMonth();
+                        const paymentYear = date.getFullYear();
+                        
+                        if (paymentYear === now.getFullYear() && paymentMonth >= quarterStartMonth && paymentMonth < quarterStartMonth + 3) {
+                            const monthIndex = paymentMonth - quarterStartMonth;
+                            if (payment.status === 'paid') {
+                                paidData[monthIndex] += (payment.amount || 0);
+                            } else if (payment.status === 'pending') {
+                                pendingData[monthIndex] += (payment.amount || 0);
+                            }
                         }
                     }
                 });
@@ -2847,13 +2902,15 @@
                 pendingData = Array(12).fill(0);
                 
                 payments.forEach(payment => {
-                    const date = new Date(payment.paymentDate);
-                    if (date.getFullYear() === now.getFullYear()) {
-                        const month = date.getMonth();
-                        if (payment.status === 'paid') {
-                            paidData[month] += payment.amount;
-                        } else if (payment.status === 'pending') {
-                            pendingData[month] += payment.amount;
+                    if (payment.paymentDate) {
+                        const date = new Date(payment.paymentDate);
+                        if (date.getFullYear() === now.getFullYear()) {
+                            const month = date.getMonth();
+                            if (payment.status === 'paid') {
+                                paidData[month] += (payment.amount || 0);
+                            } else if (payment.status === 'pending') {
+                                pendingData[month] += (payment.amount || 0);
+                            }
                         }
                     }
                 });
@@ -3023,27 +3080,27 @@
                 // Filtre par période
                 let matchesPeriod = true;
                 if (periodFilter !== 'all') {
-                    const paymentDate = new Date(payment.paymentDate);
+                    const paymentDate = payment.paymentDate ? new Date(payment.paymentDate) : null;
                     const today = new Date();
                     
                     if (periodFilter === 'today') {
-                        const isToday = paymentDate.toDateString() === today.toDateString();
+                        const isToday = paymentDate ? paymentDate.toDateString() === today.toDateString() : false;
                         matchesPeriod = isToday;
                     } else if (periodFilter === 'week') {
                         const weekAgo = new Date();
                         weekAgo.setDate(today.getDate() - 7);
-                        matchesPeriod = paymentDate >= weekAgo;
+                        matchesPeriod = paymentDate ? paymentDate >= weekAgo : false;
                     } else if (periodFilter === 'month') {
                         const monthAgo = new Date();
                         monthAgo.setMonth(today.getMonth() - 1);
-                        matchesPeriod = paymentDate >= monthAgo;
+                        matchesPeriod = paymentDate ? paymentDate >= monthAgo : false;
                     } else if (periodFilter === 'overdue') {
                         // Pour les paiements en retard, on vérifie le bon de livraison
                         const delivery = deliveries.find(d => d.id === payment.deliveryId);
-                        if (delivery) {
+                        if (delivery && delivery.deliveryDate) {
                             const deliveryDate = new Date(delivery.deliveryDate);
-                            const diffTime = Math.abs(today - deliveryDate);
-                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            const diffTime = today.getTime() - deliveryDate.getTime();
+                            const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
                             matchesPeriod = diffDays > 30;
                         } else {
                             matchesPeriod = false;
@@ -3055,7 +3112,11 @@
             });
             
             // Trier par date (plus récent d'abord)
-            filteredPayments.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate));
+            filteredPayments.sort((a, b) => {
+                const dateA = a.paymentDate ? new Date(a.paymentDate) : new Date(0);
+                const dateB = b.paymentDate ? new Date(b.paymentDate) : new Date(0);
+                return dateB - dateA;
+            });
             
             // Mettre à jour le compteur
             document.getElementById('paymentsCount').textContent = filteredPayments.length;
@@ -3101,16 +3162,16 @@
                 const delivery = deliveries.find(d => d.id === payment.deliveryId);
                 
                 const clientName = client ? client.name : 'Client inconnu';
-                const firstLetter = clientName.charAt(0).toUpperCase();
+                const firstLetter = clientName ? clientName.charAt(0).toUpperCase() : '?';
                 const clientPhone = client ? client.phone : '--';
                 
                 const deliveryNumber = delivery ? (delivery.bonNumber || delivery.id.substring(0, 8)) : '--';
-                const deliveryTotal = delivery ? delivery.totalAmount : 0;
+                const deliveryTotal = delivery ? (delivery.totalAmount || 0) : 0;
                 
                 // Calculer les paiements pour ce bon
                 const deliveryPayments = payments.filter(p => p.deliveryId === payment.deliveryId);
-                const totalPaid = deliveryPayments.reduce((sum, p) => sum + p.amount, 0);
-                const remaining = deliveryTotal - totalPaid;
+                const totalPaid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                const remaining = Math.max(0, deliveryTotal - totalPaid);
                 
                 // Statut
                 const status = payment.status || 'pending';
@@ -3124,11 +3185,11 @@
                 
                 // Échéance
                 let dueDateInfo = '';
-                if (delivery && remaining > 0) {
+                if (delivery && remaining > 0 && delivery.deliveryDate) {
                     const deliveryDate = new Date(delivery.deliveryDate);
                     const today = new Date();
-                    const diffTime = Math.abs(today - deliveryDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const diffTime = today.getTime() - deliveryDate.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
                     
                     let dueClass = 'due-future';
                     let dueText = `J+${diffDays}`;
@@ -3147,6 +3208,11 @@
                     dueDateInfo = `<span class="due-date ${dueClass}">${dueText}</span>`;
                 }
                 
+                // Déterminer la classe de couleur pour le montant
+                let amountClass = 'amount-paid';
+                if (status === 'pending') amountClass = 'amount-pending';
+                if (status === 'overdue') amountClass = 'amount-overdue';
+                
                 html += `
                     <tr>
                         <td>
@@ -3161,7 +3227,7 @@
                         <td>${deliveryNumber}</td>
                         <td>${formatDate(payment.paymentDate)}</td>
                         <td><strong>${deliveryTotal.toFixed(2)} DH</strong></td>
-                        <td class="amount-${status}">${payment.amount.toFixed(2)} DH</td>
+                        <td class="${amountClass}">${payment.amount ? payment.amount.toFixed(2) : '0.00'} DH</td>
                         <td class="amount-pending">${remaining.toFixed(2)} DH</td>
                         <td><span class="method-badge ${methodClass}">${methodText}</span></td>
                         <td>
@@ -3178,8 +3244,8 @@
                                 <button class="action-btn btn-receipt" onclick="printReceiptForPayment('${payment.id}')" title="Imprimer reçu">
                                     <i class="fas fa-print"></i>
                                 </button>
-                                <button class="action-btn btn-reminder" onclick="sendReminder('${payment.id}')" title="Envoyer rappel">
-                                    <i class="fas fa-bell"></i>
+                                <button class="action-btn btn-delete" onclick="deletePayment('${payment.id}')" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
@@ -3257,24 +3323,26 @@
             const overduePayments = [];
             
             deliveries.forEach(delivery => {
-                const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
-                const totalPaid = deliveryPayments.reduce((sum, p) => sum + p.amount, 0);
-                const remaining = delivery.totalAmount - totalPaid;
-                
-                if (remaining > 0) {
-                    const deliveryDate = new Date(delivery.deliveryDate);
-                    const today = new Date();
-                    const diffTime = Math.abs(today - deliveryDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (delivery.clientId && delivery.deliveryDate) {
+                    const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
+                    const totalPaid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                    const remaining = (delivery.totalAmount || 0) - totalPaid;
                     
-                    if (diffDays > 30) {
-                        const client = clients.find(c => c.id === delivery.clientId);
-                        overduePayments.push({
-                            delivery: delivery,
-                            client: client,
-                            remaining: remaining,
-                            overdueDays: diffDays - 30
-                        });
+                    if (remaining > 0) {
+                        const deliveryDate = new Date(delivery.deliveryDate);
+                        const today = new Date();
+                        const diffTime = today.getTime() - deliveryDate.getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
+                        
+                        if (diffDays > 30) {
+                            const client = clients.find(c => c.id === delivery.clientId);
+                            overduePayments.push({
+                                delivery: delivery,
+                                client: client,
+                                remaining: remaining,
+                                overdueDays: diffDays - 30
+                            });
+                        }
                     }
                 }
             });
@@ -3340,7 +3408,11 @@
             
             // Trier par date (plus récent d'abord) et limiter à 5
             const recentPayments = [...payments]
-                .sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate))
+                .sort((a, b) => {
+                    const dateA = a.paymentDate ? new Date(a.paymentDate) : new Date(0);
+                    const dateB = b.paymentDate ? new Date(b.paymentDate) : new Date(0);
+                    return dateB - dateA;
+                })
                 .slice(0, 5);
             
             if (recentPayments.length === 0) {
@@ -3370,7 +3442,7 @@
                     <tr>
                         <td>${clientName}</td>
                         <td>${formatDate(payment.paymentDate)}</td>
-                        <td><strong style="color: var(--success);">${payment.amount.toFixed(2)} DH</strong></td>
+                        <td><strong style="color: var(--success);">${payment.amount ? payment.amount.toFixed(2) : '0.00'} DH</strong></td>
                         <td><span class="method-badge ${methodClass}">${methodText}</span></td>
                         <td>${deliveryNumber}</td>
                         <td>
@@ -3396,7 +3468,11 @@
             
             // Filtrer les paiements pour ce bon
             const deliveryPayments = payments.filter(p => p.deliveryId === deliveryId)
-                .sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate));
+                .sort((a, b) => {
+                    const dateA = a.paymentDate ? new Date(a.paymentDate) : new Date(0);
+                    const dateB = b.paymentDate ? new Date(b.paymentDate) : new Date(0);
+                    return dateB - dateA;
+                });
             
             if (deliveryPayments.length === 0) {
                 historyList.innerHTML = `
@@ -3423,7 +3499,7 @@
                 html += `
                     <div class="history-item">
                         <div class="history-header">
-                            <span class="history-amount">${payment.amount.toFixed(2)} DH</span>
+                            <span class="history-amount">${payment.amount ? payment.amount.toFixed(2) : '0.00'} DH</span>
                             <span class="history-date">${formatDate(payment.paymentDate)}</span>
                         </div>
                         <div>
@@ -3535,8 +3611,6 @@
         function refreshData() {
             showToast("Actualisation des paiements en cours...", "info");
             loadPayments();
-            loadDeliveries();
-            loadClients();
         }
         
         function filterByStatus(status) {
@@ -3681,14 +3755,14 @@
             // Trouver tous les paiements en retard
             const overdueDeliveries = deliveries.filter(delivery => {
                 const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
-                const totalPaid = deliveryPayments.reduce((sum, p) => sum + p.amount, 0);
-                const remaining = delivery.totalAmount - totalPaid;
+                const totalPaid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                const remaining = (delivery.totalAmount || 0) - totalPaid;
                 
-                if (remaining > 0) {
+                if (remaining > 0 && delivery.deliveryDate) {
                     const deliveryDate = new Date(delivery.deliveryDate);
                     const today = new Date();
-                    const diffTime = Math.abs(today - deliveryDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const diffTime = today.getTime() - deliveryDate.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
                     return diffDays > 30;
                 }
                 return false;
@@ -3716,11 +3790,11 @@
                 const clientName = client ? client.name : 'Inconnu';
                 const clientPhone = client ? client.phone : '--';
                 const deliveryNumber = delivery ? (delivery.bonNumber || '--') : '--';
-                const deliveryTotal = delivery ? delivery.totalAmount : 0;
+                const deliveryTotal = delivery ? (delivery.totalAmount || 0) : 0;
                 
                 // Calculer les paiements pour ce bon
                 const deliveryPayments = payments.filter(p => p.deliveryId === payment.deliveryId);
-                const totalPaid = deliveryPayments.reduce((sum, p) => sum + p.amount, 0);
+                const totalPaid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
                 const remaining = deliveryTotal - totalPaid;
                 
                 const row = [
@@ -3749,6 +3823,276 @@
             document.body.removeChild(link);
             
             showToast("Rapport généré avec succès", "success");
+        }
+        
+        // ==================== FONCTIONS POUR LES CLIENTS NON PAYÉS ====================
+        
+        function loadUnpaidClients() {
+            const unpaidClients = [];
+            
+            clients.forEach(client => {
+                const clientDeliveries = deliveries.filter(d => d.clientId === client.id);
+                let clientTotal = 0;
+                let clientPaid = 0;
+                let clientRemaining = 0;
+                
+                clientDeliveries.forEach(delivery => {
+                    clientTotal += delivery.totalAmount || 0;
+                    const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
+                    const paid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                    clientPaid += paid;
+                    clientRemaining += (delivery.totalAmount || 0) - paid;
+                });
+                
+                if (clientRemaining > 0) {
+                    unpaidClients.push({
+                        ...client,
+                        totalAmount: clientTotal,
+                        paidAmount: clientPaid,
+                        remainingAmount: clientRemaining
+                    });
+                }
+            });
+            
+            return unpaidClients;
+        }
+        
+        function showUnpaidClientsModal() {
+            const unpaidClients = loadUnpaidClients();
+            
+            if (unpaidClients.length === 0) {
+                showToast("Tous les clients sont à jour dans leurs paiements", "info");
+                return;
+            }
+            
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: var(--danger); margin-bottom: 10px;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Clients avec Paiements En Attente
+                    </h3>
+                    <p style="color: var(--text-light);">Total: ${unpaidClients.length} clients</p>
+                </div>
+                
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr style="background: var(--light);">
+                                <th style="padding: 10px; text-align: right;">Client</th>
+                                <th style="padding: 10px; text-align: right;">Téléphone</th>
+                                <th style="padding: 10px; text-align: right;">Total Commandes</th>
+                                <th style="padding: 10px; text-align: right;">Payé</th>
+                                <th style="padding: 10px; text-align: right;">Reste</th>
+                                <th style="padding: 10px; text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            unpaidClients.forEach(client => {
+                html += `
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 10px;">${client.name}</td>
+                        <td style="padding: 10px;">${client.phone || '--'}</td>
+                        <td style="padding: 10px;">${client.totalAmount.toFixed(2)} DH</td>
+                        <td style="padding: 10px; color: var(--success);">${client.paidAmount.toFixed(2)} DH</td>
+                        <td style="padding: 10px; color: var(--danger); font-weight: bold;">${client.remainingAmount.toFixed(2)} DH</td>
+                        <td style="padding: 10px;">
+                            <div style="display: flex; gap: 5px;">
+                                <button class="btn btn-small btn-primary" onclick="viewClientDetails('${client.id}')" title="Voir détails">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-small btn-success" onclick="openPaymentForClient('${client.id}')" title="Ajouter paiement">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>Total Restant à Payer:</strong>
+                        <span style="color: var(--danger); font-size: 18px; margin-right: 10px;">
+                            ${unpaidClients.reduce((sum, c) => sum + c.remainingAmount, 0).toFixed(2)} DH
+                        </span>
+                    </div>
+                    <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">
+                        Fermer
+                    </button>
+                </div>
+            `;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay active';
+            modal.innerHTML = `
+                <div class="modal" style="max-width: 900px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-users"></i> Clients Non Payés</h3>
+                        <button class="close-modal" onclick="this.closest('.modal-overlay').remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ${html}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function openPaymentForClient(clientId) {
+            openNewPaymentModal();
+            
+            setTimeout(() => {
+                document.getElementById('clientSelect').value = clientId;
+                loadClientDeliveries();
+            }, 100);
+        }
+        
+        function viewClientDetails(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+            
+            // Créer une modal pour afficher les détails du client
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay active';
+            modal.innerHTML = `
+                <div class="modal" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-user"></i> Détails du Client</h3>
+                        <button class="close-modal" onclick="this.closest('.modal-overlay').remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h4>Informations Client</h4>
+                                <div style="background: var(--light); padding: 15px; border-radius: 8px;">
+                                    <div style="margin-bottom: 10px;">
+                                        <strong>Nom:</strong> ${client.name}
+                                    </div>
+                                    <div style="margin-bottom: 10px;">
+                                        <strong>Téléphone:</strong> ${client.phone || '--'}
+                                    </div>
+                                    <div style="margin-bottom: 10px;">
+                                        <strong>Email:</strong> ${client.email || '--'}
+                                    </div>
+                                    <div style="margin-bottom: 10px;">
+                                        <strong>Adresse:</strong> ${client.address || '--'}
+                                    </div>
+                                    <div>
+                                        <strong>Ville:</strong> ${client.city || '--'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4>Statistiques Paiements</h4>
+                                <div style="background: var(--light); padding: 15px; border-radius: 8px;">
+                                    ${getClientPaymentStats(client.id)}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <h4>Historique des Paiements</h4>
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                ${getClientPaymentHistory(client.id)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function getClientPaymentStats(clientId) {
+            const clientDeliveries = deliveries.filter(d => d.clientId === clientId);
+            let total = 0;
+            let paid = 0;
+            let remaining = 0;
+            let overdueAmount = 0;
+            
+            clientDeliveries.forEach(delivery => {
+                total += delivery.totalAmount || 0;
+                const deliveryPayments = payments.filter(p => p.deliveryId === delivery.id);
+                const deliveryPaid = deliveryPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                paid += deliveryPaid;
+                remaining += (delivery.totalAmount || 0) - deliveryPaid;
+                
+                // Vérifier si en retard
+                if (delivery.deliveryDate) {
+                    const deliveryDate = new Date(delivery.deliveryDate);
+                    const today = new Date();
+                    const diffTime = today.getTime() - deliveryDate.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
+                    
+                    if (diffDays > 30) {
+                        overdueAmount += (delivery.totalAmount || 0) - deliveryPaid;
+                    }
+                }
+            });
+            
+            return `
+                <div style="margin-bottom: 10px;">
+                    <strong>Total Commandes:</strong> ${total.toFixed(2)} DH
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Total Payé:</strong> <span style="color: var(--success);">${paid.toFixed(2)} DH</span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Reste à Payer:</strong> <span style="color: var(--warning);">${remaining.toFixed(2)} DH</span>
+                </div>
+                <div>
+                    <strong>En Retard:</strong> <span style="color: var(--danger);">${overdueAmount.toFixed(2)} DH</span>
+                </div>
+            `;
+        }
+        
+        function getClientPaymentHistory(clientId) {
+            const clientPayments = payments.filter(p => p.clientId === clientId)
+                .sort((a, b) => {
+                    const dateA = a.paymentDate ? new Date(a.paymentDate) : new Date(0);
+                    const dateB = b.paymentDate ? new Date(b.paymentDate) : new Date(0);
+                    return dateB - dateA;
+                });
+            
+            if (clientPayments.length === 0) {
+                return '<div style="text-align: center; padding: 20px; color: var(--text-light);">Aucun paiement trouvé</div>';
+            }
+            
+            let html = '<table style="width: 100%;"><thead><tr><th>Date</th><th>Bon</th><th>Montant</th><th>Méthode</th><th>Statut</th></tr></thead><tbody>';
+            
+            clientPayments.forEach(payment => {
+                const delivery = deliveries.find(d => d.id === payment.deliveryId);
+                const deliveryNumber = delivery ? (delivery.bonNumber || '--') : '--';
+                const methodText = getPaymentMethodText(payment.paymentMethod);
+                const statusText = getPaymentStatusText(payment.status);
+                
+                html += `
+                    <tr>
+                        <td>${formatDate(payment.paymentDate)}</td>
+                        <td>${deliveryNumber}</td>
+                        <td>${payment.amount ? payment.amount.toFixed(2) : '0.00'} DH</td>
+                        <td>${methodText}</td>
+                        <td>${statusText}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            return html;
         }
         
         // ==================== TOAST NOTIFICATION ====================
