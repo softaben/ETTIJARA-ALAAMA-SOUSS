@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr" dir="rtl">
 <head>
@@ -11,6 +10,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <style>
         :root {
@@ -382,37 +382,43 @@
         .products-section {
             background: var(--card-bg);
             border-radius: 12px;
-            padding: 25px;
+            overflow: hidden;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             margin-bottom: 30px;
         }
 
-        .section-header {
+        /* Table Header */
+        .table-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .section-header h3 {
-            font-size: 20px;
+        .table-header h3 {
+            font-size: 18px;
             color: var(--text);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
+        .table-toolbar {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Table Container */
         .table-container {
             overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid var(--border);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1000px;
+            min-width: 1200px;
         }
         
         th {
@@ -440,8 +446,8 @@
             background-color: var(--light);
         }
 
-        /* Status Badge */
-        .status-badge {
+        /* Stock Status Badge */
+        .stock-status {
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
@@ -449,22 +455,26 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             display: inline-block;
-            white-space: nowrap;
         }
         
-        .status-in-stock {
+        .stock-high {
             background-color: rgba(6, 95, 70, 0.1);
             color: #065f46;
         }
         
-        .status-low-stock {
+        .stock-medium {
             background-color: rgba(217, 119, 6, 0.1);
             color: #d97706;
         }
         
-        .status-out-of-stock {
+        .stock-low {
             background-color: rgba(220, 38, 38, 0.1);
             color: #dc2626;
+        }
+        
+        .stock-out {
+            background-color: rgba(75, 85, 99, 0.1);
+            color: #4b5563;
         }
 
         /* Action Buttons */
@@ -991,6 +1001,16 @@
             line-height: 1.6;
         }
 
+        /* Footer */
+        .dashboard-footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+            margin-top: 30px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header { 
@@ -1033,17 +1053,15 @@
                 flex: 1;
             }
 
-            .table-container {
-                border-radius: 0;
-                border: none;
+            .table-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
             }
 
-            .modal {
-                max-height: 95vh;
-            }
-
-            .modal-body {
-                padding: 20px;
+            .table-toolbar {
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
             .depots-grid, .categories-grid {
@@ -1070,7 +1088,7 @@
             }
 
             .products-section {
-                padding: 15px;
+                padding: 0;
             }
 
             .action-buttons {
@@ -1245,7 +1263,7 @@
             <div class="filters-row">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchProducts" placeholder="Rechercher un produit par nom, référence ou catégorie...">
+                    <input type="text" id="searchProducts" placeholder="Rechercher un produit par nom, code ou catégorie...">
                 </div>
                 
                 <div class="filter-group">
@@ -1259,9 +1277,10 @@
                     <label for="filterStock">État du Stock</label>
                     <select id="filterStock" class="filter-control">
                         <option value="">Tous</option>
-                        <option value="in-stock">En stock</option>
-                        <option value="low-stock">Stock faible</option>
-                        <option value="out-of-stock">Rupture</option>
+                        <option value="high">Stock élevé</option>
+                        <option value="medium">Stock moyen</option>
+                        <option value="low">Stock bas</option>
+                        <option value="out">Rupture</option>
                     </select>
                 </div>
                 
@@ -1276,31 +1295,46 @@
 
         <!-- Products Table -->
         <div class="products-section">
-            <div class="section-header">
-                <h3><i class="fas fa-list"></i> Liste des Produits</h3>
-                <div class="pagination-info" id="productsInfo">
-                    Affichage de 0 produits
+            <!-- En-tête du tableau modifié -->
+            <div class="table-header">
+                <h3><i class="fas fa-list"></i> Liste des Produits en Stock</h3>
+                <div class="table-toolbar">
+                    <button class="btn btn-primary" onclick="openProductModal()">
+                        <i class="fas fa-plus"></i> Nouveau Produit
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshStockData()">
+                        <i class="fas fa-sync-alt"></i> Actualiser
+                    </button>
+                    <button class="btn btn-success" onclick="exportStockToExcel()">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </button>
+                    <button class="btn btn-warning" onclick="exportStockToPDF()">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
                 </div>
             </div>
             
             <div class="table-container">
+                <!-- Tableau modifié avec les mêmes colonnes que la page Stock -->
                 <table>
                     <thead>
                         <tr>
-                            <th>Référence</th>
-                            <th>Nom du Produit</th>
+                            <th>Code</th>
+                            <th>Produit</th>
                             <th>Catégorie</th>
-                            <th>Stock</th>
-                            <th>Niveau</th>
-                            <th>Prix (DH)</th>
                             <th>Dépôt</th>
-                            <th>Valeur (DH)</th>
+                            <th>Quantité</th>
+                            <th>Seuil Min</th>
+                            <th>Prix Achat</th>
+                            <th>Prix Vente</th>
+                            <th>Valeur</th>
+                            <th>Statut</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="productsTable">
                         <tr>
-                            <td colspan="9" class="loading">
+                            <td colspan="11" class="loading">
                                 <i class="fas fa-spinner fa-spin"></i>
                                 <p>Chargement des produits...</p>
                             </td>
@@ -1339,12 +1373,12 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="productName">Nom du Produit *</label>
-                            <input type="text" id="productName" class="form-control" required placeholder="Ex: Ciment 50kg">
+                            <label for="productCode">Code Produit *</label>
+                            <input type="text" id="productCode" class="form-control" required placeholder="Ex: PROD-001">
                         </div>
                         <div class="form-group">
-                            <label for="productReference">Référence</label>
-                            <input type="text" id="productReference" class="form-control" placeholder="Référence unique">
+                            <label for="productName">Nom du Produit *</label>
+                            <input type="text" id="productName" class="form-control" required placeholder="Ex: Ciment 50kg">
                         </div>
                     </div>
                     
@@ -1365,23 +1399,34 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="productPrice">Prix Unitaire (DH) *</label>
-                            <input type="number" id="productPrice" class="form-control" required min="0" step="0.01" placeholder="0.00">
+                            <label for="productCostPrice">Prix d'Achat (DH) *</label>
+                            <input type="number" id="productCostPrice" class="form-control" required min="0" step="0.01" placeholder="0.00">
                         </div>
                         <div class="form-group">
-                            <label for="productCost">Coût d'Achat (DH)</label>
-                            <input type="number" id="productCost" class="form-control" min="0" step="0.01" placeholder="0.00">
+                            <label for="productSellPrice">Prix de Vente (DH) *</label>
+                            <input type="number" id="productSellPrice" class="form-control" required min="0" step="0.01" placeholder="0.00">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="productStock">Stock Initial</label>
-                            <input type="number" id="productStock" class="form-control" min="0" value="0">
+                            <label for="productQuantity">Stock Initial</label>
+                            <input type="number" id="productQuantity" class="form-control" min="0" value="0">
                         </div>
                         <div class="form-group">
                             <label for="productMinStock">Stock Minimum</label>
                             <input type="number" id="productMinStock" class="form-control" min="0" value="10">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productMaxStock">Stock Maximum</label>
+                            <input type="number" id="productMaxStock" class="form-control" min="0" value="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="productSupplier">Fournisseur</label>
+                            <input type="text" id="productSupplier" class="form-control" placeholder="Nom du fournisseur">
                         </div>
                     </div>
                     
@@ -1391,9 +1436,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="productImage">Image du Produit (URL)</label>
-                        <input type="text" id="productImage" class="form-control" placeholder="https://example.com/image.jpg">
-                        <small style="color: var(--text-light);">Laissez vide pour utiliser l'image par défaut</small>
+                        <label for="productBarcode">Code-barres</label>
+                        <input type="text" id="productBarcode" class="form-control" placeholder="Code-barres du produit">
                     </div>
                     
                     <div class="form-actions">
@@ -1814,6 +1858,7 @@
         let categories = [];
         let depots = [];
         let stockMovements = [];
+        let filteredProducts = [];
         let currentPage = 1;
         let itemsPerPage = 10;
         let currentFilter = {};
@@ -1821,6 +1866,79 @@
         let currentCategoryId = null;
         let currentDepotId = null;
         let confirmCallback = null;
+        
+        // ==================== CLASSES UTILITAIRES ====================
+        
+        // Classe StockManager
+        class StockManager {
+            static getStockStatus(quantity, minStock = 10, maxStock = 100) {
+                if (quantity <= 0) return 'out';
+                if (quantity <= minStock) return 'low';
+                if (quantity > minStock * 2 && quantity <= maxStock * 0.7) return 'medium';
+                return 'high';
+            }
+            
+            static getStockStatusText(status) {
+                switch(status) {
+                    case 'high': return 'Élevé';
+                    case 'medium': return 'Moyen';
+                    case 'low': return 'Bas';
+                    case 'out': return 'Rupture';
+                    default: return 'Inconnu';
+                }
+            }
+            
+            static calculateProductValue(quantity, costPrice) {
+                return (quantity || 0) * (costPrice || 0);
+            }
+            
+            static calculateMargin(sellPrice, costPrice) {
+                if (!costPrice || costPrice <= 0) return 0;
+                return ((sellPrice - costPrice) / costPrice) * 100;
+            }
+            
+            static getCategoryProducts(categoryId) {
+                return products.filter(p => p.category === categoryId);
+            }
+        }
+        
+        // Classe ExportManager
+        class ExportManager {
+            static exportProductsToExcel() {
+                try {
+                    const exportData = products.map(product => ({
+                        'Code': product.code || product.reference || '',
+                        'Nom': product.name,
+                        'Catégorie': getCategoryName(product.category),
+                        'Dépôt': getDepotName(product.depot),
+                        'Quantité': product.currentStock || product.quantity || 0,
+                        'Seuil Min': product.minStock || 10,
+                        'Seuil Max': product.maxStock || 100,
+                        'Prix Achat': product.costPrice || product.price || 0,
+                        'Prix Vente': product.sellPrice || product.price || 0,
+                        'Valeur': StockManager.calculateProductValue(product.currentStock || product.quantity || 0, product.costPrice || product.price || 0),
+                        'Statut': StockManager.getStockStatusText(
+                            StockManager.getStockStatus(product.currentStock || product.quantity || 0, product.minStock || 10, product.maxStock || 100)
+                        ),
+                        'Description': product.description || '',
+                        'Code-barres': product.barcode || '',
+                        'Fournisseur': product.supplier || ''
+                    }));
+                    
+                    const ws = XLSX.utils.json_to_sheet(exportData);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Produits");
+                    XLSX.writeFile(wb, `stock_produits_${new Date().toISOString().split('T')[0]}.xlsx`);
+                    
+                    showToast("Export Excel réussi", "success");
+                    return true;
+                } catch (error) {
+                    console.error("Erreur d'export:", error);
+                    showToast("Erreur lors de l'export Excel", "error");
+                    return false;
+                }
+            }
+        }
         
         // ==================== INITIALISATION ====================
         document.addEventListener('DOMContentLoaded', function() {
@@ -1902,6 +2020,13 @@
             // Stock adjustment product change
             document.getElementById('adjustmentProduct').addEventListener('change', updateCurrentStock);
             document.getElementById('adjustmentType').addEventListener('change', updateAdjustmentType);
+            
+            // Confirmation action
+            document.getElementById('confirmAction').addEventListener('click', function() {
+                if (confirmCallback) {
+                    confirmCallback();
+                }
+            });
         }
         
         function initFilters() {
@@ -2058,10 +2183,25 @@
                     
                     if (data) {
                         Object.keys(data).forEach(key => {
-                            products.push({
+                            const product = {
                                 id: key,
                                 ...data[key]
-                            });
+                            };
+                            
+                            // Calculer la valeur totale
+                            product.totalValue = StockManager.calculateProductValue(
+                                product.currentStock || product.quantity || 0, 
+                                product.costPrice || product.price || 0
+                            );
+                            
+                            // Déterminer le statut du stock
+                            product.stockStatus = StockManager.getStockStatus(
+                                product.currentStock || product.quantity || 0, 
+                                product.minStock || 10,
+                                product.maxStock || 100
+                            );
+                            
+                            products.push(product);
                         });
                         
                         console.log(`✅ ${products.length} produits chargés`);
@@ -2167,16 +2307,112 @@
             
             // Produits démo
             products = [
-                { id: "prod1", name: "Ciment 50kg", reference: "CIM-001", category: "Matériaux", description: "Ciment Portland 50kg", price: 85.50, cost: 70.00, currentStock: 45, minStock: 10, depotId: "depot1", depotName: "Dépôt Principal", image: "", createdAt: new Date().toISOString() },
-                { id: "prod2", name: "Sable fin", reference: "SAB-001", category: "Matériaux", description: "Sable fin pour construction", price: 450.00, cost: 350.00, currentStock: 120, minStock: 20, depotId: "depot1", depotName: "Dépôt Principal", image: "", createdAt: new Date().toISOString() },
-                { id: "prod3", name: "Gravier 5/15", reference: "GRA-001", category: "Matériaux", description: "Gravier pour béton", price: 380.00, cost: 300.00, currentStock: 85, minStock: 15, depotId: "depot1", depotName: "Dépôt Principal", image: "", createdAt: new Date().toISOString() },
-                { id: "prod4", name: "Briques rouges", reference: "BRI-001", category: "Matériaux", description: "Briques de construction", price: 2.50, cost: 1.80, currentStock: 5000, minStock: 500, depotId: "depot2", depotName: "Dépôt Secondaire", image: "", createdAt: new Date().toISOString() },
-                { id: "prod5", name: "Tôle galvanisée", reference: "TOL-001", category: "Matériaux", description: "Tôle 1m x 2m", price: 125.00, cost: 95.00, currentStock: 25, minStock: 5, depotId: "depot2", depotName: "Dépôt Secondaire", image: "", createdAt: new Date().toISOString() },
-                { id: "prod6", name: "Tube PVC 100mm", reference: "TUB-001", category: "Plomberie", description: "Tube PVC diamètre 100mm", price: 45.00, cost: 35.00, currentStock: 60, minStock: 10, depotId: "depot1", depotName: "Dépôt Principal", image: "", createdAt: new Date().toISOString() },
-                { id: "prod7", name: "Peinture blanche", reference: "PEI-001", category: "Peinture", description: "Peinture acrylique 10L", price: 180.00, cost: 140.00, currentStock: 35, minStock: 8, depotId: "depot2", depotName: "Dépôt Secondaire", image: "", createdAt: new Date().toISOString() },
-                { id: "prod8", name: "Carreaux 30x30", reference: "CAR-001", category: "Matériaux", description: "Carreaux céramique", price: 85.00, cost: 65.00, currentStock: 200, minStock: 50, depotId: "depot3", depotName: "Entrepôt Nord", image: "", createdAt: new Date().toISOString() },
-                { id: "prod9", name: "Parpaing 20x40", reference: "PAR-001", category: "Matériaux", description: "Parpaing creux", price: 4.20, cost: 3.20, currentStock: 800, minStock: 100, depotId: "depot1", depotName: "Dépôt Principal", image: "", createdAt: new Date().toISOString() },
-                { id: "prod10", name: "Lambris PVC", reference: "LAM-001", category: "Matériaux", description: "Lambris pour plafond", price: 65.00, cost: 50.00, currentStock: 75, minStock: 15, depotId: "depot3", depotName: "Entrepôt Nord", image: "", createdAt: new Date().toISOString() }
+                { 
+                    id: "prod1", 
+                    code: "CIM-001",
+                    name: "Ciment 50kg", 
+                    reference: "CIM-001", 
+                    category: "cat1", 
+                    description: "Ciment Portland 50kg", 
+                    costPrice: 70.00,
+                    sellPrice: 85.50,
+                    price: 85.50, 
+                    currentStock: 45, 
+                    quantity: 45,
+                    minStock: 10, 
+                    maxStock: 200,
+                    depotId: "depot1", 
+                    depot: "depot1",
+                    supplier: "Cimenterie Nationale",
+                    barcode: "123456789012",
+                    createdAt: new Date().toISOString(),
+                    totalValue: 45 * 70.00,
+                    stockStatus: StockManager.getStockStatus(45, 10, 200)
+                },
+                { 
+                    id: "prod2", 
+                    code: "SAB-001",
+                    name: "Sable fin", 
+                    reference: "SAB-001", 
+                    category: "cat1", 
+                    description: "Sable fin pour construction", 
+                    costPrice: 350.00,
+                    sellPrice: 450.00,
+                    price: 450.00, 
+                    currentStock: 120, 
+                    quantity: 120,
+                    minStock: 20, 
+                    maxStock: 500,
+                    depotId: "depot1", 
+                    depot: "depot1",
+                    supplier: "Carrière du Sud",
+                    createdAt: new Date().toISOString(),
+                    totalValue: 120 * 350.00,
+                    stockStatus: StockManager.getStockStatus(120, 20, 500)
+                },
+                { 
+                    id: "prod3", 
+                    code: "GRA-001",
+                    name: "Gravier 5/15", 
+                    reference: "GRA-001", 
+                    category: "cat1", 
+                    description: "Gravier pour béton", 
+                    costPrice: 300.00,
+                    sellPrice: 380.00,
+                    price: 380.00, 
+                    currentStock: 85, 
+                    quantity: 85,
+                    minStock: 15, 
+                    maxStock: 300,
+                    depotId: "depot1", 
+                    depot: "depot1",
+                    supplier: "Carrière du Sud",
+                    createdAt: new Date().toISOString(),
+                    totalValue: 85 * 300.00,
+                    stockStatus: StockManager.getStockStatus(85, 15, 300)
+                },
+                { 
+                    id: "prod4", 
+                    code: "BRI-001",
+                    name: "Briques rouges", 
+                    reference: "BRI-001", 
+                    category: "cat1", 
+                    description: "Briques de construction", 
+                    costPrice: 1.80,
+                    sellPrice: 2.50,
+                    price: 2.50, 
+                    currentStock: 5000, 
+                    quantity: 5000,
+                    minStock: 500, 
+                    maxStock: 10000,
+                    depotId: "depot2", 
+                    depot: "depot2",
+                    supplier: "Briqueterie Moderne",
+                    createdAt: new Date().toISOString(),
+                    totalValue: 5000 * 1.80,
+                    stockStatus: StockManager.getStockStatus(5000, 500, 10000)
+                },
+                { 
+                    id: "prod5", 
+                    code: "TOL-001",
+                    name: "Tôle galvanisée", 
+                    reference: "TOL-001", 
+                    category: "cat1", 
+                    description: "Tôle 1m x 2m", 
+                    costPrice: 95.00,
+                    sellPrice: 125.00,
+                    price: 125.00, 
+                    currentStock: 25, 
+                    quantity: 25,
+                    minStock: 5, 
+                    maxStock: 100,
+                    depotId: "depot2", 
+                    depot: "depot2",
+                    supplier: "Aciérie Maroc",
+                    createdAt: new Date().toISOString(),
+                    totalValue: 25 * 95.00,
+                    stockStatus: StockManager.getStockStatus(25, 5, 100)
+                }
             ];
             
             updateDashboard();
@@ -2263,37 +2499,34 @@
         function updateStats() {
             const totalProducts = products.length;
             
-            // Compter les produits en stock faible
-            const lowStockCount = products.filter(product => {
-                const stockLevel = (product.currentStock || 0) / (product.minStock || 1);
-                return stockLevel <= 1.5 && stockLevel > 0;
-            }).length;
+            // Compter les produits par statut
+            let lowStockCount = 0;
+            let outOfStockCount = 0;
+            let totalValue = 0;
             
-            // Compter les catégories
-            const categoryCount = categories.length;
-            
-            // Calculer la valeur totale du stock
-            const stockValue = products.reduce((total, product) => {
-                return total + ((product.currentStock || 0) * (product.cost || product.price || 0));
-            }, 0);
+            products.forEach(product => {
+                totalValue += product.totalValue || 0;
+                
+                if (product.stockStatus === 'low') lowStockCount++;
+                if (product.stockStatus === 'out') outOfStockCount++;
+            });
             
             // Mettre à jour les stats
             document.getElementById('totalProducts').textContent = totalProducts;
             document.getElementById('lowStockCount').textContent = lowStockCount;
-            document.getElementById('totalCategories').textContent = categoryCount;
-            document.getElementById('stockValue').textContent = stockValue.toFixed(2) + ' DH';
+            document.getElementById('totalCategories').textContent = categories.length;
+            document.getElementById('stockValue').textContent = formatNumber(totalValue) + ' DH';
             
             // Mettre à jour le footer
-            const outOfStockCount = products.filter(p => (p.currentStock || 0) <= 0).length;
             document.getElementById('totalStats').textContent = 
-                `${totalProducts} produits | ${outOfStockCount} en rupture`;
+                `${totalProducts} produits | ${lowStockCount} en stock faible | ${outOfStockCount} en rupture`;
         }
         
         function updateProductsTable() {
             const tableBody = document.getElementById('productsTable');
             
             // Appliquer les filtres
-            let filteredProducts = filterProductsList(products);
+            filteredProducts = filterProductsList(products);
             
             // Pagination
             const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -2301,14 +2534,10 @@
             const endIndex = Math.min(startIndex + itemsPerPage, filteredProducts.length);
             const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
             
-            // Mettre à jour l'info de pagination
-            document.getElementById('productsInfo').textContent = 
-                `Affichage de ${startIndex + 1}-${endIndex} sur ${filteredProducts.length} produits`;
-            
             if (paginatedProducts.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="9" class="empty-state">
+                        <td colspan="11" class="empty-state">
                             <i class="fas fa-box-open"></i>
                             <h3>Aucun produit trouvé</h3>
                             <p>Aucun produit ne correspond à vos critères de recherche.</p>
@@ -2325,66 +2554,31 @@
             
             let html = '';
             paginatedProducts.forEach(product => {
-                // Déterminer le statut du stock
-                let stockStatus = 'in-stock';
-                let stockStatusText = 'En stock';
-                let stockLevel = 'high';
-                
-                if (product.currentStock <= 0) {
-                    stockStatus = 'out-of-stock';
-                    stockStatusText = 'Rupture';
-                    stockLevel = 'low';
-                } else if (product.currentStock <= (product.minStock || 10)) {
-                    stockStatus = 'low-stock';
-                    stockStatusText = 'Stock faible';
-                    stockLevel = 'low';
-                } else if (product.currentStock <= (product.minStock || 10) * 2) {
-                    stockStatus = 'low-stock';
-                    stockStatusText = 'Stock moyen';
-                    stockLevel = 'medium';
-                }
-                
-                // Calculer la valeur du stock
-                const stockValue = (product.currentStock || 0) * (product.price || 0);
-                
-                // Trouver le nom du dépôt
-                const depot = depots.find(d => d.id === product.depotId);
-                const depotName = depot ? depot.name : product.depotName || '--';
+                const statusText = StockManager.getStockStatusText(product.stockStatus);
+                const statusClass = `stock-${product.stockStatus}`;
+                const categoryName = getCategoryName(product.category);
+                const depotName = getDepotName(product.depot);
+                const margin = StockManager.calculateMargin(product.sellPrice || product.price || 0, product.costPrice || product.price || 0);
                 
                 html += `
                     <tr>
-                        <td><strong>${product.reference || '--'}</strong></td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                ${product.image ? 
-                                    `<img src="${product.image}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;">` : 
-                                    `<div style="width: 40px; height: 40px; border-radius: 6px; background: var(--light); display: flex; align-items: center; justify-content: center; color: var(--primary);">
-                                        <i class="fas fa-box"></i>
-                                    </div>`
-                                }
-                                <div>
-                                    <div style="font-weight: 600;">${product.name}</div>
-                                    <div style="font-size: 12px; color: var(--text-light);">${product.description || ''}</div>
-                                </div>
-                            </div>
+                        <td><strong style="color: var(--primary);">${product.code || product.reference || '--'}</strong></td>
+                        <td style="text-align: right;">
+                            <div><strong>${product.name}</strong></div>
+                            ${product.description ? `<div style="font-size: 12px; color: var(--text-light);">${product.description.substring(0, 50)}...</div>` : ''}
                         </td>
+                        <td>${categoryName}</td>
+                        <td>${depotName}</td>
+                        <td><strong>${product.currentStock || product.quantity || 0}</strong></td>
+                        <td>${product.minStock || 10}</td>
+                        <td><strong>${formatNumber(product.costPrice || product.price || 0)}</strong></td>
+                        <td><strong>${formatNumber(product.sellPrice || product.price || 0)}</strong></td>
+                        <td><strong style="color: var(--success);">${formatNumber(product.totalValue || 0)}</strong></td>
                         <td>
-                            <span class="category-tag" style="background: ${getCategoryColor(product.category)}20; color: ${getCategoryColor(product.category)};">
-                                ${product.category || 'Non catégorisé'}
+                            <span class="stock-status ${statusClass}">
+                                ${statusText}
                             </span>
                         </td>
-                        <td><strong>${product.currentStock || 0}</strong></td>
-                        <td>
-                            <div class="stock-level">
-                                <div class="stock-bar">
-                                    <div class="stock-fill ${stockLevel}"></div>
-                                </div>
-                                <span class="stock-text">${stockStatusText}</span>
-                            </div>
-                        </td>
-                        <td><strong>${(product.price || 0).toFixed(2)} DH</strong></td>
-                        <td>${depotName}</td>
-                        <td><strong style="color: var(--success);">${stockValue.toFixed(2)} DH</strong></td>
                         <td>
                             <div class="action-buttons">
                                 <button class="action-btn edit" title="Modifier" onclick="editProduct('${product.id}')">
@@ -2417,8 +2611,9 @@
             if (searchTerm) {
                 filtered = filtered.filter(product => 
                     (product.name && product.name.toLowerCase().includes(searchTerm)) ||
+                    (product.code && product.code.toLowerCase().includes(searchTerm)) ||
                     (product.reference && product.reference.toLowerCase().includes(searchTerm)) ||
-                    (product.category && product.category.toLowerCase().includes(searchTerm)) ||
+                    (getCategoryName(product.category) && getCategoryName(product.category).toLowerCase().includes(searchTerm)) ||
                     (product.description && product.description.toLowerCase().includes(searchTerm))
                 );
             }
@@ -2432,40 +2627,19 @@
             // Filtre d'état du stock
             const stockFilter = document.getElementById('filterStock').value;
             if (stockFilter) {
-                filtered = filtered.filter(product => {
-                    const stock = product.currentStock || 0;
-                    const minStock = product.minStock || 10;
-                    
-                    switch(stockFilter) {
-                        case 'in-stock':
-                            return stock > minStock * 2;
-                        case 'low-stock':
-                            return stock > 0 && stock <= minStock * 2;
-                        case 'out-of-stock':
-                            return stock <= 0;
-                        default:
-                            return true;
-                    }
-                });
+                filtered = filtered.filter(product => product.stockStatus === stockFilter);
             }
             
             // Filtre de dépôt
             const depotFilter = document.getElementById('filterDepot').value;
             if (depotFilter) {
-                filtered = filtered.filter(product => product.depotId === depotFilter);
+                filtered = filtered.filter(product => product.depot === depotFilter);
             }
             
-            // Trier par stock (faible d'abord)
+            // Trier par statut (rupture d'abord, puis stock bas)
             filtered.sort((a, b) => {
-                const stockA = a.currentStock || 0;
-                const stockB = b.currentStock || 0;
-                const minStockA = a.minStock || 10;
-                const minStockB = b.minStock || 10;
-                
-                const ratioA = stockA / minStockA;
-                const ratioB = stockB / minStockB;
-                
-                return ratioA - ratioB;
+                const statusOrder = { 'out': 0, 'low': 1, 'medium': 2, 'high': 3 };
+                return statusOrder[a.stockStatus] - statusOrder[b.stockStatus];
             });
             
             return filtered;
@@ -2533,6 +2707,32 @@
             updateProductsTable();
         }
         
+        // ==================== FONCTIONS UTILITAIRES ====================
+        
+        function formatNumber(num) {
+            return new Intl.NumberFormat('fr-FR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(num);
+        }
+        
+        function getCategoryName(categoryId) {
+            if (!categoryId) return 'Non classé';
+            const category = categories.find(c => c.id === categoryId);
+            return category ? category.name : categoryId;
+        }
+        
+        function getDepotName(depotId) {
+            if (!depotId) return 'Non spécifié';
+            const depot = depots.find(d => d.id === depotId);
+            return depot ? depot.name : depotId;
+        }
+        
+        function getCategoryColor(categoryName) {
+            const category = categories.find(c => c.name === categoryName);
+            return category ? category.color : '#1a237e';
+        }
+        
         // ==================== GESTION DES CATÉGORIES ====================
         
         function updateCategoriesDisplay() {
@@ -2556,16 +2756,16 @@
             let html = '';
             categories.forEach(category => {
                 // Compter les produits dans cette catégorie
-                const productCount = products.filter(p => p.category === category.name).length;
+                const productCount = StockManager.getCategoryProducts(category.id).length;
                 
                 // Calculer la valeur du stock de cette catégorie
-                const categoryProducts = products.filter(p => p.category === category.name);
+                const categoryProducts = StockManager.getCategoryProducts(category.id);
                 const stockValue = categoryProducts.reduce((total, product) => {
-                    return total + ((product.currentStock || 0) * (product.price || 0));
+                    return total + (product.totalValue || 0);
                 }, 0);
                 
                 html += `
-                    <div class="category-card" onclick="filterByCategory('${category.name}')">
+                    <div class="category-card" onclick="filterByCategory('${category.id}')">
                         <div class="category-actions">
                             <button class="action-btn edit btn-small" onclick="editCategory('${category.id}', event)">
                                 <i class="fas fa-edit"></i>
@@ -2582,7 +2782,7 @@
                         </div>
                         <div class="count">${productCount}</div>
                         <div class="subtitle">produits</div>
-                        <div class="subtitle" style="margin-top: 5px;">Valeur: ${stockValue.toFixed(2)} DH</div>
+                        <div class="subtitle" style="margin-top: 5px;">Valeur: ${formatNumber(stockValue)} DH</div>
                         ${category.description ? `<div class="subtitle" style="margin-top: 5px; font-size: 11px;">${category.description}</div>` : ''}
                     </div>
                 `;
@@ -2602,24 +2802,19 @@
             // Ajouter les catégories
             categories.forEach(category => {
                 const option1 = document.createElement('option');
-                option1.value = category.name;
+                option1.value = category.id;
                 option1.textContent = category.name;
                 select.appendChild(option1);
                 
                 const option2 = document.createElement('option');
-                option2.value = category.name;
+                option2.value = category.id;
                 option2.textContent = category.name;
                 productSelect.appendChild(option2);
             });
         }
         
-        function getCategoryColor(categoryName) {
-            const category = categories.find(c => c.name === categoryName);
-            return category ? category.color : '#1a237e';
-        }
-        
-        function filterByCategory(categoryName) {
-            document.getElementById('filterCategory').value = categoryName;
+        function filterByCategory(categoryId) {
+            document.getElementById('filterCategory').value = categoryId;
             filterProducts();
         }
         
@@ -2646,12 +2841,12 @@
             let html = '';
             depots.forEach(depot => {
                 // Compter les produits dans ce dépôt
-                const productCount = products.filter(p => p.depotId === depot.id).length;
+                const productCount = products.filter(p => p.depot === depot.id).length;
                 
                 // Calculer la valeur du stock dans ce dépôt
-                const depotProducts = products.filter(p => p.depotId === depot.id);
+                const depotProducts = products.filter(p => p.depot === depot.id);
                 const stockValue = depotProducts.reduce((total, product) => {
-                    return total + ((product.currentStock || 0) * (product.price || 0));
+                    return total + (product.totalValue || 0);
                 }, 0);
                 
                 html += `
@@ -2677,7 +2872,7 @@
                             </div>
                             <div class="depot-info-item">
                                 <div class="label">Valeur stock</div>
-                                <div class="value">${stockValue.toFixed(2)} DH</div>
+                                <div class="value">${formatNumber(stockValue)} DH</div>
                             </div>
                         </div>
                         <div style="display: flex; gap: 10px; margin-top: 15px;">
@@ -2884,12 +3079,13 @@
         function resetProductForm() {
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
-            document.getElementById('productStock').value = '0';
+            document.getElementById('productQuantity').value = '0';
             document.getElementById('productMinStock').value = '10';
+            document.getElementById('productMaxStock').value = '100';
             
-            // Générer une référence automatique
-            const ref = 'PROD-' + Date.now().toString().slice(-6);
-            document.getElementById('productReference').value = ref;
+            // Générer un code produit automatique
+            const nextId = products.length + 1;
+            document.getElementById('productCode').value = `PROD-${String(nextId).padStart(4, '0')}`;
         }
         
         function loadProductForEdit(productId) {
@@ -2897,50 +3093,64 @@
             if (!product) return;
             
             document.getElementById('productId').value = product.id;
+            document.getElementById('productCode').value = product.code || '';
             document.getElementById('productName').value = product.name || '';
-            document.getElementById('productReference').value = product.reference || '';
             document.getElementById('productCategory').value = product.category || '';
-            document.getElementById('productDepot').value = product.depotId || '';
-            document.getElementById('productPrice').value = product.price || '';
-            document.getElementById('productCost').value = product.cost || '';
-            document.getElementById('productStock').value = product.currentStock || '0';
+            document.getElementById('productDepot').value = product.depot || '';
+            document.getElementById('productCostPrice').value = product.costPrice || product.price || '';
+            document.getElementById('productSellPrice').value = product.sellPrice || product.price || '';
+            document.getElementById('productQuantity').value = product.currentStock || product.quantity || '0';
             document.getElementById('productMinStock').value = product.minStock || '10';
+            document.getElementById('productMaxStock').value = product.maxStock || '100';
             document.getElementById('productDescription').value = product.description || '';
-            document.getElementById('productImage').value = product.image || '';
+            document.getElementById('productBarcode').value = product.barcode || '';
+            document.getElementById('productSupplier').value = product.supplier || '';
         }
         
-        function saveProduct(e) {
+        async function saveProduct(e) {
             e.preventDefault();
             
             const productId = document.getElementById('productId').value;
+            const isNew = !productId;
+            
             const productData = {
+                code: document.getElementById('productCode').value,
                 name: document.getElementById('productName').value,
-                reference: document.getElementById('productReference').value,
                 category: document.getElementById('productCategory').value,
-                depotId: document.getElementById('productDepot').value,
-                price: parseFloat(document.getElementById('productPrice').value) || 0,
-                cost: parseFloat(document.getElementById('productCost').value) || 0,
-                currentStock: parseInt(document.getElementById('productStock').value) || 0,
-                minStock: parseInt(document.getElementById('productMinStock').value) || 10,
+                depot: document.getElementById('productDepot').value,
+                costPrice: parseFloat(document.getElementById('productCostPrice').value) || 0,
+                sellPrice: parseFloat(document.getElementById('productSellPrice').value) || 0,
+                quantity: parseFloat(document.getElementById('productQuantity').value) || 0,
+                currentStock: parseFloat(document.getElementById('productQuantity').value) || 0,
+                minStock: parseFloat(document.getElementById('productMinStock').value) || 10,
+                maxStock: parseFloat(document.getElementById('productMaxStock').value) || 100,
                 description: document.getElementById('productDescription').value,
-                image: document.getElementById('productImage').value,
+                barcode: document.getElementById('productBarcode').value,
+                supplier: document.getElementById('productSupplier').value,
                 updatedAt: new Date().toISOString()
             };
             
-            // Ajouter le nom du dépôt
-            const depot = depots.find(d => d.id === productData.depotId);
-            if (depot) {
-                productData.depotName = depot.name;
+            if (isNew) {
+                productData.createdAt = new Date().toISOString();
             }
             
-            if (productId) {
-                // Mise à jour
-                productData.createdAt = products.find(p => p.id === productId).createdAt;
-                updateProductInFirebase(productId, productData);
-            } else {
-                // Création
-                productData.createdAt = new Date().toISOString();
-                createProductInFirebase(productData);
+            try {
+                if (isNew) {
+                    const newRef = database.ref('products').push();
+                    await newRef.set(productData);
+                    
+                    showToast("Produit ajouté avec succès", "success");
+                } else {
+                    await database.ref(`products/${productId}`).update(productData);
+                    
+                    showToast("Produit modifié avec succès", "success");
+                }
+                
+                closeProductModal();
+                
+            } catch (error) {
+                console.error("Erreur d'enregistrement:", error);
+                showToast("Erreur lors de l'enregistrement du produit", "error");
             }
         }
         
@@ -2958,7 +3168,7 @@
             products.forEach(product => {
                 const option = document.createElement('option');
                 option.value = product.id;
-                option.textContent = `${product.name} (${product.reference || 'Sans réf.'}) - Stock: ${product.currentStock || 0}`;
+                option.textContent = `${product.code || product.reference} - ${product.name} - Stock: ${product.currentStock || product.quantity || 0}`;
                 select.appendChild(option);
             });
         }
@@ -2968,7 +3178,7 @@
             const product = products.find(p => p.id === productId);
             
             if (product) {
-                document.getElementById('currentStock').value = product.currentStock || 0;
+                document.getElementById('currentStock').value = product.currentStock || product.quantity || 0;
             } else {
                 document.getElementById('currentStock').value = '';
             }
@@ -2985,7 +3195,7 @@
             }
         }
         
-        function saveStockAdjustment(e) {
+        async function saveStockAdjustment(e) {
             e.preventDefault();
             
             const productId = document.getElementById('adjustmentProduct').value;
@@ -3007,7 +3217,7 @@
             }
             
             // Calculer le nouveau stock
-            let newStock = product.currentStock || 0;
+            let newStock = product.currentStock || product.quantity || 0;
             let adjustmentQuantity = quantity;
             
             switch (type) {
@@ -3023,7 +3233,7 @@
                     break;
                 case 'set':
                     newStock = quantity;
-                    adjustmentQuantity = Math.abs(quantity - (product.currentStock || 0));
+                    adjustmentQuantity = Math.abs(quantity - (product.currentStock || product.quantity || 0));
                     break;
             }
             
@@ -3032,25 +3242,34 @@
                 productId: productId,
                 productName: product.name,
                 depotId: depotId,
-                type: type === 'set' ? (quantity > (product.currentStock || 0) ? 'in' : 'out') : type,
+                type: type === 'set' ? (quantity > (product.currentStock || product.quantity || 0) ? 'in' : 'out') : type,
                 quantity: adjustmentQuantity,
                 reason: reason,
                 notes: notes,
-                previousStock: product.currentStock || 0,
+                previousStock: product.currentStock || product.quantity || 0,
                 newStock: newStock,
                 date: new Date().toISOString(),
                 user: 'admin'
             };
             
-            if (isDemoMode) {
-                // Mode démo
-                product.currentStock = newStock;
-                showToast("Ajustement de stock appliqué (mode démo)", "success");
+            try {
+                // 1. Mettre à jour le stock du produit
+                await database.ref(`products/${productId}`).update({
+                    currentStock: newStock,
+                    quantity: newStock,
+                    updatedAt: new Date().toISOString()
+                });
+                
+                // 2. Enregistrer le mouvement
+                const movementRef = database.ref('stockMovements').push();
+                await movementRef.set(adjustmentData);
+                
+                showToast("Ajustement de stock appliqué avec succès!", "success");
                 closeStockAdjustmentModal();
-                updateDashboard();
-            } else {
-                // Mode Firebase
-                saveStockAdjustmentToFirebase(productId, newStock, adjustmentData);
+                
+            } catch (error) {
+                console.error("Erreur d'ajustement:", error);
+                showToast("Erreur lors de l'ajustement du stock", "error");
             }
         }
         
@@ -3059,27 +3278,41 @@
             document.getElementById('categoryColor').value = '#1a237e';
         }
         
-        function saveCategory(e) {
+        async function saveCategory(e) {
             e.preventDefault();
+            
+            const categoryId = document.getElementById('categoryId').value;
+            const isNew = !categoryId;
             
             const categoryData = {
                 name: document.getElementById('categoryName').value,
                 description: document.getElementById('categoryDescription').value,
                 color: document.getElementById('categoryColor').value,
                 productCount: 0,
-                createdAt: new Date().toISOString()
+                updatedAt: new Date().toISOString()
             };
             
-            if (isDemoMode) {
-                // Mode démo
-                categoryData.id = 'cat-' + Date.now();
-                categories.push(categoryData);
-                showToast("Catégorie créée (mode démo)", "success");
+            if (isNew) {
+                categoryData.createdAt = new Date().toISOString();
+            }
+            
+            try {
+                if (isNew) {
+                    const newRef = database.ref('categories').push();
+                    await newRef.set(categoryData);
+                    
+                    showToast("Catégorie créée avec succès", "success");
+                } else {
+                    await database.ref(`categories/${categoryId}`).update(categoryData);
+                    
+                    showToast("Catégorie modifiée avec succès", "success");
+                }
+                
                 closeAddCategoryModal();
-                updateDashboard();
-            } else {
-                // Mode Firebase
-                createCategoryInFirebase(categoryData);
+                
+            } catch (error) {
+                console.error("Erreur d'enregistrement:", error);
+                showToast("Erreur lors de l'enregistrement de la catégorie", "error");
             }
         }
         
@@ -3105,10 +3338,12 @@
             document.getElementById('depotNotes').value = depot.notes || '';
         }
         
-        function saveDepot(e) {
+        async function saveDepot(e) {
             e.preventDefault();
             
             const depotId = document.getElementById('depotId').value;
+            const isNew = !depotId;
+            
             const depotData = {
                 name: document.getElementById('depotName').value,
                 city: document.getElementById('depotCity').value,
@@ -3122,14 +3357,27 @@
                 updatedAt: new Date().toISOString()
             };
             
-            if (depotId) {
-                // Mise à jour
-                depotData.createdAt = depots.find(d => d.id === depotId).createdAt;
-                updateDepotInFirebase(depotId, depotData);
-            } else {
-                // Création
+            if (isNew) {
                 depotData.createdAt = new Date().toISOString();
-                createDepotInFirebase(depotData);
+            }
+            
+            try {
+                if (isNew) {
+                    const newRef = database.ref('depots').push();
+                    await newRef.set(depotData);
+                    
+                    showToast("Dépôt créé avec succès", "success");
+                } else {
+                    await database.ref(`depots/${depotId}`).update(depotData);
+                    
+                    showToast("Dépôt modifié avec succès", "success");
+                }
+                
+                closeAddDepotModal();
+                
+            } catch (error) {
+                console.error("Erreur d'enregistrement:", error);
+                showToast("Erreur lors de l'enregistrement du dépôt", "error");
             }
         }
         
@@ -3151,7 +3399,7 @@
             
             if (product) {
                 document.getElementById('historyProductName').value = product.name;
-                document.getElementById('historyCurrentStock').value = product.currentStock || 0;
+                document.getElementById('historyCurrentStock').value = product.currentStock || product.quantity || 0;
             }
             
             openHistoryModal();
@@ -3272,15 +3520,15 @@
             );
         }
         
-        function deleteProduct(productId) {
-            if (isDemoMode) {
-                // Mode démo
-                products = products.filter(p => p.id !== productId);
-                showToast("Produit supprimé (mode démo)", "success");
-                updateDashboard();
-            } else {
-                // Mode Firebase
-                deleteProductFromFirebase(productId);
+        async function deleteProduct(productId) {
+            try {
+                await database.ref(`products/${productId}`).remove();
+                
+                showToast("Produit supprimé avec succès", "success");
+                
+            } catch (error) {
+                console.error("Erreur de suppression:", error);
+                showToast("Erreur lors de la suppression du produit", "error");
             }
             closeConfirmModal();
         }
@@ -3300,29 +3548,24 @@
                 return;
             }
             
-            if (isDemoMode) {
-                // Mode démo
-                const newCategory = {
-                    id: 'cat-' + Date.now(),
-                    name: name,
-                    description: '',
-                    color: '#1a237e',
-                    productCount: 0,
-                    createdAt: new Date().toISOString()
-                };
-                categories.push(newCategory);
-                showToast("Catégorie ajoutée (mode démo)", "success");
+            const categoryData = {
+                name: name,
+                description: '',
+                color: '#1a237e',
+                productCount: 0,
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                const newRef = database.ref('categories').push();
+                newRef.set(categoryData);
+                
+                showToast("Catégorie ajoutée avec succès", "success");
                 document.getElementById('newCategoryName').value = '';
-                updateDashboard();
-            } else {
-                // Mode Firebase
-                createCategoryInFirebase({
-                    name: name,
-                    description: '',
-                    color: '#1a237e',
-                    productCount: 0,
-                    createdAt: new Date().toISOString()
-                });
+                
+            } catch (error) {
+                console.error("Erreur d'ajout:", error);
+                showToast("Erreur lors de l'ajout de la catégorie", "error");
             }
         }
         
@@ -3345,7 +3588,7 @@
             let html = '';
             categories.forEach(category => {
                 // Compter les produits dans cette catégorie
-                const productCount = products.filter(p => p.category === category.name).length;
+                const productCount = StockManager.getCategoryProducts(category.id).length;
                 
                 const date = new Date(category.createdAt);
                 const dateStr = date.toLocaleDateString('fr-FR', {
@@ -3409,7 +3652,7 @@
             if (!category) return;
             
             // Vérifier si des produits utilisent cette catégorie
-            const productsUsingCategory = products.filter(p => p.category === category.name);
+            const productsUsingCategory = StockManager.getCategoryProducts(categoryId);
             
             if (productsUsingCategory.length > 0) {
                 openConfirmModal(
@@ -3433,39 +3676,48 @@
                 return;
             }
             
-            if (isDemoMode) {
-                // Mode démo
-                // Mettre à jour les produits
-                products.forEach(product => {
-                    if (product.category === categoryName) {
-                        product.category = newCategory.trim();
-                    }
-                });
-                
-                // Supprimer la catégorie
-                categories = categories.filter(c => c.id !== categoryId);
-                showToast("Catégorie supprimée et produits réaffectés (mode démo)", "success");
-            } else {
-                // Mode Firebase
-                // TODO: Implémenter la réaffectation en Firebase
-                showToast("Fonctionnalité non implémentée en mode Firebase", "warning");
+            // Trouver la nouvelle catégorie
+            const targetCategory = categories.find(c => c.name === newCategory.trim());
+            if (!targetCategory) {
+                showToast("Catégorie non trouvée", "error");
+                return;
             }
             
+            // Mettre à jour les produits
+            const updates = {};
+            products.forEach(product => {
+                if (product.category === categoryId) {
+                    updates[`products/${product.id}/category`] = targetCategory.id;
+                }
+            });
+            
+            database.ref().update(updates)
+                .then(() => {
+                    // Supprimer la catégorie
+                    return database.ref(`categories/${categoryId}`).remove();
+                })
+                .then(() => {
+                    showToast("Catégorie supprimée et produits réaffectés", "success");
+                })
+                .catch(error => {
+                    console.error("Erreur:", error);
+                    showToast("Erreur lors de l'opération", "error");
+                });
+            
             closeConfirmModal();
-            updateDashboard();
         }
         
-        function deleteCategory(categoryId) {
-            if (isDemoMode) {
-                // Mode démo
-                categories = categories.filter(c => c.id !== categoryId);
-                showToast("Catégorie supprimée (mode démo)", "success");
-            } else {
-                // Mode Firebase
-                deleteCategoryFromFirebase(categoryId);
+        async function deleteCategory(categoryId) {
+            try {
+                await database.ref(`categories/${categoryId}`).remove();
+                
+                showToast("Catégorie supprimée avec succès", "success");
+                
+            } catch (error) {
+                console.error("Erreur de suppression:", error);
+                showToast("Erreur lors de la suppression de la catégorie", "error");
             }
             closeConfirmModal();
-            updateDashboard();
         }
         
         // ==================== ACTIONS SUR LES DÉPÔTS ====================
@@ -3489,7 +3741,7 @@
             let html = '';
             depots.forEach(depot => {
                 // Compter les produits dans ce dépôt
-                const productCount = products.filter(p => p.depotId === depot.id).length;
+                const productCount = products.filter(p => p.depot === depot.id).length;
                 
                 html += `
                     <tr>
@@ -3499,7 +3751,7 @@
                         <td>${depot.manager || '--'}</td>
                         <td>${depot.phone || '--'}</td>
                         <td>
-                            <span class="status-badge ${depot.status === 'active' ? 'status-in-stock' : 'status-out-of-stock'}">
+                            <span class="depot-status ${depot.status === 'active' ? '' : 'inactive'}">
                                 ${depot.status === 'active' ? 'Actif' : 'Inactif'}
                             </span>
                         </td>
@@ -3529,7 +3781,7 @@
             if (!depot) return;
             
             // Vérifier si des produits utilisent ce dépôt
-            const productsUsingDepot = products.filter(p => p.depotId === depotId);
+            const productsUsingDepot = products.filter(p => p.depot === depotId);
             
             if (productsUsingDepot.length > 0) {
                 openConfirmModal(
@@ -3553,288 +3805,86 @@
                 return;
             }
             
-            if (isDemoMode) {
-                // Mode démo
-                // Mettre à jour les produits
-                products.forEach(product => {
-                    if (product.depotId === depotId) {
-                        product.depotId = otherDepot.id;
-                        product.depotName = otherDepot.name;
-                    }
-                });
-                
-                // Supprimer le dépôt
-                depots = depots.filter(d => d.id !== depotId);
-                showToast("Dépôt supprimé et produits réaffectés (mode démo)", "success");
-            } else {
-                // Mode Firebase
-                // TODO: Implémenter la réaffectation en Firebase
-                showToast("Fonctionnalité non implémentée en mode Firebase", "warning");
-            }
-            
-            closeConfirmModal();
-            updateDashboard();
-        }
-        
-        function deleteDepot(depotId) {
-            if (isDemoMode) {
-                // Mode démo
-                depots = depots.filter(d => d.id !== depotId);
-                showToast("Dépôt supprimé (mode démo)", "success");
-            } else {
-                // Mode Firebase
-                deleteDepotFromFirebase(depotId);
-            }
-            closeConfirmModal();
-            updateDashboard();
-        }
-        
-        // ==================== FIREBASE OPERATIONS ====================
-        
-        function createProductInFirebase(productData) {
-            if (!database) {
-                showToast("Erreur: Base de données non connectée", "error");
-                return;
-            }
-            
-            showToast("Création du produit en cours...", "info");
-            
-            const newProductRef = database.ref('products').push();
-            productData.id = newProductRef.key;
-            
-            newProductRef.set(productData)
-                .then(() => {
-                    showToast("Produit créé avec succès!", "success");
-                    closeProductModal();
-                    
-                    // Ajouter à la liste locale
-                    products.push(productData);
-                    updateDashboard();
-                })
-                .catch((error) => {
-                    console.error("Erreur de création:", error);
-                    showToast("Erreur lors de la création du produit", "error");
-                });
-        }
-        
-        function updateProductInFirebase(productId, productData) {
-            if (!database) {
-                showToast("Erreur: Base de données non connectée", "error");
-                return;
-            }
-            
-            showToast("Mise à jour du produit en cours...", "info");
-            
-            const productRef = database.ref(`products/${productId}`);
-            
-            productRef.update(productData)
-                .then(() => {
-                    showToast("Produit mis à jour avec succès!", "success");
-                    closeProductModal();
-                    
-                    // Mettre à jour la liste locale
-                    const index = products.findIndex(p => p.id === productId);
-                    if (index !== -1) {
-                        products[index] = { ...products[index], ...productData };
-                    }
-                    updateDashboard();
-                })
-                .catch((error) => {
-                    console.error("Erreur de mise à jour:", error);
-                    showToast("Erreur lors de la mise à jour du produit", "error");
-                });
-        }
-        
-        function deleteProductFromFirebase(productId) {
-            if (!database) {
-                showToast("Erreur: Base de données non connectée", "error");
-                return;
-            }
-            
-            showToast("Suppression du produit en cours...", "info");
-            
-            const productRef = database.ref(`products/${productId}`);
-            
-            productRef.remove()
-                .then(() => {
-                    showToast("Produit supprimé avec succès!", "success");
-                    
-                    // Retirer de la liste locale
-                    products = products.filter(p => p.id !== productId);
-                    updateDashboard();
-                })
-                .catch((error) => {
-                    console.error("Erreur de suppression:", error);
-                    showToast("Erreur lors de la suppression du produit", "error");
-                });
-        }
-        
-        function saveStockAdjustmentToFirebase(productId, newStock, adjustmentData) {
-            if (!database) {
-                showToast("Erreur: Base de données non connectée", "error");
-                return;
-            }
-            
-            showToast("Ajustement de stock en cours...", "info");
-            
-            // 1. Mettre à jour le stock du produit
-            const productRef = database.ref(`products/${productId}`);
-            
-            productRef.update({
-                currentStock: newStock,
-                updatedAt: new Date().toISOString()
-            })
-            .then(() => {
-                // 2. Enregistrer le mouvement
-                const movementRef = database.ref('stockMovements').push();
-                adjustmentData.id = movementRef.key;
-                
-                return movementRef.set(adjustmentData);
-            })
-            .then(() => {
-                showToast("Ajustement de stock appliqué avec succès!", "success");
-                closeStockAdjustmentModal();
-                
-                // Mettre à jour la liste locale
-                const index = products.findIndex(p => p.id === productId);
-                if (index !== -1) {
-                    products[index].currentStock = newStock;
-                    products[index].updatedAt = new Date().toISOString();
+            // Mettre à jour les produits
+            const updates = {};
+            products.forEach(product => {
+                if (product.depot === depotId) {
+                    updates[`products/${product.id}/depot`] = otherDepot.id;
                 }
-                updateDashboard();
-            })
-            .catch((error) => {
-                console.error("Erreur d'ajustement:", error);
-                showToast("Erreur lors de l'ajustement du stock", "error");
             });
+            
+            database.ref().update(updates)
+                .then(() => {
+                    // Supprimer le dépôt
+                    return database.ref(`depots/${depotId}`).remove();
+                })
+                .then(() => {
+                    showToast("Dépôt supprimé et produits réaffectés", "success");
+                })
+                .catch(error => {
+                    console.error("Erreur:", error);
+                    showToast("Erreur lors de l'opération", "error");
+                });
+            
+            closeConfirmModal();
         }
         
-        function createCategoryInFirebase(categoryData) {
-            if (!database) {
-                showToast("Erreur: Base de données non connectée", "error");
-                return;
+        async function deleteDepot(depotId) {
+            try {
+                await database.ref(`depots/${depotId}`).remove();
+                
+                showToast("Dépôt supprimé avec succès", "success");
+                
+            } catch (error) {
+                console.error("Erreur de suppression:", error);
+                showToast("Erreur lors de la suppression du dépôt", "error");
             }
-            
-            showToast("Création de la catégorie en cours...", "info");
-            
-            const newCategoryRef = database.ref('categories').push();
-            categoryData.id = newCategoryRef.key;
-            
-            newCategoryRef.set(categoryData)
-                .then(() => {
-                    showToast("Catégorie créée avec succès!", "success");
-                    closeAddCategoryModal();
-                    
-                    // Ajouter à la liste locale
-                    categories.push(categoryData);
-                    updateDashboard();
-                })
-                .catch((error) => {
-                    console.error("Erreur de création:", error);
-                    showToast("Erreur lors de la création de la catégorie", "error");
-                });
+            closeConfirmModal();
         }
         
-        function deleteCategoryFromFirebase(categoryId) {
-            if (!database) {
-                showToast("Erreur: Base de données non connectée", "error");
-                return;
-            }
-            
-            showToast("Suppression de la catégorie en cours...", "info");
-            
-            const categoryRef = database.ref(`categories/${categoryId}`);
-            
-            categoryRef.remove()
-                .then(() => {
-                    showToast("Catégorie supprimée avec succès!", "success");
-                    
-                    // Retirer de la liste locale
-                    categories = categories.filter(c => c.id !== categoryId);
-                    updateDashboard();
-                })
-                .catch((error) => {
-                    console.error("Erreur de suppression:", error);
-                    showToast("Erreur lors de la suppression de la catégorie", "error");
-                });
+        // ==================== FONCTIONS D'EXPORT ====================
+        
+        function refreshStockData() {
+            loadProducts();
+            showToast("Données actualisées", "success");
         }
         
-        function createDepotInFirebase(depotData) {
-            if (!database) {
-                showToast("Erreur: Base de données non connectée", "error");
-                return;
-            }
-            
-            showToast("Création du dépôt en cours...", "info");
-            
-            const newDepotRef = database.ref('depots').push();
-            depotData.id = newDepotRef.key;
-            
-            newDepotRef.set(depotData)
-                .then(() => {
-                    showToast("Dépôt créé avec succès!", "success");
-                    closeAddDepotModal();
-                    
-                    // Ajouter à la liste locale
-                    depots.push(depotData);
-                    updateDashboard();
-                })
-                .catch((error) => {
-                    console.error("Erreur de création:", error);
-                    showToast("Erreur lors de la création du dépôt", "error");
-                });
+        function exportStockToExcel() {
+            ExportManager.exportProductsToExcel();
         }
         
-        function updateDepotInFirebase(depotId, depotData) {
-            if (!database) {
-                showToast("Erreur: Base de données non connectée", "error");
-                return;
-            }
-            
-            showToast("Mise à jour du dépôt en cours...", "info");
-            
-            const depotRef = database.ref(`depots/${depotId}`);
-            
-            depotRef.update(depotData)
-                .then(() => {
-                    showToast("Dépôt mis à jour avec succès!", "success");
-                    closeAddDepotModal();
-                    
-                    // Mettre à jour la liste locale
-                    const index = depots.findIndex(d => d.id === depotId);
-                    if (index !== -1) {
-                        depots[index] = { ...depots[index], ...depotData };
-                    }
-                    updateDashboard();
-                })
-                .catch((error) => {
-                    console.error("Erreur de mise à jour:", error);
-                    showToast("Erreur lors de la mise à jour du dépôt", "error");
-                });
+        function exportStockToPDF() {
+            showToast("Export PDF en développement", "info");
         }
         
-        function deleteDepotFromFirebase(depotId) {
-            if (!database) {
-                showToast("Erreur: Base de données non connectée", "error");
-                return;
-            }
-            
-            showToast("Suppression du dépôt en cours...", "info");
-            
-            const depotRef = database.ref(`depots/${depotId}`);
-            
-            depotRef.remove()
-                .then(() => {
-                    showToast("Dépôt supprimé avec succès!", "success");
+        function exportCategoriesToExcel() {
+            try {
+                const exportData = categories.map(category => {
+                    const categoryProducts = StockManager.getCategoryProducts(category.id);
+                    const totalValue = categoryProducts.reduce((sum, p) => 
+                        sum + (p.totalValue || 0), 0);
                     
-                    // Retirer de la liste locale
-                    depots = depots.filter(d => d.id !== depotId);
-                    updateDashboard();
-                })
-                .catch((error) => {
-                    console.error("Erreur de suppression:", error);
-                    showToast("Erreur lors de la suppression du dépôt", "error");
+                    return {
+                        'Nom': category.name,
+                        'Description': category.description || '',
+                        'Produits': categoryProducts.length,
+                        'Valeur Totale': totalValue,
+                        'Stock Moyen': categoryProducts.length > 0 ? 
+                            categoryProducts.reduce((sum, p) => sum + (p.currentStock || p.quantity || 0), 0) / categoryProducts.length : 0,
+                        'Couleur': category.color
+                    };
                 });
+                
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Catégories");
+                XLSX.writeFile(wb, `categories_${new Date().toISOString().split('T')[0]}.xlsx`);
+                
+                showToast("Export Excel réussi", "success");
+            } catch (error) {
+                console.error("Erreur d'export:", error);
+                showToast("Erreur lors de l'export Excel", "error");
+            }
         }
         
         // ==================== FONCTIONS UTILITAIRES ====================
@@ -3905,20 +3955,6 @@
                 timeout = setTimeout(later, wait);
             };
         }
-        
-        // Confirmation action
-        document.getElementById('confirmAction').addEventListener('click', function() {
-            if (confirmCallback) {
-                confirmCallback();
-            }
-        });
-        
-        // Raccourci pour fermer les modals avec Escape
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeAllModals();
-            }
-        });
     </script>
 </body>
 </html>
