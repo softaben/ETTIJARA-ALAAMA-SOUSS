@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETTIJARA ALAAMA SOUSS - Fournisseurs</title>
+    <title>ETTIJARA ALAAMA SOUSS - Détails Achats</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase SDK -->
@@ -273,6 +273,7 @@
             display: flex;
             gap: 15px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -392,70 +393,204 @@
             background-color: var(--light);
         }
 
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        /* Purchase Details Card */
+        .purchase-details-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .purchase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .purchase-info {
+            flex: 1;
+        }
+
+        .purchase-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .purchase-title h3 {
+            font-size: 24px;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .purchase-title .status-badge {
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+
+        .purchase-meta {
+            display: flex;
+            flex-wrap: wrap;
             gap: 20px;
+            margin-top: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .meta-item i {
+            color: var(--primary);
+            width: 20px;
+        }
+
+        .purchase-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Purchase Items */
+        .purchase-items {
             margin-bottom: 30px;
         }
 
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-        }
-
-        .stat-icon.total {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-        }
-
-        .stat-icon.active {
-            background: linear-gradient(135deg, var(--success), #4caf50);
-        }
-
-        .stat-icon.debts {
-            background: linear-gradient(135deg, var(--warning), #ff9800);
-        }
-
-        .stat-icon.recent {
-            background: linear-gradient(135deg, var(--info), #29b6f6);
-        }
-
-        .stat-info h3 {
-            font-size: 14px;
-            color: var(--text-light);
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-
-        .stat-info .value {
-            font-size: 28px;
-            font-weight: 700;
+        .purchase-items h4 {
             color: var(--text);
-            margin-bottom: 5px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--light);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .items-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Payment Summary */
+        .payment-summary {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .payment-summary h4 {
+            color: var(--text);
+            margin-bottom: 20px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .payment-row:last-child {
+            border-bottom: none;
+        }
+
+        .payment-row.total {
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid var(--border);
+            border-bottom: none;
+        }
+
+        /* Distribution Section */
+        .distribution-section {
+            margin-top: 30px;
+        }
+
+        .distribution-section h4 {
+            color: var(--text);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .distribution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .distribution-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .distribution-card h5 {
+            color: var(--text);
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .distribution-list {
+            list-style: none;
+        }
+
+        .distribution-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dashed var(--border);
+            font-size: 13px;
+        }
+
+        .distribution-list li:last-child {
+            border-bottom: none;
         }
 
         /* Form Controls */
@@ -645,6 +780,7 @@
             gap: 5px;
             margin-bottom: 20px;
             border-bottom: 2px solid var(--border);
+            overflow-x: auto;
         }
 
         .tab {
@@ -656,6 +792,7 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
+            white-space: nowrap;
         }
 
         .tab:hover {
@@ -673,6 +810,47 @@
 
         .tab-content.active {
             display: block;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+        
+        .status-pending {
+            background-color: rgba(217, 119, 6, 0.1);
+            color: #d97706;
+        }
+        
+        .status-paid {
+            background-color: rgba(6, 95, 70, 0.1);
+            color: #065f46;
+        }
+        
+        .status-partial {
+            background-color: rgba(29, 78, 216, 0.1);
+            color: #1d4ed8;
+        }
+        
+        .status-overdue {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+        }
+
+        .status-completed {
+            background-color: rgba(6, 95, 70, 0.1);
+            color: #065f46;
+        }
+
+        .status-cancelled {
+            background-color: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
         }
 
         /* Connection Status */
@@ -699,77 +877,65 @@
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
         }
 
-        /* Supplier Card */
-        .supplier-card {
-            background: var(--card-bg);
-            border-radius: 12px;
+        /* Purchase Timeline */
+        .purchase-timeline {
+            margin-top: 30px;
             padding: 20px;
-            margin-bottom: 15px;
+            background: var(--light);
+            border-radius: 8px;
             border: 1px solid var(--border);
-            transition: all 0.3s;
-            cursor: pointer;
         }
 
-        .supplier-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow);
-            border-color: var(--primary);
-        }
-
-        .supplier-card-header {
+        .timeline-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
         }
 
-        .supplier-card-header h4 {
-            color: var(--text);
-            font-size: 18px;
-            margin: 0;
+        .timeline-item:last-child {
+            margin-bottom: 0;
         }
 
-        .supplier-card-body {
-            color: var(--text-light);
-            font-size: 14px;
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 0;
+            bottom: -20px;
+            width: 2px;
+            background: var(--primary);
         }
 
-        .supplier-info-row {
+        .timeline-item:last-child:before {
+            display: none;
+        }
+
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
+            justify-content: center;
+            margin-left: 10px;
+            position: relative;
+            z-index: 1;
         }
 
-        .supplier-info-row i {
-            width: 20px;
-            color: var(--primary);
+        .timeline-content {
+            flex: 1;
         }
 
-        /* Status Badge */
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
+        .timeline-date {
             font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-block;
+            color: var(--text-light);
+            margin-bottom: 5px;
         }
-        
-        .status-active {
-            background-color: rgba(6, 95, 70, 0.1);
-            color: #065f46;
-        }
-        
-        .status-inactive {
-            background-color: rgba(107, 114, 128, 0.1);
-            color: #6b7280;
-        }
-        
-        .status-warning {
-            background-color: rgba(217, 119, 6, 0.1);
-            color: #d97706;
+
+        .timeline-text {
+            color: var(--text);
         }
 
         /* Search Bar */
@@ -830,12 +996,22 @@
                 width: 100%;
             }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
+            .purchase-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .purchase-actions {
+                width: 100%;
+                justify-content: center;
             }
 
             .modal {
                 max-height: 95vh;
+            }
+
+            .distribution-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -848,15 +1024,11 @@
                 font-size: 22px;
             }
 
-            .stat-card {
-                padding: 15px;
-            }
-
             .modal-body {
                 padding: 20px;
             }
 
-            .supplier-card-header {
+            .purchase-title {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 10px;
@@ -868,7 +1040,7 @@
     <header class="header">
         <div class="logo">
             <i class="fas fa-shopping-cart"></i>
-            <h1>ETTIJARA ALAAMA SOUSS - FOURNISSEURS</h1>
+            <h1>ETTIJARA ALAAMA SOUSS - DÉTAILS ACHATS</h1>
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <nav class="nav">
@@ -880,11 +1052,11 @@
                     <i class="fas fa-truck"></i>
                     Livraisons
                 </a>
-                <a href="purchases.html" class="nav-item">
+                <a href="purchases.html" class="nav-item active">
                     <i class="fas fa-cart-plus"></i>
                     Achats
                 </a>
-                <a href="suppliers.html" class="nav-item active">
+                <a href="suppliers.html" class="nav-item">
                     <i class="fas fa-truck-loading"></i>
                     Fournisseurs
                 </a>
@@ -931,73 +1103,26 @@
     <main class="main-content">
         <!-- Page Header -->
         <div class="page-header">
-            <h2><i class="fas fa-truck-loading"></i> Gestion des Fournisseurs</h2>
+            <h2><i class="fas fa-eye"></i> Détails des Achats</h2>
             <div class="action-buttons">
-                <button class="btn btn-primary" id="newSupplierBtn">
-                    <i class="fas fa-user-plus"></i>
-                    Nouveau Fournisseur
+                <button class="btn btn-secondary" onclick="window.location.href='purchases.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    Retour aux Achats
                 </button>
-                <button class="btn btn-info" onclick="importSuppliers()">
-                    <i class="fas fa-file-import"></i>
-                    Importer
+                <button class="btn btn-primary" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    Imprimer
                 </button>
-                <button class="btn btn-success" onclick="exportSuppliers()">
+                <button class="btn btn-info" onclick="exportPurchaseData()">
                     <i class="fas fa-file-export"></i>
                     Exporter
                 </button>
             </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card" onclick="filterSuppliers('all')">
-                <div class="stat-icon total">
-                    <i class="fas fa-truck-loading"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Total Fournisseurs</h3>
-                    <div class="value" id="totalSuppliers">0</div>
-                    <div class="change">Tous les fournisseurs</div>
-                </div>
-            </div>
-            
-            <div class="stat-card" onclick="filterSuppliers('active')">
-                <div class="stat-icon active">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Fournisseurs Actifs</h3>
-                    <div class="value" id="activeSuppliers">0</div>
-                    <div class="change">Relations commerciales actives</div>
-                </div>
-            </div>
-            
-            <div class="stat-card" onclick="filterSuppliers('debts')">
-                <div class="stat-icon debts">
-                    <i class="fas fa-money-bill-wave"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Dettes Total</h3>
-                    <div class="value" id="totalDebts">0 DH</div>
-                    <div class="change">Montant total dû aux fournisseurs</div>
-                </div>
-            </div>
-            
-            <div class="stat-card" onclick="filterSuppliers('recent')">
-                <div class="stat-icon recent">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Récemment Ajoutés</h3>
-                    <div class="value" id="recentSuppliers">0</div>
-                    <div class="change">30 derniers jours</div>
-                </div>
-            </div>
-        </div>
-
         <!-- Search Bar -->
         <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un fournisseur par nom, téléphone, ville...">
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un achat par référence, fournisseur, produit...">
             <div class="search-icon">
                 <i class="fas fa-search"></i>
             </div>
@@ -1005,247 +1130,113 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('all')">Tous les Fournisseurs</button>
-            <button class="tab" onclick="switchTab('active')">Actifs</button>
-            <button class="tab" onclick="switchTab('inactive')">Inactifs</button>
-            <button class="tab" onclick="switchTab('debts')">Avec Dettes</button>
+            <button class="tab active" onclick="switchTab('all')">Tous les Achats</button>
+            <button class="tab" onclick="switchTab('pending')">En Attente</button>
+            <button class="tab" onclick="switchTab('paid')">Payés</button>
+            <button class="tab" onclick="switchTab('overdue')">En Retard</button>
+            <button class="tab" onclick="switchTab('delivered')">Livrés</button>
+            <button class="tab" onclick="switchTab('cancelled')">Annulés</button>
         </div>
 
-        <!-- Suppliers Table -->
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nom du Fournisseur</th>
-                        <th>Téléphone</th>
-                        <th>Email</th>
-                        <th>Ville</th>
-                        <th>Solde</th>
-                        <th>Condition de Paiement</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="suppliersTableBody">
-                    <tr>
-                        <td colspan="8" class="loading">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Chargement des fournisseurs...</p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Suppliers Grid View (Alternative) -->
-        <div id="suppliersGridView" style="display: none;">
-            <div class="stats-grid" id="suppliersGridContainer">
-                <!-- Les cartes de fournisseurs seront ajoutées ici dynamiquement -->
+        <!-- Purchases List -->
+        <div id="purchasesListContainer">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Chargement des achats...</p>
             </div>
         </div>
     </main>
 
-    <!-- Modal pour Nouveau Fournisseur -->
-    <div class="modal-overlay" id="newSupplierModal">
-        <div class="modal">
+    <!-- Modal pour Détails d'Achat -->
+    <div class="modal-overlay" id="purchaseDetailsModal">
+        <div class="modal" style="max-width: 1000px;">
             <div class="modal-header">
-                <h3><i class="fas fa-user-plus"></i> Nouveau Fournisseur</h3>
-                <button class="close-modal" onclick="closeNewSupplierModal()">
+                <h3><i class="fas fa-file-invoice"></i> Détails Complet de l'Achat</h3>
+                <button class="close-modal" onclick="closePurchaseDetailsModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="supplierForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="supplierName">Nom du Fournisseur *</label>
-                            <input type="text" id="supplierName" class="form-control" required placeholder="Nom complet du fournisseur">
-                        </div>
-                        <div class="form-group">
-                            <label for="supplierPhone">Téléphone *</label>
-                            <input type="tel" id="supplierPhone" class="form-control" required placeholder="Ex: 0612345678">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="supplierEmail">Email</label>
-                            <input type="email" id="supplierEmail" class="form-control" placeholder="email@fournisseur.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="supplierStatus">Statut</label>
-                            <select id="supplierStatus" class="form-control">
-                                <option value="active">Actif</option>
-                                <option value="inactive">Inactif</option>
-                                <option value="blocked">Bloqué</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="supplierAddress">Adresse</label>
-                        <textarea id="supplierAddress" class="form-control" rows="2" placeholder="Adresse complète du fournisseur"></textarea>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="supplierCity">Ville</label>
-                            <input type="text" id="supplierCity" class="form-control" placeholder="Ville">
-                        </div>
-                        <div class="form-group">
-                            <label for="supplierCountry">Pays</label>
-                            <select id="supplierCountry" class="form-control">
-                                <option value="Maroc">Maroc</option>
-                                <option value="Algérie">Algérie</option>
-                                <option value="Tunisie">Tunisie</option>
-                                <option value="France">France</option>
-                                <option value="Espagne">Espagne</option>
-                                <option value="Autre">Autre</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="supplierTaxId">Identifiant Fiscal (IF)</label>
-                            <input type="text" id="supplierTaxId" class="form-control" placeholder="Identifiant fiscal">
-                        </div>
-                        <div class="form-group">
-                            <label for="supplierTradeRegister">Registre de Commerce (RC)</label>
-                            <input type="text" id="supplierTradeRegister" class="form-control" placeholder="Numéro RC">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="supplierPaymentTerms">Conditions de Paiement</label>
-                            <select id="supplierPaymentTerms" class="form-control">
-                                <option value="30">30 jours</option>
-                                <option value="60">60 jours</option>
-                                <option value="90">90 jours</option>
-                                <option value="cash">Comptant</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="supplierCreditLimit">Limite de Crédit (DH)</label>
-                            <input type="number" id="supplierCreditLimit" class="form-control" value="0" min="0" step="0.01" placeholder="Limite de crédit autorisée">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="supplierNotes">Notes</label>
-                        <textarea id="supplierNotes" class="form-control" rows="3" placeholder="Informations supplémentaires sur le fournisseur..."></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeNewSupplierModal()">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
+                <div id="purchaseDetailsContent">
+                    <!-- Détails seront chargés dynamiquement -->
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal pour Éditer Fournisseur -->
-    <div class="modal-overlay" id="editSupplierModal">
-        <div class="modal">
+    <!-- Modal pour Éditer Achat -->
+    <div class="modal-overlay" id="editPurchaseModal">
+        <div class="modal" style="max-width: 900px;">
             <div class="modal-header">
-                <h3><i class="fas fa-edit"></i> Modifier Fournisseur</h3>
-                <button class="close-modal" onclick="closeEditSupplierModal()">
+                <h3><i class="fas fa-edit"></i> Modifier l'Achat</h3>
+                <button class="close-modal" onclick="closeEditPurchaseModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="editSupplierForm">
-                    <input type="hidden" id="editSupplierId">
+                <form id="editPurchaseForm">
+                    <input type="hidden" id="editPurchaseId">
+                    
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="editSupplierName">Nom du Fournisseur *</label>
-                            <input type="text" id="editSupplierName" class="form-control" required placeholder="Nom complet du fournisseur">
+                            <label for="editPurchaseDate">Date d'Achat *</label>
+                            <input type="date" id="editPurchaseDate" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="editSupplierPhone">Téléphone *</label>
-                            <input type="tel" id="editSupplierPhone" class="form-control" required placeholder="Ex: 0612345678">
+                            <label for="editExpectedDeliveryDate">Date Livraison Prévisionnelle</label>
+                            <input type="date" id="editExpectedDeliveryDate" class="form-control">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="editSupplierEmail">Email</label>
-                            <input type="email" id="editSupplierEmail" class="form-control" placeholder="email@fournisseur.com">
+                            <label for="editInvoiceNumber">Numéro de Facture</label>
+                            <input type="text" id="editInvoiceNumber" class="form-control" placeholder="Numéro de facture fournisseur">
                         </div>
                         <div class="form-group">
-                            <label for="editSupplierStatus">Statut</label>
-                            <select id="editSupplierStatus" class="form-control">
-                                <option value="active">Actif</option>
-                                <option value="inactive">Inactif</option>
-                                <option value="blocked">Bloqué</option>
+                            <label for="editPurchaseStatus">Statut de l'Achat</label>
+                            <select id="editPurchaseStatus" class="form-control">
+                                <option value="pending">En attente</option>
+                                <option value="confirmed">Confirmé</option>
+                                <option value="delivered">Livré</option>
+                                <option value="cancelled">Annulé</option>
                             </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editShippingCost">Frais de Transport (DH)</label>
+                            <input type="number" id="editShippingCost" class="form-control" value="0" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="editTaxRate">TVA (%)</label>
+                            <input type="number" id="editTaxRate" class="form-control" value="20" min="0" step="0.1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editPaymentStatus">Statut Paiement</label>
+                            <select id="editPaymentStatus" class="form-control">
+                                <option value="pending">En Attente</option>
+                                <option value="partial">Partiel</option>
+                                <option value="paid">Payé</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPaidAmount">Montant Payé (DH)</label>
+                            <input type="number" id="editPaidAmount" class="form-control" value="0" min="0" step="0.01">
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="editSupplierAddress">Adresse</label>
-                        <textarea id="editSupplierAddress" class="form-control" rows="2" placeholder="Adresse complète du fournisseur"></textarea>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="editSupplierCity">Ville</label>
-                            <input type="text" id="editSupplierCity" class="form-control" placeholder="Ville">
-                        </div>
-                        <div class="form-group">
-                            <label for="editSupplierCountry">Pays</label>
-                            <select id="editSupplierCountry" class="form-control">
-                                <option value="Maroc">Maroc</option>
-                                <option value="Algérie">Algérie</option>
-                                <option value="Tunisie">Tunisie</option>
-                                <option value="France">France</option>
-                                <option value="Espagne">Espagne</option>
-                                <option value="Autre">Autre</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="editSupplierTaxId">Identifiant Fiscal (IF)</label>
-                            <input type="text" id="editSupplierTaxId" class="form-control" placeholder="Identifiant fiscal">
-                        </div>
-                        <div class="form-group">
-                            <label for="editSupplierTradeRegister">Registre de Commerce (RC)</label>
-                            <input type="text" id="editSupplierTradeRegister" class="form-control" placeholder="Numéro RC">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="editSupplierPaymentTerms">Conditions de Paiement</label>
-                            <select id="editSupplierPaymentTerms" class="form-control">
-                                <option value="30">30 jours</option>
-                                <option value="60">60 jours</option>
-                                <option value="90">90 jours</option>
-                                <option value="cash">Comptant</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="editSupplierCreditLimit">Limite de Crédit (DH)</label>
-                            <input type="number" id="editSupplierCreditLimit" class="form-control" value="0" min="0" step="0.01" placeholder="Limite de crédit autorisée">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="editSupplierNotes">Notes</label>
-                        <textarea id="editSupplierNotes" class="form-control" rows="3" placeholder="Informations supplémentaires sur le fournisseur..."></textarea>
+                        <label for="editPurchaseNotes">Notes</label>
+                        <textarea id="editPurchaseNotes" class="form-control" rows="3" placeholder="Notes supplémentaires sur l'achat..."></textarea>
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeEditSupplierModal()">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditPurchaseModal()">
                             Annuler
                         </button>
                         <button type="submit" class="btn btn-primary">
@@ -1258,93 +1249,57 @@
         </div>
     </div>
 
-    <!-- Modal pour Détails Fournisseur -->
-    <div class="modal-overlay" id="supplierDetailsModal">
-        <div class="modal" style="max-width: 900px;">
-            <div class="modal-header">
-                <h3><i class="fas fa-info-circle"></i> Détails du Fournisseur</h3>
-                <button class="close-modal" onclick="closeSupplierDetailsModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="supplierDetailsContent">
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Chargement des détails...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal pour Transactions Fournisseur -->
-    <div class="modal-overlay" id="supplierTransactionsModal">
-        <div class="modal" style="max-width: 1000px;">
-            <div class="modal-header">
-                <h3><i class="fas fa-history"></i> Historique des Transactions</h3>
-                <button class="close-modal" onclick="closeSupplierTransactionsModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="supplierTransactionsContent">
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Chargement des transactions...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal pour Paiement Fournisseur -->
-    <div class="modal-overlay" id="supplierPaymentModal">
+    <div class="modal-overlay" id="paymentModal">
         <div class="modal">
             <div class="modal-header">
-                <h3><i class="fas fa-money-bill-wave"></i> Paiement au Fournisseur</h3>
-                <button class="close-modal" onclick="closeSupplierPaymentModal()">
+                <h3><i class="fas fa-money-bill-wave"></i> Enregistrer un Paiement</h3>
+                <button class="close-modal" onclick="closePaymentModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="supplierPaymentForm">
-                    <input type="hidden" id="paymentSupplierId">
+                <form id="paymentForm">
                     <div class="form-group">
-                        <label for="paymentSupplierName">Fournisseur</label>
-                        <input type="text" id="paymentSupplierName" class="form-control" readonly>
+                        <label for="selectedPurchaseId">Achat #</label>
+                        <input type="text" id="selectedPurchaseId" class="form-control" readonly>
                     </div>
                     
-                    <div class="payment-details" style="background: var(--light); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                        <div class="payment-details-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <span>Dette Totale:</span>
-                            <span id="paymentTotalDebt" style="font-weight: bold; color: var(--danger);">0.00 DH</span>
+                    <div class="form-group">
+                        <label for="selectedSupplierName">Fournisseur</label>
+                        <input type="text" id="selectedSupplierName" class="form-control" readonly>
+                    </div>
+                    
+                    <div class="payment-summary" style="background: var(--light); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <div class="payment-row">
+                            <span>Montant Total:</span>
+                            <span id="paymentTotalAmount">0.00 DH</span>
                         </div>
-                        <div class="payment-details-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div class="payment-row">
                             <span>Déjà Payé:</span>
-                            <span id="paymentAlreadyPaid" style="font-weight: bold; color: var(--success);">0.00 DH</span>
+                            <span id="paymentAlreadyPaid">0.00 DH</span>
                         </div>
-                        <div class="payment-details-row total" style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 10px; border-top: 2px solid var(--border);">
+                        <div class="payment-row total">
                             <span>Reste à Payer:</span>
-                            <span id="paymentRemainingAmount" style="font-weight: bold; font-size: 18px; color: var(--primary);">0.00 DH</span>
+                            <span id="paymentRemainingAmount">0.00 DH</span>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="supplierPaymentAmount">Montant à Payer (DH) *</label>
-                            <input type="number" id="supplierPaymentAmount" class="form-control" required min="0.01" step="0.01" placeholder="Montant du paiement">
+                            <label for="paymentAmount">Montant à Payer (DH) *</label>
+                            <input type="number" id="paymentAmount" class="form-control" required min="0.01" step="0.01">
                         </div>
                         <div class="form-group">
-                            <label for="supplierPaymentDate">Date de Paiement *</label>
-                            <input type="date" id="supplierPaymentDate" class="form-control" required>
+                            <label for="paymentDate">Date de Paiement *</label>
+                            <input type="date" id="paymentDate" class="form-control" required>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="supplierPaymentMethod">Mode de Paiement *</label>
-                            <select id="supplierPaymentMethod" class="form-control" required>
+                            <label for="paymentMethodModal">Mode de Paiement *</label>
+                            <select id="paymentMethodModal" class="form-control" required>
                                 <option value="cash">Espèces</option>
                                 <option value="check">Chèque</option>
                                 <option value="transfer">Virement</option>
@@ -1352,18 +1307,18 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="supplierPaymentReference">Référence</label>
-                            <input type="text" id="supplierPaymentReference" class="form-control" placeholder="N° chèque ou référence virement">
+                            <label for="paymentReference">Référence</label>
+                            <input type="text" id="paymentReference" class="form-control" placeholder="N° chèque ou référence virement">
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="supplierPaymentNotes">Notes</label>
-                        <textarea id="supplierPaymentNotes" class="form-control" rows="2" placeholder="Notes sur le paiement..."></textarea>
+                        <label for="paymentNotes">Notes</label>
+                        <textarea id="paymentNotes" class="form-control" rows="2" placeholder="Notes sur le paiement..."></textarea>
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeSupplierPaymentModal()">
+                        <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">
                             Annuler
                         </button>
                         <button type="submit" class="btn btn-primary">
@@ -1372,6 +1327,26 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour Historique des Paiements -->
+    <div class="modal-overlay" id="paymentsHistoryModal">
+        <div class="modal" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> Historique des Paiements</h3>
+                <button class="close-modal" onclick="closePaymentsHistoryModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="paymentsHistoryContent">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Chargement de l'historique...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1392,15 +1367,16 @@
         let database = null;
         let isConnected = false;
         let currentUser = null;
-        let suppliers = [];
         let purchases = [];
-        let selectedSupplier = null;
-        let selectedSupplierForDetails = null;
-        let currentView = 'table'; // 'table' ou 'grid'
+        let suppliers = [];
+        let products = [];
+        let depots = [];
+        let selectedPurchase = null;
+        let supplierPayments = [];
 
         // ==================== INITIALISATION ====================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("🚀 Page Fournisseurs en cours de démarrage...");
+            console.log("🚀 Page Détails Achats en cours de démarrage...");
             
             // Initialiser le thème
             initTheme();
@@ -1419,7 +1395,7 @@
             
             // Recherche en temps réel
             document.getElementById('searchInput').addEventListener('input', function(e) {
-                searchSuppliers(e.target.value);
+                searchPurchases(e.target.value);
             });
             
             // Fermer les menus en cliquant ailleurs
@@ -1431,9 +1407,9 @@
             
             // Raccourcis clavier
             document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.key === 'n') {
+                if (e.ctrlKey && e.key === 'f') {
                     e.preventDefault();
-                    openNewSupplierModal();
+                    document.getElementById('searchInput').focus();
                 }
                 
                 if (e.key === 'Escape') {
@@ -1441,21 +1417,16 @@
                     document.getElementById('userDropdown').classList.remove('show');
                 }
                 
-                if (e.ctrlKey && e.key === 'f') {
-                    e.preventDefault();
-                    document.getElementById('searchInput').focus();
-                }
-                
                 if (e.key === 'F5') {
                     e.preventDefault();
-                    refreshSuppliers();
+                    refreshPurchases();
                 }
             });
             
             // Mettre la date d'aujourd'hui par défaut
             const today = new Date().toISOString().split('T')[0];
-            if (document.getElementById('supplierPaymentDate')) {
-                document.getElementById('supplierPaymentDate').value = today;
+            if (document.getElementById('paymentDate')) {
+                document.getElementById('paymentDate').value = today;
             }
         });
         
@@ -1480,322 +1451,209 @@
         
         // ==================== GESTION DES MODALS ====================
         function initModals() {
-            // Modal Nouveau Fournisseur
-            const newSupplierModal = document.getElementById('newSupplierModal');
-            const newSupplierBtn = document.getElementById('newSupplierBtn');
-            
-            if (newSupplierBtn) {
-                newSupplierBtn.addEventListener('click', openNewSupplierModal);
-            }
-            
-            newSupplierModal.addEventListener('click', function(e) {
-                if (e.target === newSupplierModal) closeNewSupplierModal();
-            });
-            
-            // Modal Éditer Fournisseur
-            const editSupplierModal = document.getElementById('editSupplierModal');
-            editSupplierModal.addEventListener('click', function(e) {
-                if (e.target === editSupplierModal) closeEditSupplierModal();
-            });
-            
-            // Modal Détails Fournisseur
-            const detailsModal = document.getElementById('supplierDetailsModal');
+            // Modal Détails Achat
+            const detailsModal = document.getElementById('purchaseDetailsModal');
             detailsModal.addEventListener('click', function(e) {
-                if (e.target === detailsModal) closeSupplierDetailsModal();
+                if (e.target === detailsModal) closePurchaseDetailsModal();
             });
             
-            // Modal Transactions Fournisseur
-            const transactionsModal = document.getElementById('supplierTransactionsModal');
-            transactionsModal.addEventListener('click', function(e) {
-                if (e.target === transactionsModal) closeSupplierTransactionsModal();
+            // Modal Éditer Achat
+            const editModal = document.getElementById('editPurchaseModal');
+            editModal.addEventListener('click', function(e) {
+                if (e.target === editModal) closeEditPurchaseModal();
             });
             
-            // Modal Paiement Fournisseur
-            const paymentModal = document.getElementById('supplierPaymentModal');
+            // Modal Paiement
+            const paymentModal = document.getElementById('paymentModal');
             paymentModal.addEventListener('click', function(e) {
-                if (e.target === paymentModal) closeSupplierPaymentModal();
+                if (e.target === paymentModal) closePaymentModal();
+            });
+            
+            // Modal Historique Paiements
+            const historyModal = document.getElementById('paymentsHistoryModal');
+            historyModal.addEventListener('click', function(e) {
+                if (e.target === historyModal) closePaymentsHistoryModal();
             });
         }
         
-        function openNewSupplierModal() {
-            const modal = document.getElementById('newSupplierModal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+        function openPurchaseDetailsModal(purchaseId) {
+            const purchase = purchases.find(p => p.id === purchaseId);
+            if (!purchase) return;
             
-            // Réinitialiser le formulaire
-            if (document.getElementById('supplierForm')) {
-                document.getElementById('supplierForm').reset();
-            }
-        }
-        
-        function closeNewSupplierModal() {
-            const modal = document.getElementById('newSupplierModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function openEditSupplierModal(supplierId) {
-            const supplier = suppliers.find(s => s.id === supplierId);
-            if (!supplier) return;
+            selectedPurchase = purchase;
             
-            selectedSupplier = supplier;
-            
-            const modal = document.getElementById('editSupplierModal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Remplir le formulaire
-            document.getElementById('editSupplierId').value = supplier.id;
-            document.getElementById('editSupplierName').value = supplier.name || '';
-            document.getElementById('editSupplierPhone').value = supplier.phone || '';
-            document.getElementById('editSupplierEmail').value = supplier.email || '';
-            document.getElementById('editSupplierStatus').value = supplier.status || 'active';
-            document.getElementById('editSupplierAddress').value = supplier.address || '';
-            document.getElementById('editSupplierCity').value = supplier.city || '';
-            document.getElementById('editSupplierCountry').value = supplier.country || 'Maroc';
-            document.getElementById('editSupplierTaxId').value = supplier.taxId || '';
-            document.getElementById('editSupplierTradeRegister').value = supplier.tradeRegister || '';
-            document.getElementById('editSupplierPaymentTerms').value = supplier.paymentTerms || '30';
-            document.getElementById('editSupplierCreditLimit').value = supplier.creditLimit || 0;
-            document.getElementById('editSupplierNotes').value = supplier.notes || '';
-        }
-        
-        function closeEditSupplierModal() {
-            const modal = document.getElementById('editSupplierModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            selectedSupplier = null;
-        }
-        
-        function openSupplierDetailsModal(supplierId) {
-            const supplier = suppliers.find(s => s.id === supplierId);
-            if (!supplier) return;
-            
-            selectedSupplierForDetails = supplier;
-            
-            const modal = document.getElementById('supplierDetailsModal');
+            const modal = document.getElementById('purchaseDetailsModal');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
             
             // Charger les détails
-            loadSupplierDetails(supplier);
+            loadPurchaseDetails(purchase);
         }
         
-        function closeSupplierDetailsModal() {
-            const modal = document.getElementById('supplierDetailsModal');
+        function closePurchaseDetailsModal() {
+            const modal = document.getElementById('purchaseDetailsModal');
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
-            selectedSupplierForDetails = null;
+            selectedPurchase = null;
         }
         
-        function openSupplierTransactionsModal(supplierId) {
-            const supplier = suppliers.find(s => s.id === supplierId);
-            if (!supplier) return;
+        function openEditPurchaseModal(purchaseId) {
+            const purchase = purchases.find(p => p.id === purchaseId);
+            if (!purchase) return;
             
-            selectedSupplierForDetails = supplier;
+            selectedPurchase = purchase;
             
-            const modal = document.getElementById('supplierTransactionsModal');
+            const modal = document.getElementById('editPurchaseModal');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
             
-            // Charger les transactions
-            loadSupplierTransactions(supplier);
+            // Remplir le formulaire
+            document.getElementById('editPurchaseId').value = purchase.id;
+            document.getElementById('editPurchaseDate').value = purchase.purchaseDate || '';
+            document.getElementById('editExpectedDeliveryDate').value = purchase.expectedDeliveryDate || '';
+            document.getElementById('editInvoiceNumber').value = purchase.invoiceNumber || '';
+            document.getElementById('editPurchaseStatus').value = purchase.status || 'pending';
+            document.getElementById('editShippingCost').value = purchase.shippingCost || 0;
+            document.getElementById('editTaxRate').value = purchase.taxRate || 20;
+            document.getElementById('editPaymentStatus').value = purchase.paymentStatus || 'pending';
+            document.getElementById('editPaidAmount').value = purchase.paidAmount || 0;
+            document.getElementById('editPurchaseNotes').value = purchase.notes || '';
         }
         
-        function closeSupplierTransactionsModal() {
-            const modal = document.getElementById('supplierTransactionsModal');
+        function closeEditPurchaseModal() {
+            const modal = document.getElementById('editPurchaseModal');
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
-            selectedSupplierForDetails = null;
+            selectedPurchase = null;
         }
         
-        function openSupplierPaymentModal(supplierId) {
-            const supplier = suppliers.find(s => s.id === supplierId);
-            if (!supplier) return;
+        function openPaymentModal(purchaseId) {
+            const purchase = purchases.find(p => p.id === purchaseId);
+            if (!purchase) return;
             
-            selectedSupplier = supplier;
+            selectedPurchase = purchase;
             
-            const modal = document.getElementById('supplierPaymentModal');
+            const modal = document.getElementById('paymentModal');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
             
             // Remplir les informations
-            document.getElementById('paymentSupplierId').value = supplier.id;
-            document.getElementById('paymentSupplierName').value = supplier.name;
+            document.getElementById('selectedPurchaseId').value = purchase.reference || purchase.id.substring(0, 8);
+            document.getElementById('selectedSupplierName').value = purchase.supplierName;
+            document.getElementById('paymentTotalAmount').textContent = formatNumber(purchase.totalAmount) + ' DH';
+            document.getElementById('paymentAlreadyPaid').textContent = formatNumber(purchase.paidAmount || 0) + ' DH';
             
-            // Calculer la dette totale
-            const supplierPurchases = purchases.filter(p => p.supplierId === supplier.id);
-            const totalDebt = supplierPurchases.reduce((sum, purchase) => {
-                const remaining = purchase.totalAmount - (purchase.paidAmount || 0);
-                return sum + Math.max(0, remaining);
-            }, 0);
-            
-            // Calculer le total déjà payé
-            const totalPaid = supplierPurchases.reduce((sum, purchase) => {
-                return sum + (purchase.paidAmount || 0);
-            }, 0);
-            
-            const remainingAmount = totalDebt;
-            
-            document.getElementById('paymentTotalDebt').textContent = formatNumber(totalDebt) + ' DH';
-            document.getElementById('paymentAlreadyPaid').textContent = formatNumber(totalPaid) + ' DH';
+            const remainingAmount = purchase.totalAmount - (purchase.paidAmount || 0);
             document.getElementById('paymentRemainingAmount').textContent = formatNumber(remainingAmount) + ' DH';
+            
+            // Limiter le montant maximum à payer
+            document.getElementById('paymentAmount').max = remainingAmount;
+            document.getElementById('paymentAmount').value = remainingAmount;
             
             // Mettre la date d'aujourd'hui
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('supplierPaymentDate').value = today;
-            
-            // Limiter le montant maximum à payer
-            document.getElementById('supplierPaymentAmount').max = remainingAmount;
-            document.getElementById('supplierPaymentAmount').value = remainingAmount;
+            document.getElementById('paymentDate').value = today;
         }
         
-        function closeSupplierPaymentModal() {
-            const modal = document.getElementById('supplierPaymentModal');
+        function closePaymentModal() {
+            const modal = document.getElementById('paymentModal');
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
-            selectedSupplier = null;
+            selectedPurchase = null;
+        }
+        
+        function openPaymentsHistoryModal(purchaseId) {
+            const purchase = purchases.find(p => p.id === purchaseId);
+            if (!purchase) return;
+            
+            selectedPurchase = purchase;
+            
+            const modal = document.getElementById('paymentsHistoryModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Charger l'historique
+            loadPaymentsHistory(purchase);
+        }
+        
+        function closePaymentsHistoryModal() {
+            const modal = document.getElementById('paymentsHistoryModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            selectedPurchase = null;
         }
         
         function closeAllModals() {
-            closeNewSupplierModal();
-            closeEditSupplierModal();
-            closeSupplierDetailsModal();
-            closeSupplierTransactionsModal();
-            closeSupplierPaymentModal();
+            closePurchaseDetailsModal();
+            closeEditPurchaseModal();
+            closePaymentModal();
+            closePaymentsHistoryModal();
         }
         
         // ==================== INITIALISATION DES FORMULAIRES ====================
         function initForms() {
-            // Formulaire nouveau fournisseur
-            const supplierForm = document.getElementById('supplierForm');
-            if (supplierForm) {
-                supplierForm.addEventListener('submit', function(e) {
+            // Formulaire édition achat
+            const editForm = document.getElementById('editPurchaseForm');
+            if (editForm) {
+                editForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    saveSupplier();
+                    updatePurchase();
                 });
             }
             
-            // Formulaire édition fournisseur
-            const editSupplierForm = document.getElementById('editSupplierForm');
-            if (editSupplierForm) {
-                editSupplierForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    updateSupplier();
-                });
-            }
-            
-            // Formulaire paiement fournisseur
-            const paymentForm = document.getElementById('supplierPaymentForm');
+            // Formulaire paiement
+            const paymentForm = document.getElementById('paymentForm');
             if (paymentForm) {
                 paymentForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    saveSupplierPayment();
+                    savePayment();
                 });
             }
         }
         
-        // ==================== GESTION DES FOURNISSEURS ====================
-        async function saveSupplier() {
-            const formData = {
-                name: document.getElementById('supplierName').value,
-                phone: document.getElementById('supplierPhone').value,
-                email: document.getElementById('supplierEmail').value || '',
-                status: document.getElementById('supplierStatus').value,
-                address: document.getElementById('supplierAddress').value || '',
-                city: document.getElementById('supplierCity').value || '',
-                country: document.getElementById('supplierCountry').value || 'Maroc',
-                taxId: document.getElementById('supplierTaxId').value || '',
-                tradeRegister: document.getElementById('supplierTradeRegister').value || '',
-                paymentTerms: document.getElementById('supplierPaymentTerms').value,
-                creditLimit: parseFloat(document.getElementById('supplierCreditLimit').value) || 0,
-                notes: document.getElementById('supplierNotes').value || '',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                createdBy: currentUser?.email || 'admin'
-            };
-            
-            // Validation
-            if (!formData.name.trim()) {
-                showToast("Le nom du fournisseur est requis", "error");
-                return;
-            }
-            
-            if (!formData.phone.trim()) {
-                showToast("Le téléphone du fournisseur est requis", "error");
-                return;
-            }
-            
-            try {
-                const newSupplierRef = database.ref('suppliers').push();
-                formData.id = newSupplierRef.key;
-                
-                await newSupplierRef.set(formData);
-                
-                showToast("Fournisseur ajouté avec succès", "success");
-                closeNewSupplierModal();
-                
-                // Ajouter à la liste locale
-                suppliers.push(formData);
-                
-                // Mettre à jour l'affichage
-                updateSuppliersTable();
-                updateStats();
-                
-            } catch (error) {
-                console.error("Erreur d'enregistrement:", error);
-                showToast("Erreur lors de l'enregistrement: " + error.message, "error");
-            }
-        }
-        
-        async function updateSupplier() {
-            if (!selectedSupplier) return;
+        // ==================== GESTION DES ACHATS ====================
+        async function updatePurchase() {
+            if (!selectedPurchase) return;
             
             const formData = {
-                name: document.getElementById('editSupplierName').value,
-                phone: document.getElementById('editSupplierPhone').value,
-                email: document.getElementById('editSupplierEmail').value || '',
-                status: document.getElementById('editSupplierStatus').value,
-                address: document.getElementById('editSupplierAddress').value || '',
-                city: document.getElementById('editSupplierCity').value || '',
-                country: document.getElementById('editSupplierCountry').value || 'Maroc',
-                taxId: document.getElementById('editSupplierTaxId').value || '',
-                tradeRegister: document.getElementById('editSupplierTradeRegister').value || '',
-                paymentTerms: document.getElementById('editSupplierPaymentTerms').value,
-                creditLimit: parseFloat(document.getElementById('editSupplierCreditLimit').value) || 0,
-                notes: document.getElementById('editSupplierNotes').value || '',
+                purchaseDate: document.getElementById('editPurchaseDate').value,
+                expectedDeliveryDate: document.getElementById('editExpectedDeliveryDate').value || null,
+                invoiceNumber: document.getElementById('editInvoiceNumber').value || '',
+                status: document.getElementById('editPurchaseStatus').value,
+                shippingCost: parseFloat(document.getElementById('editShippingCost').value) || 0,
+                taxRate: parseFloat(document.getElementById('editTaxRate').value) || 0,
+                paymentStatus: document.getElementById('editPaymentStatus').value,
+                paidAmount: parseFloat(document.getElementById('editPaidAmount').value) || 0,
+                notes: document.getElementById('editPurchaseNotes').value || '',
                 updatedAt: new Date().toISOString()
             };
             
-            // Validation
-            if (!formData.name.trim()) {
-                showToast("Le nom du fournisseur est requis", "error");
-                return;
-            }
-            
-            if (!formData.phone.trim()) {
-                showToast("Le téléphone du fournisseur est requis", "error");
-                return;
+            // Recalculer le total si nécessaire
+            if (selectedPurchase.items && selectedPurchase.items.length > 0) {
+                const subtotal = selectedPurchase.items.reduce((sum, item) => sum + (item.total || 0), 0);
+                formData.subtotal = subtotal;
+                formData.taxAmount = subtotal * (formData.taxRate / 100);
+                formData.totalAmount = subtotal + formData.shippingCost + formData.taxAmount;
+                formData.remainingAmount = formData.totalAmount - formData.paidAmount;
             }
             
             try {
-                await database.ref(`suppliers/${selectedSupplier.id}`).update(formData);
+                await database.ref(`purchases/${selectedPurchase.id}`).update(formData);
                 
-                showToast("Fournisseur mis à jour avec succès", "success");
-                closeEditSupplierModal();
+                showToast("Achat mis à jour avec succès", "success");
+                closeEditPurchaseModal();
                 
                 // Mettre à jour la liste locale
-                const index = suppliers.findIndex(s => s.id === selectedSupplier.id);
+                const index = purchases.findIndex(p => p.id === selectedPurchase.id);
                 if (index !== -1) {
-                    suppliers[index] = {
-                        ...suppliers[index],
+                    purchases[index] = {
+                        ...purchases[index],
                         ...formData
                     };
                 }
                 
                 // Mettre à jour l'affichage
-                updateSuppliersTable();
-                updateStats();
+                updatePurchasesList();
                 
             } catch (error) {
                 console.error("Erreur de mise à jour:", error);
@@ -1803,22 +1661,21 @@
             }
         }
         
-        async function deleteSupplier(supplierId) {
-            if (!confirm("Êtes-vous sûr de vouloir supprimer ce fournisseur ? Cette action est irréversible.")) {
+        async function deletePurchase(purchaseId) {
+            if (!confirm("Êtes-vous sûr de vouloir supprimer cet achat ? Cette action est irréversible.")) {
                 return;
             }
             
             try {
-                await database.ref(`suppliers/${supplierId}`).remove();
+                await database.ref(`purchases/${purchaseId}`).remove();
                 
                 // Retirer de la liste locale
-                suppliers = suppliers.filter(s => s.id !== supplierId);
+                purchases = purchases.filter(p => p.id !== purchaseId);
                 
-                showToast("Fournisseur supprimé avec succès", "success");
+                showToast("Achat supprimé avec succès", "success");
                 
                 // Mettre à jour l'affichage
-                updateSuppliersTable();
-                updateStats();
+                updatePurchasesList();
                 
             } catch (error) {
                 console.error("Erreur de suppression:", error);
@@ -1826,89 +1683,203 @@
             }
         }
         
-        // ==================== GESTION DES PAIEMENTS FOURNISSEUR ====================
-        
-        async function saveSupplierPayment() {
-            if (!selectedSupplier) return;
+        async function cancelPurchase(purchaseId) {
+            if (!confirm("Êtes-vous sûr de vouloir annuler cet achat ?")) {
+                return;
+            }
             
-            const paymentAmount = parseFloat(document.getElementById('supplierPaymentAmount').value) || 0;
+            try {
+                await database.ref(`purchases/${purchaseId}`).update({
+                    status: 'cancelled',
+                    updatedAt: new Date().toISOString()
+                });
+                
+                // Mettre à jour localement
+                const index = purchases.findIndex(p => p.id === purchaseId);
+                if (index !== -1) {
+                    purchases[index].status = 'cancelled';
+                    purchases[index].updatedAt = new Date().toISOString();
+                }
+                
+                showToast("Achat annulé avec succès", "success");
+                updatePurchasesList();
+                
+            } catch (error) {
+                console.error("Erreur d'annulation:", error);
+                showToast("Erreur lors de l'annulation: " + error.message, "error");
+            }
+        }
+        
+        // ==================== GESTION DES PAIEMENTS ====================
+        
+        async function savePayment() {
+            if (!selectedPurchase) return;
+            
+            const paymentAmount = parseFloat(document.getElementById('paymentAmount').value) || 0;
             
             if (paymentAmount <= 0) {
                 showToast("Le montant du paiement doit être supérieur à 0", "error");
                 return;
             }
             
+            const remainingAmount = selectedPurchase.totalAmount - (selectedPurchase.paidAmount || 0);
+            
+            if (paymentAmount > remainingAmount) {
+                showToast(`Le montant ne peut pas dépasser ${formatNumber(remainingAmount)} DH`, "error");
+                return;
+            }
+            
             try {
+                // Mettre à jour l'achat
+                const newPaidAmount = (selectedPurchase.paidAmount || 0) + paymentAmount;
+                const newRemainingAmount = selectedPurchase.totalAmount - newPaidAmount;
+                
+                // Déterminer le nouveau statut
+                let newPaymentStatus = 'partial';
+                if (newRemainingAmount <= 0) {
+                    newPaymentStatus = 'paid';
+                } else {
+                    // Vérifier si la date d'échéance est dépassée
+                    const today = new Date();
+                    const dueDate = new Date(selectedPurchase.dueDate);
+                    if (dueDate && today > dueDate) {
+                        newPaymentStatus = 'overdue';
+                    }
+                }
+                
+                const purchaseUpdate = {
+                    paidAmount: newPaidAmount,
+                    remainingAmount: newRemainingAmount,
+                    paymentStatus: newPaymentStatus,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                await database.ref(`purchases/${selectedPurchase.id}`).update(purchaseUpdate);
+                
                 // Enregistrer le paiement
                 const paymentRef = database.ref('supplierPayments').push();
                 const paymentData = {
-                    supplierId: selectedSupplier.id,
-                    supplierName: selectedSupplier.name,
+                    purchaseId: selectedPurchase.id,
+                    supplierId: selectedPurchase.supplierId,
+                    supplierName: selectedPurchase.supplierName,
                     amount: paymentAmount,
-                    paymentDate: document.getElementById('supplierPaymentDate').value,
-                    paymentMethod: document.getElementById('supplierPaymentMethod').value,
-                    reference: document.getElementById('supplierPaymentReference').value || '',
-                    notes: document.getElementById('supplierPaymentNotes').value || '',
+                    paymentDate: document.getElementById('paymentDate').value,
+                    paymentMethod: document.getElementById('paymentMethodModal').value,
+                    reference: document.getElementById('paymentReference').value || '',
+                    notes: document.getElementById('paymentNotes').value || '',
                     createdAt: new Date().toISOString(),
                     createdBy: currentUser?.email || 'admin'
                 };
                 
                 await paymentRef.set(paymentData);
                 
-                // Trouver les achats impayés de ce fournisseur et appliquer le paiement
-                const supplierPurchases = purchases.filter(p => 
-                    p.supplierId === selectedSupplier.id && 
-                    (p.paidAmount || 0) < p.totalAmount
-                );
-                
-                let remainingPayment = paymentAmount;
-                
-                for (const purchase of supplierPurchases) {
-                    if (remainingPayment <= 0) break;
-                    
-                    const purchaseRemaining = purchase.totalAmount - (purchase.paidAmount || 0);
-                    const amountToPay = Math.min(remainingPayment, purchaseRemaining);
-                    
-                    const newPaidAmount = (purchase.paidAmount || 0) + amountToPay;
-                    const newRemainingAmount = purchase.totalAmount - newPaidAmount;
-                    
-                    // Déterminer le nouveau statut
-                    let newPaymentStatus = 'partial';
-                    if (newRemainingAmount <= 0) {
-                        newPaymentStatus = 'paid';
-                    }
-                    
-                    const purchaseUpdate = {
-                        paidAmount: newPaidAmount,
-                        remainingAmount: newRemainingAmount,
-                        paymentStatus: newPaymentStatus,
-                        updatedAt: new Date().toISOString()
+                // Mettre à jour l'achat local
+                const purchaseIndex = purchases.findIndex(p => p.id === selectedPurchase.id);
+                if (purchaseIndex !== -1) {
+                    purchases[purchaseIndex] = {
+                        ...purchases[purchaseIndex],
+                        ...purchaseUpdate
                     };
-                    
-                    await database.ref(`purchases/${purchase.id}`).update(purchaseUpdate);
-                    
-                    // Mettre à jour l'achat local
-                    const purchaseIndex = purchases.findIndex(p => p.id === purchase.id);
-                    if (purchaseIndex !== -1) {
-                        purchases[purchaseIndex] = {
-                            ...purchases[purchaseIndex],
-                            ...purchaseUpdate
-                        };
-                    }
-                    
-                    remainingPayment -= amountToPay;
                 }
                 
                 showToast("Paiement enregistré avec succès", "success");
-                closeSupplierPaymentModal();
-                
-                // Mettre à jour l'affichage
-                updateSuppliersTable();
-                updateStats();
+                closePaymentModal();
+                updatePurchasesList();
                 
             } catch (error) {
                 console.error("Erreur d'enregistrement:", error);
                 showToast("Erreur lors de l'enregistrement: " + error.message, "error");
+            }
+        }
+        
+        async function loadPaymentsHistory(purchase) {
+            const content = document.getElementById('paymentsHistoryContent');
+            if (!content) return;
+            
+            try {
+                // Charger les paiements pour cet achat
+                const paymentsRef = database.ref('supplierPayments');
+                const snapshot = await paymentsRef.orderByChild('purchaseId').equalTo(purchase.id).once('value');
+                const payments = [];
+                
+                snapshot.forEach(childSnapshot => {
+                    payments.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                // Trier par date (récentes d'abord)
+                payments.sort((a, b) => new Date(b.paymentDate || b.createdAt) - new Date(a.paymentDate || a.createdAt));
+                
+                if (payments.length === 0) {
+                    content.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: var(--text-light);">
+                            <i class="fas fa-history" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun paiement enregistré</h3>
+                            <p>Aucun paiement n'a été effectué pour cet achat</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = `
+                    <h3 style="color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">
+                        <i class="fas fa-money-bill-wave"></i>
+                        Historique des Paiements - ${purchase.reference || purchase.id.substring(0, 8)}
+                    </h3>
+                    
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--light);">
+                                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Date</th>
+                                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Montant</th>
+                                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Mode</th>
+                                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Référence</th>
+                                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                payments.forEach(payment => {
+                    const paymentMethodText = getPaymentMethodText(payment.paymentMethod);
+                    
+                    html += `
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 10px; text-align: center;">${formatDate(payment.paymentDate)}</td>
+                            <td style="padding: 10px; text-align: center; font-weight: bold; color: var(--success);">${formatNumber(payment.amount)} DH</td>
+                            <td style="padding: 10px; text-align: center;">${paymentMethodText}</td>
+                            <td style="padding: 10px; text-align: center;">${payment.reference || '--'}</td>
+                            <td style="padding: 10px; text-align: center;">${payment.notes || '--'}</td>
+                        </tr>
+                    `;
+                });
+                
+                // Total des paiements
+                const totalPayments = payments.reduce((sum, payment) => sum + payment.amount, 0);
+                
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: var(--light); border-radius: 8px; text-align: center;">
+                        <strong>Total des Paiements: <span style="color: var(--success); font-size: 18px;">${formatNumber(totalPayments)} DH</span></strong>
+                    </div>
+                `;
+                
+                content.innerHTML = html;
+                
+            } catch (error) {
+                console.error("Erreur de chargement de l'historique:", error);
+                content.innerHTML = `
+                    <div class="error" style="text-align: center; padding: 20px; color: var(--danger);">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Erreur lors du chargement de l'historique</p>
+                    </div>
+                `;
             }
         }
         
@@ -1981,7 +1952,34 @@
         
         function loadInitialData() {
             console.log("📊 Chargement des données initiales...");
-            loadSuppliers();
+            loadPurchases();
+        }
+        
+        function loadPurchases() {
+            try {
+                const purchasesRef = database.ref('purchases');
+                purchasesRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    purchases = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            purchases.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        console.log(`✅ ${purchases.length} achats chargés`);
+                    }
+                    
+                    // Charger les fournisseurs
+                    loadSuppliers();
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur de chargement des achats:", error);
+                loadSuppliers();
+            }
         }
         
         function loadSuppliers() {
@@ -2001,439 +1999,518 @@
                         console.log(`✅ ${suppliers.length} fournisseurs chargés`);
                     }
                     
-                    // Charger les achats pour calculer les dettes
-                    loadPurchasesForSuppliers();
+                    // Charger les produits
+                    loadProducts();
                 });
                 
             } catch (error) {
                 console.error("❌ Erreur de chargement des fournisseurs:", error);
-                loadPurchasesForSuppliers();
+                loadProducts();
             }
         }
         
-        function loadPurchasesForSuppliers() {
+        function loadProducts() {
             try {
-                const purchasesRef = database.ref('purchases');
-                purchasesRef.on('value', (snapshot) => {
+                const productsRef = database.ref('products');
+                productsRef.on('value', (snapshot) => {
                     const data = snapshot.val();
-                    purchases = [];
+                    products = [];
                     
                     if (data) {
                         Object.keys(data).forEach(key => {
-                            purchases.push({
+                            products.push({
                                 id: key,
                                 ...data[key]
                             });
                         });
-                        console.log(`✅ ${purchases.length} achats chargés`);
+                        console.log(`✅ ${products.length} produits chargés`);
                     }
                     
-                    // Mettre à jour l'affichage
-                    updateSuppliersTable();
-                    updateStats();
-                    
-                }, (error) => {
-                    console.error("❌ Erreur de chargement des achats:", error);
-                    updateSuppliersTable();
-                    updateStats();
+                    // Charger les dépôts
+                    loadDepots();
                 });
                 
             } catch (error) {
-                console.error("❌ Erreur dans loadPurchasesForSuppliers:", error);
-                updateSuppliersTable();
-                updateStats();
+                console.error("❌ Erreur de chargement des produits:", error);
+                loadDepots();
             }
         }
         
-        // ==================== AFFICHAGE DES FOURNISSEURS ====================
+        function loadDepots() {
+            try {
+                const depotsRef = database.ref('depots');
+                depotsRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    depots = [];
+                    
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                            depots.push({
+                                id: key,
+                                ...data[key]
+                            });
+                        });
+                        console.log(`✅ ${depots.length} dépôts chargés`);
+                    }
+                    
+                    // Mettre à jour l'affichage
+                    updatePurchasesList();
+                });
+                
+            } catch (error) {
+                console.error("❌ Erreur de chargement des dépôts:", error);
+                updatePurchasesList();
+            }
+        }
         
-        function updateSuppliersTable() {
-            const tableBody = document.getElementById('suppliersTableBody');
-            if (!tableBody) return;
+        // ==================== AFFICHAGE DES ACHATS ====================
+        
+        function updatePurchasesList() {
+            const container = document.getElementById('purchasesListContainer');
+            if (!container) return;
             
-            // Trier par nom
-            const sortedSuppliers = [...suppliers]
-                .sort((a, b) => a.name?.localeCompare(b.name));
+            // Trier par date (récentes d'abord)
+            const sortedPurchases = [...purchases]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             
-            if (sortedSuppliers.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-light);">
-                            <i class="fas fa-truck-loading" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun fournisseur enregistré</h3>
-                            <p>Commencez par créer un nouveau fournisseur</p>
-                        </td>
-                    </tr>
+            if (sortedPurchases.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun achat enregistré</h3>
+                        <p>Commencez par créer un nouvel achat</p>
+                        <button class="btn btn-primary" onclick="window.location.href='purchases.html'" style="margin-top: 20px;">
+                            <i class="fas fa-cart-plus"></i>
+                            Nouvel Achat
+                        </button>
+                    </div>
                 `;
                 return;
             }
             
             let html = '';
-            sortedSuppliers.forEach(supplier => {
-                // Calculer la dette du fournisseur
-                const supplierPurchases = purchases.filter(p => p.supplierId === supplier.id);
-                const totalDebt = supplierPurchases.reduce((sum, purchase) => {
-                    const remaining = purchase.totalAmount - (purchase.paidAmount || 0);
-                    return sum + Math.max(0, remaining);
-                }, 0);
-                
-                const paymentTermsText = getPaymentTermsText(supplier.paymentTerms);
-                const statusClass = supplier.status === 'active' ? 'status-active' : 
-                                  supplier.status === 'inactive' ? 'status-inactive' : 'status-warning';
-                const statusText = supplier.status === 'active' ? 'Actif' : 
-                                 supplier.status === 'inactive' ? 'Inactif' : 'Bloqué';
-                
-                html += `
-                    <tr>
-                        <td style="text-align: right; font-weight: 600;">
-                            <div>${supplier.name || '--'}</div>
-                            ${supplier.city ? `<div style="font-size: 12px; color: var(--text-light);">${supplier.city}</div>` : ''}
-                        </td>
-                        <td>${supplier.phone || '--'}</td>
-                        <td>${supplier.email || '--'}</td>
-                        <td>${supplier.city || '--'}</td>
-                        <td><strong style="color: ${totalDebt > 0 ? 'var(--warning)' : 'var(--success)'};">${formatNumber(totalDebt)} DH</strong></td>
-                        <td>${paymentTermsText}</td>
-                        <td>
-                            <span class="status-badge ${statusClass}">
-                                ${statusText}
-                            </span>
-                        </td>
-                        <td>
-                            <div style="display: flex; gap: 5px; justify-content: center;">
-                                ${totalDebt > 0 ? `
-                                    <button class="btn btn-success btn-small" onclick="openSupplierPaymentModal('${supplier.id}')" style="padding: 5px 10px; font-size: 12px;">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                    </button>
-                                ` : ''}
-                                <button class="btn btn-info btn-small" onclick="openSupplierDetailsModal('${supplier.id}')" style="padding: 5px 10px; font-size: 12px;">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn btn-warning btn-small" onclick="openEditSupplierModal('${supplier.id}')" style="padding: 5px 10px; font-size: 12px;">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-danger btn-small" onclick="deleteSupplier('${supplier.id}')" style="padding: 5px 10px; font-size: 12px;">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tableBody.innerHTML = html;
-        }
-        
-        function loadSupplierDetails(supplier) {
-            const detailsContent = document.getElementById('supplierDetailsContent');
-            if (!detailsContent) return;
-            
-            // Calculer la dette du fournisseur
-            const supplierPurchases = purchases.filter(p => p.supplierId === supplier.id);
-            const totalDebt = supplierPurchases.reduce((sum, purchase) => {
-                const remaining = purchase.totalAmount - (purchase.paidAmount || 0);
-                return sum + Math.max(0, remaining);
-            }, 0);
-            
-            // Calculer le total des achats
-            const totalPurchases = supplierPurchases.reduce((sum, purchase) => {
-                return sum + purchase.totalAmount;
-            }, 0);
-            
-            // Calculer le total payé
-            const totalPaid = supplierPurchases.reduce((sum, purchase) => {
-                return sum + (purchase.paidAmount || 0);
-            }, 0);
-            
-            // Nombre d'achats
-            const purchasesCount = supplierPurchases.length;
-            
-            // Dernier achat
-            let lastPurchaseDate = '--';
-            if (supplierPurchases.length > 0) {
-                const sortedPurchases = [...supplierPurchases].sort((a, b) => 
-                    new Date(b.purchaseDate || b.createdAt) - new Date(a.purchaseDate || a.createdAt)
-                );
-                lastPurchaseDate = formatDate(sortedPurchases[0].purchaseDate || sortedPurchases[0].createdAt);
-            }
-            
-            const paymentTermsText = getPaymentTermsText(supplier.paymentTerms);
-            const statusClass = supplier.status === 'active' ? 'status-active' : 
-                              supplier.status === 'inactive' ? 'status-inactive' : 'status-warning';
-            const statusText = supplier.status === 'active' ? 'Actif' : 
-                             supplier.status === 'inactive' ? 'Inactif' : 'Bloqué';
-            
-            const html = `
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                    <div>
-                        <h3 style="color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">
-                            <i class="fas fa-user"></i>
-                            Informations du Fournisseur
-                        </h3>
-                        
-                        <div style="margin-bottom: 25px;">
-                            <h4 style="color: var(--text); margin-bottom: 10px; font-size: 22px;">${supplier.name}</h4>
-                            <span class="status-badge ${statusClass}" style="font-size: 14px;">
-                                ${statusText}
-                            </span>
-                        </div>
-                        
-                        <div style="background: var(--light); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                <h4 style="color: var(--text); margin: 0;">Statistiques</h4>
-                                <button class="btn btn-info btn-small" onclick="openSupplierTransactionsModal('${supplier.id}')">
-                                    <i class="fas fa-history"></i>
-                                    Historique
-                                </button>
-                            </div>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div style="text-align: center;">
-                                    <div style="font-size: 24px; font-weight: bold; color: var(--primary);">${purchasesCount}</div>
-                                    <div style="font-size: 12px; color: var(--text-light);">Achats</div>
-                                </div>
-                                <div style="text-align: center;">
-                                    <div style="font-size: 24px; font-weight: bold; color: var(--success);">${formatNumber(totalPaid)} DH</div>
-                                    <div style="font-size: 12px; color: var(--text-light);">Total Payé</div>
-                                </div>
-                                <div style="text-align: center;">
-                                    <div style="font-size: 24px; font-weight: bold; color: ${totalDebt > 0 ? 'var(--warning)' : 'var(--success)'};">${formatNumber(totalDebt)} DH</div>
-                                    <div style="font-size: 12px; color: var(--text-light);">Dette Actuelle</div>
-                                </div>
-                                <div style="text-align: center;">
-                                    <div style="font-size: 24px; font-weight: bold; color: var(--info);">${formatNumber(totalPurchases)} DH</div>
-                                    <div style="font-size: 12px; color: var(--text-light);">Total Achats</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div style="background: var(--light); padding: 20px; border-radius: 10px;">
-                            <h4 style="color: var(--text); margin-bottom: 15px;">Informations de Contact</h4>
-                            <div style="display: flex; flex-direction: column; gap: 12px;">
-                                <div class="supplier-info-row">
-                                    <i class="fas fa-phone"></i>
-                                    <span>${supplier.phone || '--'}</span>
-                                </div>
-                                ${supplier.email ? `
-                                    <div class="supplier-info-row">
-                                        <i class="fas fa-envelope"></i>
-                                        <span>${supplier.email}</span>
-                                    </div>
-                                ` : ''}
-                                ${supplier.address ? `
-                                    <div class="supplier-info-row">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span>${supplier.address}</span>
-                                    </div>
-                                ` : ''}
-                                ${supplier.city ? `
-                                    <div class="supplier-info-row">
-                                        <i class="fas fa-city"></i>
-                                        <span>${supplier.city}, ${supplier.country || 'Maroc'}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h3 style="color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">
-                            <i class="fas fa-file-invoice"></i>
-                            Informations Commerciales
-                        </h3>
-                        
-                        <div style="background: var(--light); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                            <h4 style="color: var(--text); margin-bottom: 15px;">Conditions de Paiement</h4>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <span>Conditions:</span>
-                                <strong>${paymentTermsText}</strong>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <span>Limite de Crédit:</span>
-                                <strong>${formatNumber(supplier.creditLimit || 0)} DH</strong>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <span>Dernier Achat:</span>
-                                <strong>${lastPurchaseDate}</strong>
-                            </div>
-                        </div>
-                        
-                        ${supplier.taxId || supplier.tradeRegister ? `
-                            <div style="background: var(--light); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                                <h4 style="color: var(--text); margin-bottom: 15px;">Informations Fiscales</h4>
-                                ${supplier.taxId ? `
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                        <span>Identifiant Fiscal (IF):</span>
-                                        <strong>${supplier.taxId}</strong>
-                                    </div>
-                                ` : ''}
-                                ${supplier.tradeRegister ? `
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                        <span>Registre de Commerce (RC):</span>
-                                        <strong>${supplier.tradeRegister}</strong>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        ` : ''}
-                        
-                        ${supplier.notes ? `
-                            <div style="background: var(--light); padding: 20px; border-radius: 10px;">
-                                <h4 style="color: var(--text); margin-bottom: 15px;">Notes</h4>
-                                <p style="color: var(--text-light); line-height: 1.6;">${supplier.notes}</p>
-                            </div>
-                        ` : ''}
-                        
-                        <div style="margin-top: 20px; display: flex; gap: 10px;">
-                            <button class="btn btn-primary" onclick="openEditSupplierModal('${supplier.id}')">
-                                <i class="fas fa-edit"></i>
-                                Modifier
-                            </button>
-                            ${totalDebt > 0 ? `
-                                <button class="btn btn-success" onclick="openSupplierPaymentModal('${supplier.id}')">
-                                    <i class="fas fa-money-bill-wave"></i>
-                                    Effectuer un Paiement
-                                </button>
-                            ` : ''}
-                            <button class="btn btn-info" onclick="window.location.href='purchases.html?supplier=${supplier.id}'">
-                                <i class="fas fa-shopping-cart"></i>
-                                Voir les Achats
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            detailsContent.innerHTML = html;
-        }
-        
-        function loadSupplierTransactions(supplier) {
-            const transactionsContent = document.getElementById('supplierTransactionsContent');
-            if (!transactionsContent) return;
-            
-            // Filtrer les achats du fournisseur
-            const supplierPurchases = purchases.filter(p => p.supplierId === supplier.id);
-            
-            if (supplierPurchases.length === 0) {
-                transactionsContent.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: var(--text-light);">
-                        <i class="fas fa-history" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                        <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucune transaction trouvée</h3>
-                        <p>Ce fournisseur n'a effectué aucun achat</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Trier par date (récentes d'abord)
-            const sortedPurchases = [...supplierPurchases].sort((a, b) => 
-                new Date(b.purchaseDate || b.createdAt) - new Date(a.purchaseDate || a.createdAt)
-            );
-            
-            let html = `
-                <h3 style="color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">
-                    <i class="fas fa-shopping-cart"></i>
-                    Historique des Achats
-                </h3>
-                
-                <div style="max-height: 500px; overflow-y: auto;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background: var(--light);">
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Référence</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Date</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Montant Total</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Payé</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Reste</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            
             sortedPurchases.forEach(purchase => {
                 const totalAmount = purchase.totalAmount || 0;
                 const paidAmount = purchase.paidAmount || 0;
                 const remainingAmount = totalAmount - paidAmount;
                 
                 // Déterminer le statut
-                let status = purchase.paymentStatus || 'pending';
+                let paymentStatus = purchase.paymentStatus || 'pending';
                 const today = new Date();
                 const dueDate = purchase.dueDate ? new Date(purchase.dueDate) : null;
                 
-                if (status !== 'paid' && dueDate && today > dueDate) {
-                    status = 'overdue';
+                if (paymentStatus !== 'paid' && dueDate && today > dueDate) {
+                    paymentStatus = 'overdue';
                 }
                 
-                const statusClass = `status-${status}`;
-                const statusText = getPaymentStatusText(status);
+                const status = purchase.status || 'pending';
+                const statusClass = `status-${paymentStatus}`;
+                const statusText = getPaymentStatusText(paymentStatus);
+                
+                // Nombre de produits
+                const productCount = purchase.items ? purchase.items.length : 0;
+                
+                // Date formatée
+                const purchaseDate = formatDate(purchase.purchaseDate || purchase.createdAt);
                 
                 html += `
-                    <tr style="border-bottom: 1px solid var(--border);">
-                        <td style="padding: 10px; text-align: center;">
-                            <strong style="color: var(--primary);">${purchase.reference || purchase.id.substring(0, 8)}</strong>
-                        </td>
-                        <td style="padding: 10px; text-align: center;">${formatDate(purchase.purchaseDate || purchase.createdAt)}</td>
-                        <td style="padding: 10px; text-align: center; font-weight: bold;">${formatNumber(totalAmount)} DH</td>
-                        <td style="padding: 10px; text-align: center; color: var(--success); font-weight: bold;">${formatNumber(paidAmount)} DH</td>
-                        <td style="padding: 10px; text-align: center; color: ${remainingAmount > 0 ? 'var(--warning)' : 'var(--success)'}; font-weight: bold;">${formatNumber(remainingAmount)} DH</td>
-                        <td style="padding: 10px; text-align: center;">
-                            <span class="status-badge ${statusClass}" style="font-size: 11px;">
-                                ${statusText}
-                            </span>
-                        </td>
-                    </tr>
+                    <div class="purchase-details-card">
+                        <div class="purchase-header">
+                            <div class="purchase-info">
+                                <div class="purchase-title">
+                                    <h3>${purchase.reference || purchase.id.substring(0, 8)}</h3>
+                                    <span class="status-badge ${statusClass}">
+                                        ${statusText}
+                                    </span>
+                                    ${status !== 'pending' ? `
+                                        <span class="status-badge status-${status}">
+                                            ${getPurchaseStatusText(status)}
+                                        </span>
+                                    ` : ''}
+                                </div>
+                                
+                                <div class="purchase-meta">
+                                    <div class="meta-item">
+                                        <i class="fas fa-truck-loading"></i>
+                                        <span>${purchase.supplierName || 'Non spécifié'}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>${purchaseDate}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-box"></i>
+                                        <span>${productCount} produit(s)</span>
+                                    </div>
+                                    ${purchase.expectedDeliveryDate ? `
+                                        <div class="meta-item">
+                                            <i class="fas fa-truck"></i>
+                                            <span>Livraison: ${formatDate(purchase.expectedDeliveryDate)}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            
+                            <div class="purchase-actions">
+                                ${remainingAmount > 0 ? `
+                                    <button class="btn btn-success btn-small" onclick="openPaymentModal('${purchase.id}')">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        Payer
+                                    </button>
+                                ` : ''}
+                                <button class="btn btn-info btn-small" onclick="openPurchaseDetailsModal('${purchase.id}')">
+                                    <i class="fas fa-eye"></i>
+                                    Détails
+                                </button>
+                                <button class="btn btn-warning btn-small" onclick="openEditPurchaseModal('${purchase.id}')">
+                                    <i class="fas fa-edit"></i>
+                                    Modifier
+                                </button>
+                                ${paymentStatus !== 'paid' ? `
+                                    <button class="btn btn-danger btn-small" onclick="cancelPurchase('${purchase.id}')">
+                                        <i class="fas fa-times"></i>
+                                        Annuler
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="payment-summary">
+                            <div class="payment-row">
+                                <span>Montant Total:</span>
+                                <span><strong>${formatNumber(totalAmount)} DH</strong></span>
+                            </div>
+                            <div class="payment-row">
+                                <span>Montant Payé:</span>
+                                <span style="color: var(--success);"><strong>${formatNumber(paidAmount)} DH</strong></span>
+                            </div>
+                            <div class="payment-row total">
+                                <span>Reste à Payer:</span>
+                                <span style="color: ${remainingAmount > 0 ? 'var(--warning)' : 'var(--success)'};">
+                                    <strong>${formatNumber(remainingAmount)} DH</strong>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                            <div style="font-size: 12px; color: var(--text-light);">
+                                <i class="fas fa-clock"></i>
+                                Créé le: ${formatDateTime(purchase.createdAt)}
+                            </div>
+                            <div>
+                                <button class="btn btn-secondary btn-small" onclick="openPaymentsHistoryModal('${purchase.id}')">
+                                    <i class="fas fa-history"></i>
+                                    Historique Paiements
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 `;
             });
             
-            html += `
+            container.innerHTML = html;
+        }
+        
+        function loadPurchaseDetails(purchase) {
+            const content = document.getElementById('purchaseDetailsContent');
+            if (!content) return;
+            
+            const totalAmount = purchase.totalAmount || 0;
+            const paidAmount = purchase.paidAmount || 0;
+            const remainingAmount = totalAmount - paidAmount;
+            
+            // Déterminer le statut
+            let paymentStatus = purchase.paymentStatus || 'pending';
+            const today = new Date();
+            const dueDate = purchase.dueDate ? new Date(purchase.dueDate) : null;
+            
+            if (paymentStatus !== 'paid' && dueDate && today > dueDate) {
+                paymentStatus = 'overdue';
+            }
+            
+            const status = purchase.status || 'pending';
+            const statusClass = `status-${paymentStatus}`;
+            const statusText = getPaymentStatusText(paymentStatus);
+            
+            // Récupérer le fournisseur
+            const supplier = suppliers.find(s => s.id === purchase.supplierId);
+            
+            // Items
+            let itemsHtml = '';
+            if (purchase.items && purchase.items.length > 0) {
+                itemsHtml = `
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Quantité</th>
+                                <th>Prix d'Achat</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                purchase.items.forEach(item => {
+                    const productTotal = (item.quantity || 0) * (item.costPrice || 0);
+                    itemsHtml += `
+                        <tr>
+                            <td>${item.name || 'Produit'}</td>
+                            <td>${item.quantity || 0}</td>
+                            <td>${formatNumber(item.costPrice || 0)} DH</td>
+                            <td><strong>${formatNumber(productTotal)} DH</strong></td>
+                        </tr>
+                    `;
+                });
+                
+                itemsHtml += `
                         </tbody>
                     </table>
-                </div>
+                `;
+            } else {
+                itemsHtml = `
+                    <div style="text-align: center; padding: 20px; color: var(--text-light);">
+                        <i class="fas fa-box-open"></i>
+                        <p>Aucun produit dans cet achat</p>
+                    </div>
+                `;
+            }
+            
+            // Distribution par dépôt
+            let distributionHtml = '';
+            if (purchase.items && purchase.items.length > 0) {
+                // Regrouper la distribution par dépôt
+                const depotDistribution = {};
                 
-                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--light); border-radius: 8px;">
-                    <div>
-                        <strong>Total Achats: ${formatNumber(sortedPurchases.reduce((sum, p) => sum + p.totalAmount, 0))} DH</strong>
+                purchase.items.forEach(item => {
+                    if (item.distribution) {
+                        Object.keys(item.distribution).forEach(depotId => {
+                            const depotName = getDepotName(depotId);
+                            const quantity = item.distribution[depotId];
+                            
+                            if (!depotDistribution[depotId]) {
+                                depotDistribution[depotId] = {
+                                    name: depotName,
+                                    items: []
+                                };
+                            }
+                            
+                            depotDistribution[depotId].items.push({
+                                productName: item.name,
+                                quantity: quantity
+                            });
+                        });
+                    }
+                });
+                
+                if (Object.keys(depotDistribution).length > 0) {
+                    distributionHtml = `
+                        <div class="distribution-section">
+                            <h4><i class="fas fa-share-alt"></i> Répartition par Dépôt</h4>
+                            <div class="distribution-grid">
+                    `;
+                    
+                    Object.keys(depotDistribution).forEach(depotId => {
+                        const depot = depotDistribution[depotId];
+                        
+                        distributionHtml += `
+                            <div class="distribution-card">
+                                <h5>${depot.name}</h5>
+                                <ul class="distribution-list">
+                        `;
+                        
+                        depot.items.forEach(item => {
+                            distributionHtml += `
+                                <li>
+                                    <span>${item.productName}</span>
+                                    <span><strong>${item.quantity}</strong></span>
+                                </li>
+                            `;
+                        });
+                        
+                        distributionHtml += `
+                                </ul>
+                            </div>
+                        `;
+                    });
+                    
+                    distributionHtml += `
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Timeline
+            const timelineHtml = `
+                <div class="purchase-timeline">
+                    <h4><i class="fas fa-history"></i> Chronologie</h4>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-cart-plus"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">${formatDateTime(purchase.createdAt)}</div>
+                            <div class="timeline-text">Achat créé</div>
+                        </div>
                     </div>
-                    <div>
-                        <strong>Total Payé: <span style="color: var(--success);">${formatNumber(sortedPurchases.reduce((sum, p) => sum + (p.paidAmount || 0), 0))} DH</span></strong>
-                    </div>
-                    <div>
-                        <strong>Dette Totale: <span style="color: var(--warning);">${formatNumber(sortedPurchases.reduce((sum, p) => sum + Math.max(0, p.totalAmount - (p.paidAmount || 0)), 0))} DH</span></strong>
-                    </div>
+                    
+                    ${purchase.expectedDeliveryDate ? `
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">${formatDate(purchase.expectedDeliveryDate)}</div>
+                                <div class="timeline-text">Date prévue de livraison</div>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${purchase.updatedAt !== purchase.createdAt ? `
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">${formatDateTime(purchase.updatedAt)}</div>
+                                <div class="timeline-text">Dernière modification</div>
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
             `;
             
-            transactionsContent.innerHTML = html;
-        }
-        
-        function updateStats() {
-            const totalSuppliers = suppliers.length;
+            const html = `
+                <div class="purchase-header">
+                    <div class="purchase-info">
+                        <div class="purchase-title">
+                            <h3 style="font-size: 28px; margin-bottom: 5px;">${purchase.reference || purchase.id.substring(0, 8)}</h3>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <span class="status-badge ${statusClass}" style="font-size: 14px;">
+                                    ${statusText}
+                                </span>
+                                ${status !== 'pending' ? `
+                                    <span class="status-badge status-${status}" style="font-size: 14px;">
+                                        ${getPurchaseStatusText(status)}
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="purchase-meta" style="margin-top: 20px;">
+                            <div class="meta-item">
+                                <i class="fas fa-truck-loading"></i>
+                                <div>
+                                    <div style="font-weight: bold;">${purchase.supplierName || 'Non spécifié'}</div>
+                                    ${supplier ? `
+                                        <div style="font-size: 12px; color: var(--text-light);">
+                                            ${supplier.phone || ''} ${supplier.city ? ` | ${supplier.city}` : ''}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                <div>
+                                    <div style="font-weight: bold;">Date d'achat</div>
+                                    <div style="font-size: 12px; color: var(--text-light);">${formatDate(purchase.purchaseDate || purchase.createdAt)}</div>
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-box"></i>
+                                <div>
+                                    <div style="font-weight: bold;">Produits</div>
+                                    <div style="font-size: 12px; color: var(--text-light);">${purchase.items ? purchase.items.length : 0} article(s)</div>
+                                </div>
+                            </div>
+                            ${purchase.expectedDeliveryDate ? `
+                                <div class="meta-item">
+                                    <i class="fas fa-truck"></i>
+                                    <div>
+                                        <div style="font-weight: bold;">Livraison prévue</div>
+                                        <div style="font-size: 12px; color: var(--text-light);">${formatDate(purchase.expectedDeliveryDate)}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${purchase.invoiceNumber ? `
+                                <div class="meta-item">
+                                    <i class="fas fa-file-invoice"></i>
+                                    <div>
+                                        <div style="font-weight: bold;">Facture</div>
+                                        <div style="font-size: 12px; color: var(--text-light);">${purchase.invoiceNumber}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="purchase-actions">
+                        ${remainingAmount > 0 ? `
+                            <button class="btn btn-success" onclick="openPaymentModal('${purchase.id}')">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Effectuer un Paiement
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-primary" onclick="window.print()">
+                            <i class="fas fa-print"></i>
+                            Imprimer
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                    <div>
+                        <div class="payment-summary">
+                            <h4><i class="fas fa-money-bill-wave"></i> Résumé Financier</h4>
+                            <div class="payment-row">
+                                <span>Sous-total:</span>
+                                <span>${formatNumber(purchase.subtotal || 0)} DH</span>
+                            </div>
+                            <div class="payment-row">
+                                <span>Frais de transport:</span>
+                                <span>${formatNumber(purchase.shippingCost || 0)} DH</span>
+                            </div>
+                            <div class="payment-row">
+                                <span>TVA (${purchase.taxRate || 0}%):</span>
+                                <span>${formatNumber(purchase.taxAmount || 0)} DH</span>
+                            </div>
+                            <div class="payment-row total">
+                                <span>Montant Total:</span>
+                                <span><strong>${formatNumber(totalAmount)} DH</strong></span>
+                            </div>
+                            <div class="payment-row" style="color: var(--success);">
+                                <span>Montant Payé:</span>
+                                <span><strong>${formatNumber(paidAmount)} DH</strong></span>
+                            </div>
+                            <div class="payment-row" style="color: ${remainingAmount > 0 ? 'var(--warning)' : 'var(--success)'};">
+                                <span>Reste à Payer:</span>
+                                <span><strong>${formatNumber(remainingAmount)} DH</strong></span>
+                            </div>
+                        </div>
+                        
+                        ${purchase.notes ? `
+                            <div style="margin-top: 20px; padding: 20px; background: var(--light); border-radius: 8px;">
+                                <h4><i class="fas fa-sticky-note"></i> Notes</h4>
+                                <p style="color: var(--text-light); line-height: 1.6; margin-top: 10px;">${purchase.notes}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div>
+                        ${timelineHtml}
+                    </div>
+                </div>
+                
+                <div class="purchase-items">
+                    <h4><i class="fas fa-boxes"></i> Produits Achetés</h4>
+                    ${itemsHtml}
+                </div>
+                
+                ${distributionHtml}
+            `;
             
-            const activeSuppliers = suppliers.filter(s => s.status === 'active').length;
-            
-            // Calculer la dette totale
-            const totalDebt = suppliers.reduce((sum, supplier) => {
-                const supplierPurchases = purchases.filter(p => p.supplierId === supplier.id);
-                const supplierDebt = supplierPurchases.reduce((pSum, purchase) => {
-                    const remaining = purchase.totalAmount - (purchase.paidAmount || 0);
-                    return pSum + Math.max(0, remaining);
-                }, 0);
-                return sum + supplierDebt;
-            }, 0);
-            
-            // Fournisseurs récemment ajoutés (30 derniers jours)
-            const thirtyDaysAgo = new Date();
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-            
-            const recentSuppliers = suppliers.filter(s => {
-                const createdDate = new Date(s.createdAt || s.updatedAt);
-                return createdDate >= thirtyDaysAgo;
-            }).length;
-            
-            document.getElementById('totalSuppliers').textContent = totalSuppliers;
-            document.getElementById('activeSuppliers').textContent = activeSuppliers;
-            document.getElementById('totalDebts').textContent = formatNumber(totalDebt) + ' DH';
-            document.getElementById('recentSuppliers').textContent = recentSuppliers;
+            content.innerHTML = html;
         }
         
         function switchTab(tabName) {
@@ -2445,154 +2522,221 @@
             // Activer l'onglet sélectionné
             document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
             
-            // Filtrer les fournisseurs
-            filterSuppliers(tabName);
+            // Filtrer les achats
+            filterPurchases(tabName);
         }
         
-        function filterSuppliers(filter) {
-            let filteredSuppliers = [...suppliers];
+        function filterPurchases(filter) {
+            let filteredPurchases = [...purchases];
             
-            if (filter === 'active') {
-                filteredSuppliers = filteredSuppliers.filter(s => s.status === 'active');
-            } else if (filter === 'inactive') {
-                filteredSuppliers = filteredSuppliers.filter(s => s.status === 'inactive');
-            } else if (filter === 'debts') {
-                // Fournisseurs avec dettes
-                filteredSuppliers = filteredSuppliers.filter(supplier => {
-                    const supplierPurchases = purchases.filter(p => p.supplierId === supplier.id);
-                    const supplierDebt = supplierPurchases.reduce((sum, purchase) => {
-                        const remaining = purchase.totalAmount - (purchase.paidAmount || 0);
-                        return sum + Math.max(0, remaining);
-                    }, 0);
-                    return supplierDebt > 0;
+            if (filter === 'pending') {
+                filteredPurchases = filteredPurchases.filter(p => {
+                    const status = p.paymentStatus || 'pending';
+                    return status === 'pending' || status === 'partial';
                 });
+            } else if (filter === 'paid') {
+                filteredPurchases = filteredPurchases.filter(p => (p.paymentStatus || 'pending') === 'paid');
+            } else if (filter === 'overdue') {
+                filteredPurchases = filteredPurchases.filter(p => {
+                    const status = p.paymentStatus || 'pending';
+                    if (status === 'paid') return false;
+                    
+                    const today = new Date();
+                    const dueDate = p.dueDate ? new Date(p.dueDate) : null;
+                    return dueDate && today > dueDate;
+                });
+            } else if (filter === 'delivered') {
+                filteredPurchases = filteredPurchases.filter(p => p.status === 'delivered');
+            } else if (filter === 'cancelled') {
+                filteredPurchases = filteredPurchases.filter(p => p.status === 'cancelled');
             }
             
-            // Mettre à jour l'affichage
-            displayFilteredSuppliers(filteredSuppliers);
+            // Trier par date (récentes d'abord)
+            filteredPurchases.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            updatePurchasesListWithData(filteredPurchases);
         }
         
-        function displayFilteredSuppliers(filteredSuppliers) {
-            const tableBody = document.getElementById('suppliersTableBody');
-            if (!tableBody) return;
+        function updatePurchasesListWithData(filteredPurchases) {
+            const container = document.getElementById('purchasesListContainer');
+            if (!container) return;
             
-            // Trier par nom
-            filteredSuppliers.sort((a, b) => a.name?.localeCompare(b.name));
-            
-            if (filteredSuppliers.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-light);">
-                            <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun fournisseur trouvé</h3>
-                        </td>
-                    </tr>
+            if (filteredPurchases.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun achat trouvé</h3>
+                        <p>Aucun achat ne correspond aux critères de recherche</p>
+                    </div>
                 `;
                 return;
             }
             
             let html = '';
-            filteredSuppliers.forEach(supplier => {
-                // Calculer la dette du fournisseur
-                const supplierPurchases = purchases.filter(p => p.supplierId === supplier.id);
-                const totalDebt = supplierPurchases.reduce((sum, purchase) => {
-                    const remaining = purchase.totalAmount - (purchase.paidAmount || 0);
-                    return sum + Math.max(0, remaining);
-                }, 0);
+            filteredPurchases.forEach(purchase => {
+                const totalAmount = purchase.totalAmount || 0;
+                const paidAmount = purchase.paidAmount || 0;
+                const remainingAmount = totalAmount - paidAmount;
                 
-                const paymentTermsText = getPaymentTermsText(supplier.paymentTerms);
-                const statusClass = supplier.status === 'active' ? 'status-active' : 
-                                  supplier.status === 'inactive' ? 'status-inactive' : 'status-warning';
-                const statusText = supplier.status === 'active' ? 'Actif' : 
-                                 supplier.status === 'inactive' ? 'Inactif' : 'Bloqué';
+                // Déterminer le statut
+                let paymentStatus = purchase.paymentStatus || 'pending';
+                const today = new Date();
+                const dueDate = purchase.dueDate ? new Date(purchase.dueDate) : null;
+                
+                if (paymentStatus !== 'paid' && dueDate && today > dueDate) {
+                    paymentStatus = 'overdue';
+                }
+                
+                const status = purchase.status || 'pending';
+                const statusClass = `status-${paymentStatus}`;
+                const statusText = getPaymentStatusText(paymentStatus);
+                
+                // Nombre de produits
+                const productCount = purchase.items ? purchase.items.length : 0;
+                
+                // Date formatée
+                const purchaseDate = formatDate(purchase.purchaseDate || purchase.createdAt);
                 
                 html += `
-                    <tr>
-                        <td style="text-align: right; font-weight: 600;">
-                            <div>${supplier.name || '--'}</div>
-                            ${supplier.city ? `<div style="font-size: 12px; color: var(--text-light);">${supplier.city}</div>` : ''}
-                        </td>
-                        <td>${supplier.phone || '--'}</td>
-                        <td>${supplier.email || '--'}</td>
-                        <td>${supplier.city || '--'}</td>
-                        <td><strong style="color: ${totalDebt > 0 ? 'var(--warning)' : 'var(--success)'};">${formatNumber(totalDebt)} DH</strong></td>
-                        <td>${paymentTermsText}</td>
-                        <td>
-                            <span class="status-badge ${statusClass}">
-                                ${statusText}
-                            </span>
-                        </td>
-                        <td>
-                            <div style="display: flex; gap: 5px; justify-content: center;">
-                                ${totalDebt > 0 ? `
-                                    <button class="btn btn-success btn-small" onclick="openSupplierPaymentModal('${supplier.id}')" style="padding: 5px 10px; font-size: 12px;">
+                    <div class="purchase-details-card">
+                        <div class="purchase-header">
+                            <div class="purchase-info">
+                                <div class="purchase-title">
+                                    <h3>${purchase.reference || purchase.id.substring(0, 8)}</h3>
+                                    <span class="status-badge ${statusClass}">
+                                        ${statusText}
+                                    </span>
+                                    ${status !== 'pending' ? `
+                                        <span class="status-badge status-${status}">
+                                            ${getPurchaseStatusText(status)}
+                                        </span>
+                                    ` : ''}
+                                </div>
+                                
+                                <div class="purchase-meta">
+                                    <div class="meta-item">
+                                        <i class="fas fa-truck-loading"></i>
+                                        <span>${purchase.supplierName || 'Non spécifié'}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>${purchaseDate}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-box"></i>
+                                        <span>${productCount} produit(s)</span>
+                                    </div>
+                                    ${purchase.expectedDeliveryDate ? `
+                                        <div class="meta-item">
+                                            <i class="fas fa-truck"></i>
+                                            <span>Livraison: ${formatDate(purchase.expectedDeliveryDate)}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            
+                            <div class="purchase-actions">
+                                ${remainingAmount > 0 ? `
+                                    <button class="btn btn-success btn-small" onclick="openPaymentModal('${purchase.id}')">
                                         <i class="fas fa-money-bill-wave"></i>
+                                        Payer
                                     </button>
                                 ` : ''}
-                                <button class="btn btn-info btn-small" onclick="openSupplierDetailsModal('${supplier.id}')" style="padding: 5px 10px; font-size: 12px;">
+                                <button class="btn btn-info btn-small" onclick="openPurchaseDetailsModal('${purchase.id}')">
                                     <i class="fas fa-eye"></i>
+                                    Détails
                                 </button>
-                                <button class="btn btn-warning btn-small" onclick="openEditSupplierModal('${supplier.id}')" style="padding: 5px 10px; font-size: 12px;">
+                                <button class="btn btn-warning btn-small" onclick="openEditPurchaseModal('${purchase.id}')">
                                     <i class="fas fa-edit"></i>
+                                    Modifier
                                 </button>
-                                <button class="btn btn-danger btn-small" onclick="deleteSupplier('${supplier.id}')" style="padding: 5px 10px; font-size: 12px;">
-                                    <i class="fas fa-trash"></i>
+                                ${paymentStatus !== 'paid' ? `
+                                    <button class="btn btn-danger btn-small" onclick="cancelPurchase('${purchase.id}')">
+                                        <i class="fas fa-times"></i>
+                                        Annuler
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="payment-summary">
+                            <div class="payment-row">
+                                <span>Montant Total:</span>
+                                <span><strong>${formatNumber(totalAmount)} DH</strong></span>
+                            </div>
+                            <div class="payment-row">
+                                <span>Montant Payé:</span>
+                                <span style="color: var(--success);"><strong>${formatNumber(paidAmount)} DH</strong></span>
+                            </div>
+                            <div class="payment-row total">
+                                <span>Reste à Payer:</span>
+                                <span style="color: ${remainingAmount > 0 ? 'var(--warning)' : 'var(--success)'};">
+                                    <strong>${formatNumber(remainingAmount)} DH</strong>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                            <div style="font-size: 12px; color: var(--text-light);">
+                                <i class="fas fa-clock"></i>
+                                Créé le: ${formatDateTime(purchase.createdAt)}
+                            </div>
+                            <div>
+                                <button class="btn btn-secondary btn-small" onclick="openPaymentsHistoryModal('${purchase.id}')">
+                                    <i class="fas fa-history"></i>
+                                    Historique Paiements
                                 </button>
                             </div>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
                 `;
             });
             
-            tableBody.innerHTML = html;
+            container.innerHTML = html;
         }
         
-        function searchSuppliers(searchTerm) {
+        function searchPurchases(searchTerm) {
             const searchLower = searchTerm.toLowerCase().trim();
             
             if (searchLower === '') {
-                // Afficher tous les fournisseurs
+                // Afficher tous les achats selon l'onglet actif
                 const activeTab = document.querySelector('.tab.active');
                 if (activeTab) {
                     const tabName = activeTab.getAttribute('onclick').match(/'([^']+)'/)[1];
-                    filterSuppliers(tabName);
+                    filterPurchases(tabName);
                 } else {
-                    updateSuppliersTable();
+                    updatePurchasesList();
                 }
                 return;
             }
             
-            const filteredSuppliers = suppliers.filter(supplier => {
+            const filteredPurchases = purchases.filter(purchase => {
                 return (
-                    (supplier.name && supplier.name.toLowerCase().includes(searchLower)) ||
-                    (supplier.phone && supplier.phone.includes(searchTerm)) ||
-                    (supplier.email && supplier.email.toLowerCase().includes(searchLower)) ||
-                    (supplier.city && supplier.city.toLowerCase().includes(searchLower)) ||
-                    (supplier.address && supplier.address.toLowerCase().includes(searchLower)) ||
-                    (supplier.taxId && supplier.taxId.includes(searchTerm))
+                    (purchase.reference && purchase.reference.toLowerCase().includes(searchLower)) ||
+                    (purchase.supplierName && purchase.supplierName.toLowerCase().includes(searchLower)) ||
+                    (purchase.invoiceNumber && purchase.invoiceNumber.toLowerCase().includes(searchLower)) ||
+                    (purchase.items && purchase.items.some(item => 
+                        item.name && item.name.toLowerCase().includes(searchLower)
+                    ))
                 );
             });
             
-            displayFilteredSuppliers(filteredSuppliers);
+            updatePurchasesListWithData(filteredPurchases);
         }
         
-        function refreshSuppliers() {
-            showToast("Actualisation des fournisseurs...", "info");
+        function refreshPurchases() {
+            showToast("Actualisation des achats...", "info");
             
-            // Recharger les fournisseurs depuis Firebase
-            loadSuppliers();
+            // Recharger les achats depuis Firebase
+            loadPurchases();
         }
         
         // ==================== FONCTIONS UTILITAIRES ====================
         
-        function getPaymentTermsText(terms) {
-            switch(terms) {
-                case '30': return '30 jours';
-                case '60': return '60 jours';
-                case '90': return '90 jours';
-                case 'cash': return 'Comptant';
-                default: return terms || '30 jours';
-            }
+        function getDepotName(depotId) {
+            if (!depotId) return 'Non spécifié';
+            const depot = depots.find(d => d.id === depotId);
+            return depot ? depot.name : 'Non spécifié';
         }
         
         function getPaymentStatusText(status) {
@@ -2602,6 +2746,26 @@
                 case 'paid': return 'Payé';
                 case 'overdue': return 'En retard';
                 default: return 'Inconnu';
+            }
+        }
+        
+        function getPurchaseStatusText(status) {
+            switch(status) {
+                case 'pending': return 'En attente';
+                case 'confirmed': return 'Confirmé';
+                case 'delivered': return 'Livré';
+                case 'cancelled': return 'Annulé';
+                default: return status;
+            }
+        }
+        
+        function getPaymentMethodText(method) {
+            switch(method) {
+                case 'cash': return 'Espèces';
+                case 'check': return 'Chèque';
+                case 'transfer': return 'Virement';
+                case 'card': return 'Carte';
+                default: return method;
             }
         }
         
@@ -2626,6 +2790,22 @@
             }
         }
         
+        function formatDateTime(dateString) {
+            if (!dateString) return '--';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return '--';
+            }
+        }
+        
         function showToast(message, type = "success") {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -2644,14 +2824,9 @@
             }, 5000);
         }
         
-        function importSuppliers() {
-            showToast("Fonctionnalité d'import en développement", "info");
-            // À implémenter: import CSV/Excel
-        }
-        
-        function exportSuppliers() {
+        function exportPurchaseData() {
             showToast("Fonctionnalité d'export en développement", "info");
-            // À implémenter: export CSV/Excel
+            // À implémenter: export CSV/Excel/PDF
         }
     </script>
 </body>
