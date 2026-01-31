@@ -1405,25 +1405,33 @@
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <nav class="nav">
-                <a href="deliveries.html" class="nav-item">
-                    <i class="fas fa-truck"></i>
-                    Livraisons
-                </a>
                 <a href="dashboard.html" class="nav-item active">
                     <i class="fas fa-chart-pie"></i>
                     Dashboard
+                </a>
+                <a href="stock.html" class="nav-item">
+                    <i class="fas fa-warehouse"></i>
+                    Stock
+                </a>
+                <a href="sales.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    Ventes
+                </a>
+                <a href="purchases.html" class="nav-item">
+                    <i class="fas fa-shopping-basket"></i>
+                    Achats
                 </a>
                 <a href="clients.html" class="nav-item">
                     <i class="fas fa-users"></i>
                     Clients
                 </a>
-                <a href="products.html" class="nav-item">
-                    <i class="fas fa-boxes"></i>
-                    Produits
+                <a href="suppliers.html" class="nav-item">
+                    <i class="fas fa-truck-loading"></i>
+                    Fournisseurs
                 </a>
-                <a href="stock.html" class="nav-item">
-                    <i class="fas fa-warehouse"></i>
-                    Stock
+                <a href="payments.html" class="nav-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Paiements
                 </a>
                 <a href="settings.html" class="nav-item">
                     <i class="fas fa-cog"></i>
@@ -1466,7 +1474,7 @@
         <div class="welcome-section">
             <div class="welcome-text">
                 <h2>Bonjour, <span id="userDisplayName">Administrateur</span> 👋</h2>
-                <p id="welcomeMessage">Bienvenue sur votre tableau de bord de gestion des livraisons</p>
+                <p id="welcomeMessage">Bienvenue sur votre tableau de bord de gestion commerciale</p>
             </div>
             <div class="date-display">
                 <div class="day" id="currentDay">--</div>
@@ -1511,12 +1519,12 @@
 
         <!-- Stats Cards -->
         <div class="stats-grid">
-            <div class="stat-card" onclick="window.location.href='deliveries.html?status=delivered'">
+            <div class="stat-card" onclick="window.location.href='sales.html?status=delivered'">
                 <div class="stat-icon delivered">
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>Livraisons Terminées</h3>
+                    <h3>Ventes Terminées</h3>
                     <div class="value" id="deliveredCount">0</div>
                     <div class="change positive" id="deliveredChange">
                         <i class="fas fa-arrow-up"></i>
@@ -1525,12 +1533,12 @@
                 </div>
             </div>
             
-            <div class="stat-card" onclick="window.location.href='deliveries.html?status=pending'">
+            <div class="stat-card" onclick="window.location.href='sales.html?status=pending'">
                 <div class="stat-icon pending">
                     <i class="fas fa-clock"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>En Attente</h3>
+                    <h3>Ventes En Attente</h3>
                     <div class="value" id="pendingCount">0</div>
                     <div class="change negative" id="pendingChange">
                         <i class="fas fa-arrow-down"></i>
@@ -1539,12 +1547,12 @@
                 </div>
             </div>
             
-            <div class="stat-card" onclick="window.location.href='deliveries.html?status=processing'">
+            <div class="stat-card" onclick="window.location.href='sales.html?status=processing'">
                 <div class="stat-icon processing">
                     <i class="fas fa-truck-loading"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>En Cours</h3>
+                    <h3>Ventes En Cours</h3>
                     <div class="value" id="processingCount">0</div>
                     <div class="change positive" id="processingChange">
                         <i class="fas fa-arrow-up"></i>
@@ -1581,7 +1589,7 @@
                 </div>
             </div>
             
-            <div class="stat-card" onclick="window.location.href='deliveries.html'">
+            <div class="stat-card" onclick="window.location.href='sales.html'">
                 <div class="stat-icon revenue">
                     <i class="fas fa-money-bill-wave"></i>
                 </div>
@@ -1600,7 +1608,7 @@
         <div class="charts-section">
             <div class="chart-card">
                 <div class="chart-header">
-                    <h3><i class="fas fa-chart-bar"></i> Livraisons par Mois</h3>
+                    <h3><i class="fas fa-chart-bar"></i> Ventes par Mois</h3>
                     <select id="chartPeriod" onchange="updateCharts()" style="padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text);">
                         <option value="month">Ce mois</option>
                         <option value="quarter">Ce trimestre</option>
@@ -1614,7 +1622,7 @@
             
             <div class="chart-card">
                 <div class="chart-header">
-                    <h3><i class="fas fa-chart-pie"></i> Répartition par Statut</h3>
+                    <h3><i class="fas fa-chart-pie"></i> Répartition des Ventes</h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="statusChart"></canvas>
@@ -1622,11 +1630,11 @@
             </div>
         </div>
 
-        <!-- Recent Deliveries -->
+        <!-- Recent Sales -->
         <div class="recent-section">
             <div class="section-header">
-                <h3><i class="fas fa-history"></i> Livraisons Récentes</h3>
-                <a href="deliveries.html" class="view-all">
+                <h3><i class="fas fa-history"></i> Ventes Récentes</h3>
+                <a href="sales.html" class="view-all">
                     Voir toutes
                     <i class="fas fa-arrow-left"></i>
                 </a>
@@ -1646,7 +1654,7 @@
                     <tr>
                         <td colspan="6" class="loading">
                             <i class="fas fa-spinner fa-spin"></i>
-                            <p>Chargement des livraisons récentes...</p>
+                            <p>Chargement des ventes récentes...</p>
                         </td>
                     </tr>
                 </tbody>
@@ -1663,7 +1671,7 @@
                     <tr>
                         <th>Client</th>
                         <th>Téléphone</th>
-                        <th>Livraisons</th>
+                        <th>Commandes</th>
                         <th>Total (DH)</th>
                         <th>Dernière Commande</th>
                     </tr>
@@ -1707,10 +1715,10 @@
 
         <!-- Footer -->
         <div class="dashboard-footer">
-            <p>© 2024 ETTIJARA ALAAMA SOUSS - Système de Gestion des Livraisons</p>
+            <p>© 2024 ETTIJARA ALAAMA SOUSS - Système de Gestion Commerciale</p>
             <p style="font-size: 12px; margin-top: 5px;">
                 <span id="lastUpdate">Dernière mise à jour: --:--</span> | 
-                <span id="totalStats">0 livraisons | 0 produits | 0 clients</span>
+                <span id="totalStats">0 ventes | 0 produits | 0 clients</span>
             </p>
         </div>
     </main>
@@ -3430,7 +3438,7 @@
             
             // Mettre à jour les stats du footer
             document.getElementById('totalStats').textContent = 
-                `${totalDeliveries} livraisons | ${products.length} produits | ${clients.length} clients`;
+                `${totalDeliveries} ventes | ${products.length} produits | ${clients.length} clients`;
         }
         
         function updateChangeElement(elementId, change, isPositive) {
@@ -3525,7 +3533,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Nombre de Livraisons',
+                        label: 'Nombre de Ventes',
                         data: data,
                         backgroundColor: primaryColor,
                         borderColor: secondaryColor,
@@ -3645,7 +3653,7 @@
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
                             <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucune livraison récente</h3>
+                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucune vente récente</h3>
                         </td>
                     </tr>
                 `;
