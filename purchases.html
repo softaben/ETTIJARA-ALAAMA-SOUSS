@@ -240,34 +240,6 @@
             color: var(--primary);
         }
 
-        /* Filters Section */
-        .filters-section {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        .filters-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .filters-header h3 {
-            font-size: 18px;
-            color: var(--text);
-        }
-
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
         /* Action Buttons */
         .action-buttons {
             display: flex;
@@ -353,44 +325,6 @@
         .btn-small {
             padding: 8px 16px;
             font-size: 13px;
-        }
-
-        /* Table */
-        .table-container {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            margin-bottom: 30px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th {
-            background: var(--light);
-            padding: 15px;
-            border-bottom: 2px solid var(--border);
-            text-align: center;
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border);
-            text-align: center;
-            color: var(--text);
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        tr:hover {
-            background-color: var(--light);
         }
 
         /* Purchase Details Card */
@@ -541,178 +475,45 @@
             border-bottom: none;
         }
 
-        /* Distribution Section */
-        .distribution-section {
-            margin-top: 30px;
-        }
-
-        .distribution-section h4 {
-            color: var(--text);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .distribution-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .distribution-card {
-            background: var(--light);
-            border-radius: 8px;
-            padding: 15px;
-            border: 1px solid var(--border);
-        }
-
-        .distribution-card h5 {
-            color: var(--text);
-            margin-bottom: 10px;
-            font-size: 15px;
-        }
-
-        .distribution-list {
-            list-style: none;
-        }
-
-        .distribution-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
-            border-bottom: 1px dashed var(--border);
-            font-size: 13px;
-        }
-
-        .distribution-list li:last-child {
-            border-bottom: none;
-        }
-
-        /* Form Controls */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
+        /* Status Badge */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
-            color: var(--text);
-            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+        
+        .status-pending {
+            background-color: rgba(217, 119, 6, 0.1);
+            color: #d97706;
+        }
+        
+        .status-paid {
+            background-color: rgba(6, 95, 70, 0.1);
+            color: #065f46;
+        }
+        
+        .status-partial {
+            background-color: rgba(29, 78, 216, 0.1);
+            color: #1d4ed8;
+        }
+        
+        .status-overdue {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
         }
 
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--card-bg);
-            color: var(--text);
-            font-size: 14px;
-            transition: all 0.3s;
+        .status-completed {
+            background-color: rgba(6, 95, 70, 0.1);
+            color: #065f46;
         }
 
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: var(--card-bg);
-            border-radius: 15px;
-            width: 100%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            border: 1px solid var(--border);
-        }
-
-        .modal-header {
-            padding: 20px 30px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .modal-header h3 {
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .close-modal {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .close-modal:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
+        .status-cancelled {
+            background-color: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
         }
 
         /* Loading */
@@ -804,140 +605,6 @@
             border-bottom-color: var(--primary);
         }
 
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Status Badge */
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-block;
-        }
-        
-        .status-pending {
-            background-color: rgba(217, 119, 6, 0.1);
-            color: #d97706;
-        }
-        
-        .status-paid {
-            background-color: rgba(6, 95, 70, 0.1);
-            color: #065f46;
-        }
-        
-        .status-partial {
-            background-color: rgba(29, 78, 216, 0.1);
-            color: #1d4ed8;
-        }
-        
-        .status-overdue {
-            background-color: rgba(220, 38, 38, 0.1);
-            color: #dc2626;
-        }
-
-        .status-completed {
-            background-color: rgba(6, 95, 70, 0.1);
-            color: #065f46;
-        }
-
-        .status-cancelled {
-            background-color: rgba(107, 114, 128, 0.1);
-            color: #6b7280;
-        }
-
-        /* Connection Status */
-        .connection-status {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .status-dot.connected {
-            background: #10b981;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-        }
-
-        .status-dot.disconnected {
-            background: #ef4444;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-        }
-
-        /* Purchase Timeline */
-        .purchase-timeline {
-            margin-top: 30px;
-            padding: 20px;
-            background: var(--light);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .timeline-item {
-            display: flex;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .timeline-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .timeline-item:before {
-            content: '';
-            position: absolute;
-            right: 20px;
-            top: 0;
-            bottom: -20px;
-            width: 2px;
-            background: var(--primary);
-        }
-
-        .timeline-item:last-child:before {
-            display: none;
-        }
-
-        .timeline-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 10px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .timeline-content {
-            flex: 1;
-        }
-
-        .timeline-date {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .timeline-text {
-            color: var(--text);
-        }
-
         /* Search Bar */
         .search-container {
             position: relative;
@@ -1005,14 +672,6 @@
                 width: 100%;
                 justify-content: center;
             }
-
-            .modal {
-                max-height: 95vh;
-            }
-
-            .distribution-grid {
-                grid-template-columns: 1fr;
-            }
         }
 
         @media (max-width: 480px) {
@@ -1022,10 +681,6 @@
 
             .page-header h2 {
                 font-size: 22px;
-            }
-
-            .modal-body {
-                padding: 20px;
             }
 
             .purchase-title {
@@ -1052,7 +707,7 @@
                     <i class="fas fa-truck"></i>
                     Livraisons
                 </a>
-                <a href="purchases.html" class="nav-item active">
+                <a href="achats.html" class="nav-item active">
                     <i class="fas fa-cart-plus"></i>
                     Achats
                 </a>
@@ -1105,7 +760,7 @@
         <div class="page-header">
             <h2><i class="fas fa-eye"></i> Détails des Achats</h2>
             <div class="action-buttons">
-                <button class="btn btn-secondary" onclick="window.location.href='purchases.html'">
+                <button class="btn btn-secondary" onclick="window.location.href='achats.html'">
                     <i class="fas fa-arrow-right"></i>
                     Retour aux Achats
                 </button>
@@ -1147,210 +802,6 @@
         </div>
     </main>
 
-    <!-- Modal pour Détails d'Achat -->
-    <div class="modal-overlay" id="purchaseDetailsModal">
-        <div class="modal" style="max-width: 1000px;">
-            <div class="modal-header">
-                <h3><i class="fas fa-file-invoice"></i> Détails Complet de l'Achat</h3>
-                <button class="close-modal" onclick="closePurchaseDetailsModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="purchaseDetailsContent">
-                    <!-- Détails seront chargés dynamiquement -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal pour Éditer Achat -->
-    <div class="modal-overlay" id="editPurchaseModal">
-        <div class="modal" style="max-width: 900px;">
-            <div class="modal-header">
-                <h3><i class="fas fa-edit"></i> Modifier l'Achat</h3>
-                <button class="close-modal" onclick="closeEditPurchaseModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="editPurchaseForm">
-                    <input type="hidden" id="editPurchaseId">
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="editPurchaseDate">Date d'Achat *</label>
-                            <input type="date" id="editPurchaseDate" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="editExpectedDeliveryDate">Date Livraison Prévisionnelle</label>
-                            <input type="date" id="editExpectedDeliveryDate" class="form-control">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="editInvoiceNumber">Numéro de Facture</label>
-                            <input type="text" id="editInvoiceNumber" class="form-control" placeholder="Numéro de facture fournisseur">
-                        </div>
-                        <div class="form-group">
-                            <label for="editPurchaseStatus">Statut de l'Achat</label>
-                            <select id="editPurchaseStatus" class="form-control">
-                                <option value="pending">En attente</option>
-                                <option value="confirmed">Confirmé</option>
-                                <option value="delivered">Livré</option>
-                                <option value="cancelled">Annulé</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="editShippingCost">Frais de Transport (DH)</label>
-                            <input type="number" id="editShippingCost" class="form-control" value="0" min="0" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="editTaxRate">TVA (%)</label>
-                            <input type="number" id="editTaxRate" class="form-control" value="20" min="0" step="0.1">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="editPaymentStatus">Statut Paiement</label>
-                            <select id="editPaymentStatus" class="form-control">
-                                <option value="pending">En Attente</option>
-                                <option value="partial">Partiel</option>
-                                <option value="paid">Payé</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="editPaidAmount">Montant Payé (DH)</label>
-                            <input type="number" id="editPaidAmount" class="form-control" value="0" min="0" step="0.01">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="editPurchaseNotes">Notes</label>
-                        <textarea id="editPurchaseNotes" class="form-control" rows="3" placeholder="Notes supplémentaires sur l'achat..."></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeEditPurchaseModal()">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i>
-                            Mettre à jour
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal pour Paiement Fournisseur -->
-    <div class="modal-overlay" id="paymentModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3><i class="fas fa-money-bill-wave"></i> Enregistrer un Paiement</h3>
-                <button class="close-modal" onclick="closePaymentModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="paymentForm">
-                    <div class="form-group">
-                        <label for="selectedPurchaseId">Achat #</label>
-                        <input type="text" id="selectedPurchaseId" class="form-control" readonly>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="selectedSupplierName">Fournisseur</label>
-                        <input type="text" id="selectedSupplierName" class="form-control" readonly>
-                    </div>
-                    
-                    <div class="payment-summary" style="background: var(--light); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                        <div class="payment-row">
-                            <span>Montant Total:</span>
-                            <span id="paymentTotalAmount">0.00 DH</span>
-                        </div>
-                        <div class="payment-row">
-                            <span>Déjà Payé:</span>
-                            <span id="paymentAlreadyPaid">0.00 DH</span>
-                        </div>
-                        <div class="payment-row total">
-                            <span>Reste à Payer:</span>
-                            <span id="paymentRemainingAmount">0.00 DH</span>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="paymentAmount">Montant à Payer (DH) *</label>
-                            <input type="number" id="paymentAmount" class="form-control" required min="0.01" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="paymentDate">Date de Paiement *</label>
-                            <input type="date" id="paymentDate" class="form-control" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="paymentMethodModal">Mode de Paiement *</label>
-                            <select id="paymentMethodModal" class="form-control" required>
-                                <option value="cash">Espèces</option>
-                                <option value="check">Chèque</option>
-                                <option value="transfer">Virement</option>
-                                <option value="card">Carte</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="paymentReference">Référence</label>
-                            <input type="text" id="paymentReference" class="form-control" placeholder="N° chèque ou référence virement">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="paymentNotes">Notes</label>
-                        <textarea id="paymentNotes" class="form-control" rows="2" placeholder="Notes sur le paiement..."></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-check-circle"></i>
-                            Enregistrer le Paiement
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal pour Historique des Paiements -->
-    <div class="modal-overlay" id="paymentsHistoryModal">
-        <div class="modal" style="max-width: 800px;">
-            <div class="modal-header">
-                <h3><i class="fas fa-history"></i> Historique des Paiements</h3>
-                <button class="close-modal" onclick="closePaymentsHistoryModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="paymentsHistoryContent">
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Chargement de l'historique...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         // ==================== CONFIGURATION FIREBASE ====================
         const firebaseConfig = {
@@ -1371,8 +822,6 @@
         let suppliers = [];
         let products = [];
         let depots = [];
-        let selectedPurchase = null;
-        let supplierPayments = [];
 
         // ==================== INITIALISATION ====================
         document.addEventListener('DOMContentLoaded', function() {
@@ -1383,12 +832,6 @@
             
             // Initialiser Firebase
             initializeFirebase();
-            
-            // Initialiser les modals
-            initModals();
-            
-            // Initialiser les formulaires
-            initForms();
             
             // Gestion des menus utilisateur
             document.getElementById('userMenu').addEventListener('click', toggleUserDropdown);
@@ -1413,7 +856,6 @@
                 }
                 
                 if (e.key === 'Escape') {
-                    closeAllModals();
                     document.getElementById('userDropdown').classList.remove('show');
                 }
                 
@@ -1422,12 +864,6 @@
                     refreshPurchases();
                 }
             });
-            
-            // Mettre la date d'aujourd'hui par défaut
-            const today = new Date().toISOString().split('T')[0];
-            if (document.getElementById('paymentDate')) {
-                document.getElementById('paymentDate').value = today;
-            }
         });
         
         // ==================== GESTION DU THEME ====================
@@ -1447,440 +883,6 @@
         
         function toggleUserDropdown() {
             document.getElementById('userDropdown').classList.toggle('show');
-        }
-        
-        // ==================== GESTION DES MODALS ====================
-        function initModals() {
-            // Modal Détails Achat
-            const detailsModal = document.getElementById('purchaseDetailsModal');
-            detailsModal.addEventListener('click', function(e) {
-                if (e.target === detailsModal) closePurchaseDetailsModal();
-            });
-            
-            // Modal Éditer Achat
-            const editModal = document.getElementById('editPurchaseModal');
-            editModal.addEventListener('click', function(e) {
-                if (e.target === editModal) closeEditPurchaseModal();
-            });
-            
-            // Modal Paiement
-            const paymentModal = document.getElementById('paymentModal');
-            paymentModal.addEventListener('click', function(e) {
-                if (e.target === paymentModal) closePaymentModal();
-            });
-            
-            // Modal Historique Paiements
-            const historyModal = document.getElementById('paymentsHistoryModal');
-            historyModal.addEventListener('click', function(e) {
-                if (e.target === historyModal) closePaymentsHistoryModal();
-            });
-        }
-        
-        function openPurchaseDetailsModal(purchaseId) {
-            const purchase = purchases.find(p => p.id === purchaseId);
-            if (!purchase) return;
-            
-            selectedPurchase = purchase;
-            
-            const modal = document.getElementById('purchaseDetailsModal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Charger les détails
-            loadPurchaseDetails(purchase);
-        }
-        
-        function closePurchaseDetailsModal() {
-            const modal = document.getElementById('purchaseDetailsModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            selectedPurchase = null;
-        }
-        
-        function openEditPurchaseModal(purchaseId) {
-            const purchase = purchases.find(p => p.id === purchaseId);
-            if (!purchase) return;
-            
-            selectedPurchase = purchase;
-            
-            const modal = document.getElementById('editPurchaseModal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Remplir le formulaire
-            document.getElementById('editPurchaseId').value = purchase.id;
-            document.getElementById('editPurchaseDate').value = purchase.purchaseDate || '';
-            document.getElementById('editExpectedDeliveryDate').value = purchase.expectedDeliveryDate || '';
-            document.getElementById('editInvoiceNumber').value = purchase.invoiceNumber || '';
-            document.getElementById('editPurchaseStatus').value = purchase.status || 'pending';
-            document.getElementById('editShippingCost').value = purchase.shippingCost || 0;
-            document.getElementById('editTaxRate').value = purchase.taxRate || 20;
-            document.getElementById('editPaymentStatus').value = purchase.paymentStatus || 'pending';
-            document.getElementById('editPaidAmount').value = purchase.paidAmount || 0;
-            document.getElementById('editPurchaseNotes').value = purchase.notes || '';
-        }
-        
-        function closeEditPurchaseModal() {
-            const modal = document.getElementById('editPurchaseModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            selectedPurchase = null;
-        }
-        
-        function openPaymentModal(purchaseId) {
-            const purchase = purchases.find(p => p.id === purchaseId);
-            if (!purchase) return;
-            
-            selectedPurchase = purchase;
-            
-            const modal = document.getElementById('paymentModal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Remplir les informations
-            document.getElementById('selectedPurchaseId').value = purchase.reference || purchase.id.substring(0, 8);
-            document.getElementById('selectedSupplierName').value = purchase.supplierName;
-            document.getElementById('paymentTotalAmount').textContent = formatNumber(purchase.totalAmount) + ' DH';
-            document.getElementById('paymentAlreadyPaid').textContent = formatNumber(purchase.paidAmount || 0) + ' DH';
-            
-            const remainingAmount = purchase.totalAmount - (purchase.paidAmount || 0);
-            document.getElementById('paymentRemainingAmount').textContent = formatNumber(remainingAmount) + ' DH';
-            
-            // Limiter le montant maximum à payer
-            document.getElementById('paymentAmount').max = remainingAmount;
-            document.getElementById('paymentAmount').value = remainingAmount;
-            
-            // Mettre la date d'aujourd'hui
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('paymentDate').value = today;
-        }
-        
-        function closePaymentModal() {
-            const modal = document.getElementById('paymentModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            selectedPurchase = null;
-        }
-        
-        function openPaymentsHistoryModal(purchaseId) {
-            const purchase = purchases.find(p => p.id === purchaseId);
-            if (!purchase) return;
-            
-            selectedPurchase = purchase;
-            
-            const modal = document.getElementById('paymentsHistoryModal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Charger l'historique
-            loadPaymentsHistory(purchase);
-        }
-        
-        function closePaymentsHistoryModal() {
-            const modal = document.getElementById('paymentsHistoryModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            selectedPurchase = null;
-        }
-        
-        function closeAllModals() {
-            closePurchaseDetailsModal();
-            closeEditPurchaseModal();
-            closePaymentModal();
-            closePaymentsHistoryModal();
-        }
-        
-        // ==================== INITIALISATION DES FORMULAIRES ====================
-        function initForms() {
-            // Formulaire édition achat
-            const editForm = document.getElementById('editPurchaseForm');
-            if (editForm) {
-                editForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    updatePurchase();
-                });
-            }
-            
-            // Formulaire paiement
-            const paymentForm = document.getElementById('paymentForm');
-            if (paymentForm) {
-                paymentForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    savePayment();
-                });
-            }
-        }
-        
-        // ==================== GESTION DES ACHATS ====================
-        async function updatePurchase() {
-            if (!selectedPurchase) return;
-            
-            const formData = {
-                purchaseDate: document.getElementById('editPurchaseDate').value,
-                expectedDeliveryDate: document.getElementById('editExpectedDeliveryDate').value || null,
-                invoiceNumber: document.getElementById('editInvoiceNumber').value || '',
-                status: document.getElementById('editPurchaseStatus').value,
-                shippingCost: parseFloat(document.getElementById('editShippingCost').value) || 0,
-                taxRate: parseFloat(document.getElementById('editTaxRate').value) || 0,
-                paymentStatus: document.getElementById('editPaymentStatus').value,
-                paidAmount: parseFloat(document.getElementById('editPaidAmount').value) || 0,
-                notes: document.getElementById('editPurchaseNotes').value || '',
-                updatedAt: new Date().toISOString()
-            };
-            
-            // Recalculer le total si nécessaire
-            if (selectedPurchase.items && selectedPurchase.items.length > 0) {
-                const subtotal = selectedPurchase.items.reduce((sum, item) => sum + (item.total || 0), 0);
-                formData.subtotal = subtotal;
-                formData.taxAmount = subtotal * (formData.taxRate / 100);
-                formData.totalAmount = subtotal + formData.shippingCost + formData.taxAmount;
-                formData.remainingAmount = formData.totalAmount - formData.paidAmount;
-            }
-            
-            try {
-                await database.ref(`purchases/${selectedPurchase.id}`).update(formData);
-                
-                showToast("Achat mis à jour avec succès", "success");
-                closeEditPurchaseModal();
-                
-                // Mettre à jour la liste locale
-                const index = purchases.findIndex(p => p.id === selectedPurchase.id);
-                if (index !== -1) {
-                    purchases[index] = {
-                        ...purchases[index],
-                        ...formData
-                    };
-                }
-                
-                // Mettre à jour l'affichage
-                updatePurchasesList();
-                
-            } catch (error) {
-                console.error("Erreur de mise à jour:", error);
-                showToast("Erreur lors de la mise à jour: " + error.message, "error");
-            }
-        }
-        
-        async function deletePurchase(purchaseId) {
-            if (!confirm("Êtes-vous sûr de vouloir supprimer cet achat ? Cette action est irréversible.")) {
-                return;
-            }
-            
-            try {
-                await database.ref(`purchases/${purchaseId}`).remove();
-                
-                // Retirer de la liste locale
-                purchases = purchases.filter(p => p.id !== purchaseId);
-                
-                showToast("Achat supprimé avec succès", "success");
-                
-                // Mettre à jour l'affichage
-                updatePurchasesList();
-                
-            } catch (error) {
-                console.error("Erreur de suppression:", error);
-                showToast("Erreur lors de la suppression: " + error.message, "error");
-            }
-        }
-        
-        async function cancelPurchase(purchaseId) {
-            if (!confirm("Êtes-vous sûr de vouloir annuler cet achat ?")) {
-                return;
-            }
-            
-            try {
-                await database.ref(`purchases/${purchaseId}`).update({
-                    status: 'cancelled',
-                    updatedAt: new Date().toISOString()
-                });
-                
-                // Mettre à jour localement
-                const index = purchases.findIndex(p => p.id === purchaseId);
-                if (index !== -1) {
-                    purchases[index].status = 'cancelled';
-                    purchases[index].updatedAt = new Date().toISOString();
-                }
-                
-                showToast("Achat annulé avec succès", "success");
-                updatePurchasesList();
-                
-            } catch (error) {
-                console.error("Erreur d'annulation:", error);
-                showToast("Erreur lors de l'annulation: " + error.message, "error");
-            }
-        }
-        
-        // ==================== GESTION DES PAIEMENTS ====================
-        
-        async function savePayment() {
-            if (!selectedPurchase) return;
-            
-            const paymentAmount = parseFloat(document.getElementById('paymentAmount').value) || 0;
-            
-            if (paymentAmount <= 0) {
-                showToast("Le montant du paiement doit être supérieur à 0", "error");
-                return;
-            }
-            
-            const remainingAmount = selectedPurchase.totalAmount - (selectedPurchase.paidAmount || 0);
-            
-            if (paymentAmount > remainingAmount) {
-                showToast(`Le montant ne peut pas dépasser ${formatNumber(remainingAmount)} DH`, "error");
-                return;
-            }
-            
-            try {
-                // Mettre à jour l'achat
-                const newPaidAmount = (selectedPurchase.paidAmount || 0) + paymentAmount;
-                const newRemainingAmount = selectedPurchase.totalAmount - newPaidAmount;
-                
-                // Déterminer le nouveau statut
-                let newPaymentStatus = 'partial';
-                if (newRemainingAmount <= 0) {
-                    newPaymentStatus = 'paid';
-                } else {
-                    // Vérifier si la date d'échéance est dépassée
-                    const today = new Date();
-                    const dueDate = new Date(selectedPurchase.dueDate);
-                    if (dueDate && today > dueDate) {
-                        newPaymentStatus = 'overdue';
-                    }
-                }
-                
-                const purchaseUpdate = {
-                    paidAmount: newPaidAmount,
-                    remainingAmount: newRemainingAmount,
-                    paymentStatus: newPaymentStatus,
-                    updatedAt: new Date().toISOString()
-                };
-                
-                await database.ref(`purchases/${selectedPurchase.id}`).update(purchaseUpdate);
-                
-                // Enregistrer le paiement
-                const paymentRef = database.ref('supplierPayments').push();
-                const paymentData = {
-                    purchaseId: selectedPurchase.id,
-                    supplierId: selectedPurchase.supplierId,
-                    supplierName: selectedPurchase.supplierName,
-                    amount: paymentAmount,
-                    paymentDate: document.getElementById('paymentDate').value,
-                    paymentMethod: document.getElementById('paymentMethodModal').value,
-                    reference: document.getElementById('paymentReference').value || '',
-                    notes: document.getElementById('paymentNotes').value || '',
-                    createdAt: new Date().toISOString(),
-                    createdBy: currentUser?.email || 'admin'
-                };
-                
-                await paymentRef.set(paymentData);
-                
-                // Mettre à jour l'achat local
-                const purchaseIndex = purchases.findIndex(p => p.id === selectedPurchase.id);
-                if (purchaseIndex !== -1) {
-                    purchases[purchaseIndex] = {
-                        ...purchases[purchaseIndex],
-                        ...purchaseUpdate
-                    };
-                }
-                
-                showToast("Paiement enregistré avec succès", "success");
-                closePaymentModal();
-                updatePurchasesList();
-                
-            } catch (error) {
-                console.error("Erreur d'enregistrement:", error);
-                showToast("Erreur lors de l'enregistrement: " + error.message, "error");
-            }
-        }
-        
-        async function loadPaymentsHistory(purchase) {
-            const content = document.getElementById('paymentsHistoryContent');
-            if (!content) return;
-            
-            try {
-                // Charger les paiements pour cet achat
-                const paymentsRef = database.ref('supplierPayments');
-                const snapshot = await paymentsRef.orderByChild('purchaseId').equalTo(purchase.id).once('value');
-                const payments = [];
-                
-                snapshot.forEach(childSnapshot => {
-                    payments.push({
-                        id: childSnapshot.key,
-                        ...childSnapshot.val()
-                    });
-                });
-                
-                // Trier par date (récentes d'abord)
-                payments.sort((a, b) => new Date(b.paymentDate || b.createdAt) - new Date(a.paymentDate || a.createdAt));
-                
-                if (payments.length === 0) {
-                    content.innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: var(--text-light);">
-                            <i class="fas fa-history" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun paiement enregistré</h3>
-                            <p>Aucun paiement n'a été effectué pour cet achat</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                let html = `
-                    <h3 style="color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">
-                        <i class="fas fa-money-bill-wave"></i>
-                        Historique des Paiements - ${purchase.reference || purchase.id.substring(0, 8)}
-                    </h3>
-                    
-                    <div style="max-height: 400px; overflow-y: auto;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <thead>
-                                <tr style="background: var(--light);">
-                                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Date</th>
-                                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Montant</th>
-                                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Mode</th>
-                                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Référence</th>
-                                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid var(--border);">Notes</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                
-                payments.forEach(payment => {
-                    const paymentMethodText = getPaymentMethodText(payment.paymentMethod);
-                    
-                    html += `
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <td style="padding: 10px; text-align: center;">${formatDate(payment.paymentDate)}</td>
-                            <td style="padding: 10px; text-align: center; font-weight: bold; color: var(--success);">${formatNumber(payment.amount)} DH</td>
-                            <td style="padding: 10px; text-align: center;">${paymentMethodText}</td>
-                            <td style="padding: 10px; text-align: center;">${payment.reference || '--'}</td>
-                            <td style="padding: 10px; text-align: center;">${payment.notes || '--'}</td>
-                        </tr>
-                    `;
-                });
-                
-                // Total des paiements
-                const totalPayments = payments.reduce((sum, payment) => sum + payment.amount, 0);
-                
-                html += `
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div style="margin-top: 20px; padding: 15px; background: var(--light); border-radius: 8px; text-align: center;">
-                        <strong>Total des Paiements: <span style="color: var(--success); font-size: 18px;">${formatNumber(totalPayments)} DH</span></strong>
-                    </div>
-                `;
-                
-                content.innerHTML = html;
-                
-            } catch (error) {
-                console.error("Erreur de chargement de l'historique:", error);
-                content.innerHTML = `
-                    <div class="error" style="text-align: center; padding: 20px; color: var(--danger);">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>Erreur lors du chargement de l'historique</p>
-                    </div>
-                `;
-            }
         }
         
         // ==================== FIREBASE ====================
@@ -2079,7 +1081,7 @@
                         <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
                         <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun achat enregistré</h3>
                         <p>Commencez par créer un nouvel achat</p>
-                        <button class="btn btn-primary" onclick="window.location.href='purchases.html'" style="margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="window.location.href='achats.html'" style="margin-top: 20px;">
                             <i class="fas fa-cart-plus"></i>
                             Nouvel Achat
                         </button>
@@ -2152,26 +1154,10 @@
                             </div>
                             
                             <div class="purchase-actions">
-                                ${remainingAmount > 0 ? `
-                                    <button class="btn btn-success btn-small" onclick="openPaymentModal('${purchase.id}')">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                        Payer
-                                    </button>
-                                ` : ''}
-                                <button class="btn btn-info btn-small" onclick="openPurchaseDetailsModal('${purchase.id}')">
-                                    <i class="fas fa-eye"></i>
-                                    Détails
-                                </button>
-                                <button class="btn btn-warning btn-small" onclick="openEditPurchaseModal('${purchase.id}')">
+                                <button class="btn btn-info btn-small" onclick="window.location.href='achats.html?view=${purchase.id}'">
                                     <i class="fas fa-edit"></i>
-                                    Modifier
+                                    Gérer
                                 </button>
-                                ${paymentStatus !== 'paid' ? `
-                                    <button class="btn btn-danger btn-small" onclick="cancelPurchase('${purchase.id}')">
-                                        <i class="fas fa-times"></i>
-                                        Annuler
-                                    </button>
-                                ` : ''}
                             </div>
                         </div>
                         
@@ -2192,15 +1178,41 @@
                             </div>
                         </div>
                         
+                        ${purchase.items && purchase.items.length > 0 ? `
+                            <div class="purchase-items">
+                                <h4><i class="fas fa-boxes"></i> Produits Achetés</h4>
+                                <table class="items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th>
+                                            <th>Quantité</th>
+                                            <th>Prix d'Achat</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${purchase.items.map(item => `
+                                            <tr>
+                                                <td>${item.name || 'Produit'}</td>
+                                                <td>${item.quantity || 0}</td>
+                                                <td>${formatNumber(item.costPrice || 0)} DH</td>
+                                                <td><strong>${formatNumber((item.quantity || 0) * (item.costPrice || 0))} DH</strong></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ` : ''}
+                        
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
                             <div style="font-size: 12px; color: var(--text-light);">
                                 <i class="fas fa-clock"></i>
                                 Créé le: ${formatDateTime(purchase.createdAt)}
                             </div>
                             <div>
-                                <button class="btn btn-secondary btn-small" onclick="openPaymentsHistoryModal('${purchase.id}')">
-                                    <i class="fas fa-history"></i>
-                                    Historique Paiements
+                                <button class="btn btn-secondary btn-small" onclick="window.location.href='achats.html'">
+                                    <i class="fas fa-cart-plus"></i>
+                                    Gérer cet achat
                                 </button>
                             </div>
                         </div>
@@ -2209,308 +1221,6 @@
             });
             
             container.innerHTML = html;
-        }
-        
-        function loadPurchaseDetails(purchase) {
-            const content = document.getElementById('purchaseDetailsContent');
-            if (!content) return;
-            
-            const totalAmount = purchase.totalAmount || 0;
-            const paidAmount = purchase.paidAmount || 0;
-            const remainingAmount = totalAmount - paidAmount;
-            
-            // Déterminer le statut
-            let paymentStatus = purchase.paymentStatus || 'pending';
-            const today = new Date();
-            const dueDate = purchase.dueDate ? new Date(purchase.dueDate) : null;
-            
-            if (paymentStatus !== 'paid' && dueDate && today > dueDate) {
-                paymentStatus = 'overdue';
-            }
-            
-            const status = purchase.status || 'pending';
-            const statusClass = `status-${paymentStatus}`;
-            const statusText = getPaymentStatusText(paymentStatus);
-            
-            // Récupérer le fournisseur
-            const supplier = suppliers.find(s => s.id === purchase.supplierId);
-            
-            // Items
-            let itemsHtml = '';
-            if (purchase.items && purchase.items.length > 0) {
-                itemsHtml = `
-                    <table class="items-table">
-                        <thead>
-                            <tr>
-                                <th>Produit</th>
-                                <th>Quantité</th>
-                                <th>Prix d'Achat</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                purchase.items.forEach(item => {
-                    const productTotal = (item.quantity || 0) * (item.costPrice || 0);
-                    itemsHtml += `
-                        <tr>
-                            <td>${item.name || 'Produit'}</td>
-                            <td>${item.quantity || 0}</td>
-                            <td>${formatNumber(item.costPrice || 0)} DH</td>
-                            <td><strong>${formatNumber(productTotal)} DH</strong></td>
-                        </tr>
-                    `;
-                });
-                
-                itemsHtml += `
-                        </tbody>
-                    </table>
-                `;
-            } else {
-                itemsHtml = `
-                    <div style="text-align: center; padding: 20px; color: var(--text-light);">
-                        <i class="fas fa-box-open"></i>
-                        <p>Aucun produit dans cet achat</p>
-                    </div>
-                `;
-            }
-            
-            // Distribution par dépôt
-            let distributionHtml = '';
-            if (purchase.items && purchase.items.length > 0) {
-                // Regrouper la distribution par dépôt
-                const depotDistribution = {};
-                
-                purchase.items.forEach(item => {
-                    if (item.distribution) {
-                        Object.keys(item.distribution).forEach(depotId => {
-                            const depotName = getDepotName(depotId);
-                            const quantity = item.distribution[depotId];
-                            
-                            if (!depotDistribution[depotId]) {
-                                depotDistribution[depotId] = {
-                                    name: depotName,
-                                    items: []
-                                };
-                            }
-                            
-                            depotDistribution[depotId].items.push({
-                                productName: item.name,
-                                quantity: quantity
-                            });
-                        });
-                    }
-                });
-                
-                if (Object.keys(depotDistribution).length > 0) {
-                    distributionHtml = `
-                        <div class="distribution-section">
-                            <h4><i class="fas fa-share-alt"></i> Répartition par Dépôt</h4>
-                            <div class="distribution-grid">
-                    `;
-                    
-                    Object.keys(depotDistribution).forEach(depotId => {
-                        const depot = depotDistribution[depotId];
-                        
-                        distributionHtml += `
-                            <div class="distribution-card">
-                                <h5>${depot.name}</h5>
-                                <ul class="distribution-list">
-                        `;
-                        
-                        depot.items.forEach(item => {
-                            distributionHtml += `
-                                <li>
-                                    <span>${item.productName}</span>
-                                    <span><strong>${item.quantity}</strong></span>
-                                </li>
-                            `;
-                        });
-                        
-                        distributionHtml += `
-                                </ul>
-                            </div>
-                        `;
-                    });
-                    
-                    distributionHtml += `
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            // Timeline
-            const timelineHtml = `
-                <div class="purchase-timeline">
-                    <h4><i class="fas fa-history"></i> Chronologie</h4>
-                    <div class="timeline-item">
-                        <div class="timeline-icon">
-                            <i class="fas fa-cart-plus"></i>
-                        </div>
-                        <div class="timeline-content">
-                            <div class="timeline-date">${formatDateTime(purchase.createdAt)}</div>
-                            <div class="timeline-text">Achat créé</div>
-                        </div>
-                    </div>
-                    
-                    ${purchase.expectedDeliveryDate ? `
-                        <div class="timeline-item">
-                            <div class="timeline-icon">
-                                <i class="fas fa-truck"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <div class="timeline-date">${formatDate(purchase.expectedDeliveryDate)}</div>
-                                <div class="timeline-text">Date prévue de livraison</div>
-                            </div>
-                        </div>
-                    ` : ''}
-                    
-                    ${purchase.updatedAt !== purchase.createdAt ? `
-                        <div class="timeline-item">
-                            <div class="timeline-icon">
-                                <i class="fas fa-edit"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <div class="timeline-date">${formatDateTime(purchase.updatedAt)}</div>
-                                <div class="timeline-text">Dernière modification</div>
-                            </div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-            
-            const html = `
-                <div class="purchase-header">
-                    <div class="purchase-info">
-                        <div class="purchase-title">
-                            <h3 style="font-size: 28px; margin-bottom: 5px;">${purchase.reference || purchase.id.substring(0, 8)}</h3>
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <span class="status-badge ${statusClass}" style="font-size: 14px;">
-                                    ${statusText}
-                                </span>
-                                ${status !== 'pending' ? `
-                                    <span class="status-badge status-${status}" style="font-size: 14px;">
-                                        ${getPurchaseStatusText(status)}
-                                    </span>
-                                ` : ''}
-                            </div>
-                        </div>
-                        
-                        <div class="purchase-meta" style="margin-top: 20px;">
-                            <div class="meta-item">
-                                <i class="fas fa-truck-loading"></i>
-                                <div>
-                                    <div style="font-weight: bold;">${purchase.supplierName || 'Non spécifié'}</div>
-                                    ${supplier ? `
-                                        <div style="font-size: 12px; color: var(--text-light);">
-                                            ${supplier.phone || ''} ${supplier.city ? ` | ${supplier.city}` : ''}
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <div>
-                                    <div style="font-weight: bold;">Date d'achat</div>
-                                    <div style="font-size: 12px; color: var(--text-light);">${formatDate(purchase.purchaseDate || purchase.createdAt)}</div>
-                                </div>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-box"></i>
-                                <div>
-                                    <div style="font-weight: bold;">Produits</div>
-                                    <div style="font-size: 12px; color: var(--text-light);">${purchase.items ? purchase.items.length : 0} article(s)</div>
-                                </div>
-                            </div>
-                            ${purchase.expectedDeliveryDate ? `
-                                <div class="meta-item">
-                                    <i class="fas fa-truck"></i>
-                                    <div>
-                                        <div style="font-weight: bold;">Livraison prévue</div>
-                                        <div style="font-size: 12px; color: var(--text-light);">${formatDate(purchase.expectedDeliveryDate)}</div>
-                                    </div>
-                                </div>
-                            ` : ''}
-                            ${purchase.invoiceNumber ? `
-                                <div class="meta-item">
-                                    <i class="fas fa-file-invoice"></i>
-                                    <div>
-                                        <div style="font-weight: bold;">Facture</div>
-                                        <div style="font-size: 12px; color: var(--text-light);">${purchase.invoiceNumber}</div>
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                    
-                    <div class="purchase-actions">
-                        ${remainingAmount > 0 ? `
-                            <button class="btn btn-success" onclick="openPaymentModal('${purchase.id}')">
-                                <i class="fas fa-money-bill-wave"></i>
-                                Effectuer un Paiement
-                            </button>
-                        ` : ''}
-                        <button class="btn btn-primary" onclick="window.print()">
-                            <i class="fas fa-print"></i>
-                            Imprimer
-                        </button>
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
-                    <div>
-                        <div class="payment-summary">
-                            <h4><i class="fas fa-money-bill-wave"></i> Résumé Financier</h4>
-                            <div class="payment-row">
-                                <span>Sous-total:</span>
-                                <span>${formatNumber(purchase.subtotal || 0)} DH</span>
-                            </div>
-                            <div class="payment-row">
-                                <span>Frais de transport:</span>
-                                <span>${formatNumber(purchase.shippingCost || 0)} DH</span>
-                            </div>
-                            <div class="payment-row">
-                                <span>TVA (${purchase.taxRate || 0}%):</span>
-                                <span>${formatNumber(purchase.taxAmount || 0)} DH</span>
-                            </div>
-                            <div class="payment-row total">
-                                <span>Montant Total:</span>
-                                <span><strong>${formatNumber(totalAmount)} DH</strong></span>
-                            </div>
-                            <div class="payment-row" style="color: var(--success);">
-                                <span>Montant Payé:</span>
-                                <span><strong>${formatNumber(paidAmount)} DH</strong></span>
-                            </div>
-                            <div class="payment-row" style="color: ${remainingAmount > 0 ? 'var(--warning)' : 'var(--success)'};">
-                                <span>Reste à Payer:</span>
-                                <span><strong>${formatNumber(remainingAmount)} DH</strong></span>
-                            </div>
-                        </div>
-                        
-                        ${purchase.notes ? `
-                            <div style="margin-top: 20px; padding: 20px; background: var(--light); border-radius: 8px;">
-                                <h4><i class="fas fa-sticky-note"></i> Notes</h4>
-                                <p style="color: var(--text-light); line-height: 1.6; margin-top: 10px;">${purchase.notes}</p>
-                            </div>
-                        ` : ''}
-                    </div>
-                    
-                    <div>
-                        ${timelineHtml}
-                    </div>
-                </div>
-                
-                <div class="purchase-items">
-                    <h4><i class="fas fa-boxes"></i> Produits Achetés</h4>
-                    ${itemsHtml}
-                </div>
-                
-                ${distributionHtml}
-            `;
-            
-            content.innerHTML = html;
         }
         
         function switchTab(tabName) {
@@ -2636,26 +1346,10 @@
                             </div>
                             
                             <div class="purchase-actions">
-                                ${remainingAmount > 0 ? `
-                                    <button class="btn btn-success btn-small" onclick="openPaymentModal('${purchase.id}')">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                        Payer
-                                    </button>
-                                ` : ''}
-                                <button class="btn btn-info btn-small" onclick="openPurchaseDetailsModal('${purchase.id}')">
-                                    <i class="fas fa-eye"></i>
-                                    Détails
-                                </button>
-                                <button class="btn btn-warning btn-small" onclick="openEditPurchaseModal('${purchase.id}')">
+                                <button class="btn btn-info btn-small" onclick="window.location.href='achats.html?view=${purchase.id}'">
                                     <i class="fas fa-edit"></i>
-                                    Modifier
+                                    Gérer
                                 </button>
-                                ${paymentStatus !== 'paid' ? `
-                                    <button class="btn btn-danger btn-small" onclick="cancelPurchase('${purchase.id}')">
-                                        <i class="fas fa-times"></i>
-                                        Annuler
-                                    </button>
-                                ` : ''}
                             </div>
                         </div>
                         
@@ -2676,15 +1370,41 @@
                             </div>
                         </div>
                         
+                        ${purchase.items && purchase.items.length > 0 ? `
+                            <div class="purchase-items">
+                                <h4><i class="fas fa-boxes"></i> Produits Achetés</h4>
+                                <table class="items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th>
+                                            <th>Quantité</th>
+                                            <th>Prix d'Achat</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${purchase.items.map(item => `
+                                            <tr>
+                                                <td>${item.name || 'Produit'}</td>
+                                                <td>${item.quantity || 0}</td>
+                                                <td>${formatNumber(item.costPrice || 0)} DH</td>
+                                                <td><strong>${formatNumber((item.quantity || 0) * (item.costPrice || 0))} DH</strong></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ` : ''}
+                        
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
                             <div style="font-size: 12px; color: var(--text-light);">
                                 <i class="fas fa-clock"></i>
                                 Créé le: ${formatDateTime(purchase.createdAt)}
                             </div>
                             <div>
-                                <button class="btn btn-secondary btn-small" onclick="openPaymentsHistoryModal('${purchase.id}')">
-                                    <i class="fas fa-history"></i>
-                                    Historique Paiements
+                                <button class="btn btn-secondary btn-small" onclick="window.location.href='achats.html'">
+                                    <i class="fas fa-cart-plus"></i>
+                                    Gérer cet achat
                                 </button>
                             </div>
                         </div>
@@ -2733,12 +1453,6 @@
         
         // ==================== FONCTIONS UTILITAIRES ====================
         
-        function getDepotName(depotId) {
-            if (!depotId) return 'Non spécifié';
-            const depot = depots.find(d => d.id === depotId);
-            return depot ? depot.name : 'Non spécifié';
-        }
-        
         function getPaymentStatusText(status) {
             switch(status) {
                 case 'pending': return 'En attente';
@@ -2756,16 +1470,6 @@
                 case 'delivered': return 'Livré';
                 case 'cancelled': return 'Annulé';
                 default: return status;
-            }
-        }
-        
-        function getPaymentMethodText(method) {
-            switch(method) {
-                case 'cash': return 'Espèces';
-                case 'check': return 'Chèque';
-                case 'transfer': return 'Virement';
-                case 'card': return 'Carte';
-                default: return method;
             }
         }
         
