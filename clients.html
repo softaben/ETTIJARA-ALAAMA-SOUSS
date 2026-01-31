@@ -1108,25 +1108,33 @@
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <nav class="nav">
-                <a href="deliveries.html" class="nav-item">
-                    <i class="fas fa-truck"></i>
-                    Livraisons
-                </a>
                 <a href="dashboard.html" class="nav-item">
                     <i class="fas fa-chart-pie"></i>
                     Dashboard
                 </a>
-                <a href="clients.html" class="nav-item active">
-                    <i class="fas fa-users"></i>
-                    Clients
+                <a href="stock.html" class="nav-item">
+                    <i class="fas fa-warehouse"></i>
+                    Stock
+                </a>
+                <a href="ventes.html" class="nav-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    Ventes
                 </a>
                 <a href="achats.html" class="nav-item">
                     <i class="fas fa-shopping-cart"></i>
                     Achats
                 </a>
-                <a href="stock.html" class="nav-item">
-                    <i class="fas fa-warehouse"></i>
-                    Stock
+                <a href="clients.html" class="nav-item active">
+                    <i class="fas fa-users"></i>
+                    Clients
+                </a>
+                <a href="fournisseurs.html" class="nav-item">
+                    <i class="fas fa-truck-loading"></i>
+                    Fournisseurs
+                </a>
+                <a href="paiements.html" class="nav-item">
+                    <i class="fas fa-credit-card"></i>
+                    Paiements
                 </a>
                 <a href="settings.html" class="nav-item">
                     <i class="fas fa-cog"></i>
@@ -1502,7 +1510,7 @@
                             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                                 <button class="btn btn-success btn-small" onclick="createDeliveryForClient()">
                                     <i class="fas fa-plus-circle"></i>
-                                    Nouvelle Livraison
+                                    Nouvelle Vente
                                 </button>
                                 <button class="btn btn-primary btn-small" onclick="editCurrentClient()">
                                     <i class="fas fa-edit"></i>
@@ -1915,13 +1923,13 @@
                                 ...data[key]
                             });
                         });
-                        console.log(`✅ ${deliveries.length} livraisons chargées`);
+                        console.log(`✅ ${deliveries.length} ventes chargées`);
                     }
                     loadClients();
                 });
                 
             } catch (error) {
-                console.error("❌ Erreur de chargement des livraisons:", error);
+                console.error("❌ Erreur de chargement des ventes:", error);
                 loadClients();
             }
         }
@@ -2482,9 +2490,9 @@
             const client = clients.find(c => c.id === currentClientId);
             if (!client) return;
             
-            // Rediriger vers la page de livraison avec le client pré-sélectionné
+            // Rediriger vers la page de ventes avec le client pré-sélectionné
             localStorage.setItem('selectedClientForDelivery', JSON.stringify(client));
-            window.location.href = 'deliveries.html?new=true';
+            window.location.href = 'ventes.html?new=true';
         }
         
         function editCurrentClient() {
@@ -2498,8 +2506,8 @@
         function viewClientDeliveries() {
             if (!currentClientId) return;
             
-            // Rediriger vers la page des livraisons avec filtre par client
-            window.location.href = `deliveries.html?client=${currentClientId}`;
+            // Rediriger vers la page des ventes avec filtre par client
+            window.location.href = `ventes.html?client=${currentClientId}`;
         }
         
         // ==================== FONCTIONS POUR LES BL NON PAYÉS ====================
@@ -2618,7 +2626,7 @@
         }
 
         function goToDeliveriesPage(clientId) {
-            window.location.href = `deliveries.html?client=${clientId}&filter=unpaid`;
+            window.location.href = `ventes.html?client=${clientId}&filter=unpaid`;
         }
         
         // ==================== TOAST NOTIFICATION ====================
