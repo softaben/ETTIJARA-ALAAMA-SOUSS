@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETTIJARA ALAAMA SOUSS - Suivi des Paiements</title>
+    <title>ETTIJARA ALAAMA SOUSS - Suivi des Ventes et Paiements</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -1311,33 +1311,41 @@
     <header class="header">
         <div class="logo">
             <i class="fas fa-money-bill-wave"></i>
-            <h1>ETTIJARA ALAAMA SOUSS - PAIEMENTS</h1>
+            <h1>ETTIJARA ALAAMA SOUSS - SUIVI DES VENTES ET PAIEMENTS</h1>
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <nav class="nav">
-                <a href="deliveries.html" class="nav-item">
-                    <i class="fas fa-truck"></i>
-                    Livraisons
-                </a>
                 <a href="dashboard.html" class="nav-item">
                     <i class="fas fa-chart-pie"></i>
                     Dashboard
                 </a>
-                <a href="clients.html" class="nav-item">
-                    <i class="fas fa-users"></i>
-                    Clients
+                <a href="stock.html" class="nav-item">
+                    <i class="fas fa-warehouse"></i>
+                    Stock
                 </a>
-                <a href="payments.html" class="nav-item active">
-                    <i class="fas fa-money-bill-wave"></i>
-                    Paiements
+                <a href="ventes.html" class="nav-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    Ventes
                 </a>
                 <a href="achats.html" class="nav-item">
                     <i class="fas fa-shopping-cart"></i>
                     Achats
                 </a>
-                <a href="stock.html" class="nav-item">
-                    <i class="fas fa-warehouse"></i>
-                    Stock
+                <a href="clients.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    Clients
+                </a>
+                <a href="fournisseurs.html" class="nav-item">
+                    <i class="fas fa-truck-loading"></i>
+                    Fournisseurs
+                </a>
+                <a href="payments.html" class="nav-item active">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Paiements
+                </a>
+                <a href="parametres.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    Paramètres
                 </a>
             </nav>
             
@@ -1377,10 +1385,10 @@
             <div>
                 <div class="page-title">
                     <i class="fas fa-money-bill-wave"></i>
-                    <h2>Suivi des Paiements</h2>
+                    <h2>Suivi des Ventes et Paiements</h2>
                 </div>
                 <div class="page-subtitle">
-                    Gérez et suivez tous les paiements de vos clients
+                    Gérez et suivez toutes les ventes et paiements de vos clients
                 </div>
             </div>
             <div class="action-buttons">
@@ -1523,7 +1531,7 @@
                 <input type="text" 
                        id="searchInput" 
                        class="filter-input" 
-                       placeholder="Client, bon de livraison..."
+                       placeholder="Client, bon de vente..."
                        oninput="filterPayments()">
             </div>
             
@@ -1575,7 +1583,7 @@
                     <thead>
                         <tr>
                             <th>Client</th>
-                            <th>Bon de Livraison</th>
+                            <th>Bon de Vente</th>
                             <th>Date</th>
                             <th>Montant Total</th>
                             <th>Payé</th>
@@ -1618,7 +1626,7 @@
                     <thead>
                         <tr>
                             <th>Client</th>
-                            <th>Bon de Livraison</th>
+                            <th>Bon de Vente</th>
                             <th>Montant</th>
                             <th>Date Échéance</th>
                             <th>Jours de retard</th>
@@ -1650,7 +1658,7 @@
                             <th>Date</th>
                             <th>Montant</th>
                             <th>Méthode</th>
-                            <th>Bon de Livraison</th>
+                            <th>Bon de Vente</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -1663,7 +1671,7 @@
 
         <!-- Footer -->
         <div class="dashboard-footer">
-            <p>© 2024 ETTIJARA ALAAMA SOUSS - Suivi des Paiements</p>
+            <p>© 2024 ETTIJARA ALAAMA SOUSS - Système de Gestion des Ventes</p>
             <p style="font-size: 12px; margin-top: 5px;">
                 <span id="lastUpdate">Dernière mise à jour: --:--</span>
             </p>
@@ -1697,7 +1705,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="deliverySelect">Bon de Livraison</label>
+                            <label for="deliverySelect">Bon de Vente</label>
                             <select id="deliverySelect" class="form-control" onchange="loadDeliveryDetails()">
                                 <option value="">Sélectionner un bon</option>
                             </select>
@@ -1894,7 +1902,7 @@
                 <!-- Delivery Information -->
                 <div class="payment-info-card" style="margin-top: 20px;">
                     <div class="payment-info-header">
-                        <div class="payment-info-title">Bon de Livraison</div>
+                        <div class="payment-info-title">Bon de Vente</div>
                         <button class="btn btn-small btn-primary" onclick="viewDeliveryDetails()">
                             <i class="fas fa-external-link-alt"></i>
                             Voir le bon
@@ -2211,7 +2219,7 @@
                 document.getElementById('detailClientEmail').textContent = client.email || '--';
             }
             
-            // Informations bon de livraison
+            // Informations bon de vente
             const delivery = deliveries.find(d => d.id === payment.deliveryId);
             if (delivery) {
                 document.getElementById('detailDeliveryNumber').textContent = delivery.bonNumber || delivery.id.substring(0, 8);
@@ -2459,7 +2467,7 @@
                             
                             deliveries.push(delivery);
                         });
-                        console.log(`✅ ${deliveries.length} livraisons chargées`);
+                        console.log(`✅ ${deliveries.length} ventes chargées`);
                     }
                     
                     // Charger les clients
@@ -2467,7 +2475,7 @@
                 });
                 
             } catch (error) {
-                console.error("❌ Erreur de chargement des livraisons:", error);
+                console.error("❌ Erreur de chargement des ventes:", error);
                 loadClientsForPayments();
             }
         }
@@ -2548,13 +2556,13 @@
             
             deliverySelect.innerHTML = '<option value="">Sélectionner un bon</option>';
             
-            // Filtrer les livraisons du client
+            // Filtrer les ventes du client
             const clientDeliveries = deliveries.filter(d => d.clientId === clientId);
             
             if (clientDeliveries.length === 0) {
                 const option = document.createElement('option');
                 option.value = '';
-                option.textContent = 'Aucun bon de livraison trouvé';
+                option.textContent = 'Aucun bon de vente trouvé';
                 deliverySelect.appendChild(option);
                 return;
             }
@@ -2743,7 +2751,7 @@
         }
         
         function updateStats() {
-            // Calculer les totaux des livraisons
+            // Calculer les totaux des ventes
             let totalDeliveryAmount = deliveries.reduce((sum, d) => sum + (d.totalAmount || 0), 0);
             
             // Calculer les paiements par statut
@@ -3095,7 +3103,7 @@
                         monthAgo.setMonth(today.getMonth() - 1);
                         matchesPeriod = paymentDate ? paymentDate >= monthAgo : false;
                     } else if (periodFilter === 'overdue') {
-                        // Pour les paiements en retard, on vérifie le bon de livraison
+                        // Pour les paiements en retard, on vérifie le bon de vente
                         const delivery = deliveries.find(d => d.id === payment.deliveryId);
                         if (delivery && delivery.deliveryDate) {
                             const deliveryDate = new Date(delivery.deliveryDate);
@@ -3696,8 +3704,8 @@
         
         function viewDeliveryDetails() {
             if (window.currentDeliveryId) {
-                // Rediriger vers la page des livraisons
-                window.location.href = `deliveries.html?id=${window.currentDeliveryId}`;
+                // Rediriger vers la page des ventes
+                window.location.href = `ventes.html?id=${window.currentDeliveryId}`;
             }
         }
         
@@ -3781,7 +3789,7 @@
         
         function generateReport() {
             // Générer un rapport CSV
-            let csv = 'Date,Client,Téléphone,Bon Livraison,Montant Total,Payé,Reste,Méthode,Statut\n';
+            let csv = 'Date,Client,Téléphone,Bon Vente,Montant Total,Payé,Reste,Méthode,Statut\n';
             
             filteredPayments.forEach(payment => {
                 const client = clients.find(c => c.id === payment.clientId);
