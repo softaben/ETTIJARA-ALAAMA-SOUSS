@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="fr" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -859,7 +860,7 @@
                     <i class="fas fa-truck"></i>
                     Livraisons
                 </a>
-                <a href="purchases.html" class="nav-item active">
+                <a href="achats.html" class="nav-item active">
                     <i class="fas fa-cart-plus"></i>
                     Achats
                 </a>
@@ -916,9 +917,9 @@
                     <i class="fas fa-plus-circle"></i>
                     Nouvel Achat
                 </button>
-                <button class="btn btn-info" onclick="window.location.href='suppliers.html'">
-                    <i class="fas fa-truck-loading"></i>
-                    Fournisseurs
+                <button class="btn btn-info" onclick="window.location.href='view-purchases.html'">
+                    <i class="fas fa-eye"></i>
+                    Voir les Achats
                 </button>
             </div>
         </div>
@@ -2895,7 +2896,7 @@
                                         Payer
                                     </button>
                                 ` : ''}
-                                <button class="btn btn-info btn-small" onclick="viewPurchaseDetails('${purchase.id}')" style="padding: 5px 10px; font-size: 12px;">
+                                <button class="btn btn-info btn-small" onclick="window.location.href='view-purchases.html?purchase=${purchase.id}'" style="padding: 5px 10px; font-size: 12px;">
                                     <i class="fas fa-eye"></i>
                                     Voir
                                 </button>
@@ -3030,7 +3031,7 @@
                                         Payer
                                     </button>
                                 ` : ''}
-                                <button class="btn btn-info btn-small" onclick="viewPurchaseDetails('${purchase.id}')" style="padding: 5px 10px; font-size: 12px;">
+                                <button class="btn btn-info btn-small" onclick="window.location.href='view-purchases.html?purchase=${purchase.id}'" style="padding: 5px 10px; font-size: 12px;">
                                     <i class="fas fa-eye"></i>
                                     Voir
                                 </button>
@@ -3041,21 +3042,6 @@
             });
             
             tableBody.innerHTML = html;
-        }
-        
-        function viewPurchaseDetails(purchaseId) {
-            const purchase = purchases.find(p => p.id === purchaseId);
-            if (!purchase) return;
-            
-            // Ouvrir un modal avec les détails
-            alert(`Détails de l'achat ${purchase.reference}\n\n` +
-                  `Fournisseur: ${purchase.supplierName}\n` +
-                  `Date: ${formatDate(purchase.purchaseDate)}\n` +
-                  `Montant total: ${formatNumber(purchase.totalAmount)} DH\n` +
-                  `Montant payé: ${formatNumber(purchase.paidAmount || 0)} DH\n` +
-                  `Reste: ${formatNumber(purchase.totalAmount - (purchase.paidAmount || 0))} DH\n` +
-                  `Statut: ${getPaymentStatusText(purchase.paymentStatus || 'pending')}\n\n` +
-                  `${purchase.items ? `${purchase.items.length} produit(s)` : 'Aucun détail produit'}`);
         }
         
         // ==================== FONCTIONS UTILITAIRES ====================
