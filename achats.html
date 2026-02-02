@@ -852,7 +852,6 @@
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <nav class="nav">
-                <!-- Nouvel ordre des boutons de navigation -->
                 <a href="dashboard.html" class="nav-item">
                     <i class="fas fa-chart-pie"></i>
                     Dashboard
@@ -2008,6 +2007,9 @@
             
             // Mettre à jour les totaux
             updatePurchaseTotals();
+            
+            // Distribuer automatiquement
+            distributeProductsToDepots();
         }
         
         function updatePurchaseProductsDisplay() {
@@ -2123,6 +2125,11 @@
                 
                 updatePurchaseProductInDisplay(product);
                 updatePurchaseTotals();
+                
+                // Recalculer la distribution si elle existe
+                if (document.getElementById('depotDistributionContainer').innerHTML) {
+                    distributeProductsToDepots();
+                }
             }
         }
         
@@ -2140,6 +2147,11 @@
                 }
                 
                 updatePurchaseTotals();
+                
+                // Recalculer la distribution si elle existe
+                if (document.getElementById('depotDistributionContainer').innerHTML) {
+                    distributeProductsToDepots();
+                }
             }
         }
         
@@ -2204,28 +2216,56 @@
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 10px;">
                 `;
                 
-                // Pour chaque dépôt, créer un champ de répartition
-                depots.forEach((depot, depotIndex) => {
-                    const distributionId = `distribution-${product.id}-${depot.id}`;
-                    const defaultValue = productIndex === depotIndex % selectedProductsForPurchase.length ? 
-                        Math.floor(product.quantity / Math.min(depots.length, selectedProductsForPurchase.length)) : 0;
-                    
+                // Filtrer seulement les dépôts actifs
+                const activeDepots = depots.filter(d => d.status === 'active');
+                
+                if (activeDepots.length === 0) {
                     html += `
-                        <div style="background: var(--light); padding: 10px; border-radius: 6px; border: 1px solid var(--border);">
-                            <div style="font-weight: 600; color: var(--text); margin-bottom: 5px;">${depot.name}</div>
-                            <input type="number" 
-                                   id="${distributionId}"
-                                   class="form-control depot-distribution-input"
-                                   data-product-id="${product.id}"
-                                   data-depot-id="${depot.id}"
-                                   value="${defaultValue}"
-                                   min="0"
-                                   max="${product.quantity}"
-                                   oninput="validateDepotDistribution('${product.id}')"
-                                   style="text-align: center;">
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--warning);">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Aucun dépôt actif disponible. Les produits seront ajoutés au premier dépôt par défaut.</p>
                         </div>
                     `;
-                });
+                } else {
+                    // Pour chaque dépôt actif, créer un champ de répartition
+                    activeDepots.forEach((depot, depotIndex) => {
+                        const distributionId = `distribution-${product.id}-${depot.id}`;
+                        
+                        // Calculer la distribution équitable
+                        const defaultPerDepot = Math.floor(product.quantity / activeDepots.length);
+                        const remainder = product.quantity % activeDepots.length;
+                        let defaultValue = defaultPerDepot;
+                        
+                        // Ajouter le reste au premier dépôt
+                        if (depotIndex === 0) {
+                            defaultValue += remainder;
+                        }
+                        
+                        // Si le produit a déjà une distribution, utiliser la valeur existante
+                        if (product.distribution && product.distribution[depot.id]) {
+                            defaultValue = product.distribution[depot.id];
+                        }
+                        
+                        html += `
+                            <div style="background: var(--light); padding: 10px; border-radius: 6px; border: 1px solid var(--border);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                    <div style="font-weight: 600; color: var(--text);">${depot.name}</div>
+                                    <small style="color: var(--text-light);">${depot.city}</small>
+                                </div>
+                                <input type="number" 
+                                       id="${distributionId}"
+                                       class="form-control depot-distribution-input"
+                                       data-product-id="${product.id}"
+                                       data-depot-id="${depot.id}"
+                                       value="${defaultValue}"
+                                       min="0"
+                                       max="${product.quantity}"
+                                       oninput="validateDepotDistribution('${product.id}')"
+                                       style="text-align: center;">
+                            </div>
+                        `;
+                    });
+                }
                 
                 html += `
                         </div>
@@ -2455,57 +2495,116 @@
                 
                 await newPurchaseRef.set(formData);
                 
-                // Mettre à jour le stock pour chaque produit dans chaque dépôt
+                // ==================== CORRECTION DE LA MISE À JOUR DU STOCK ====================
+                
+                // 1. Mettre à jour le stock (SÉPARER LES MISES À JOUR)
                 const stockUpdates = {};
                 const productUpdates = {};
                 
                 selectedProductsForPurchase.forEach(product => {
-                    // Pour chaque produit, mettre à jour le stock dans chaque dépôt
-                    if (product.distribution) {
+                    // Si le produit a une distribution par dépôt
+                    if (product.distribution && Object.keys(product.distribution).length > 0) {
+                        // Pour chaque dépôt, mettre à jour le stock
                         Object.keys(product.distribution).forEach(depotId => {
                             const quantityToAdd = product.distribution[depotId];
-                            const productInDepotKey = `products/${product.id}/depots/${depotId}`;
-                            stockUpdates[`${productInDepotKey}/quantity`] = firebase.database.ServerValue.increment(quantityToAdd);
-                            stockUpdates[`${productInDepotKey}/depotId`] = depotId;
-                            stockUpdates[`${productInDepotKey}/productId`] = product.id;
+                            if (quantityToAdd > 0) {
+                                // Mettre à jour le stock par dépôt (chemin simple)
+                                const depotStockKey = `products/${product.id}/stockByDepot/${depotId}`;
+                                stockUpdates[depotStockKey] = firebase.database.ServerValue.increment(quantityToAdd);
+                            }
                         });
+                    } else {
+                        // Distribution par défaut : premier dépôt actif
+                        const defaultDepot = depots.find(d => d.status === 'active');
+                        if (defaultDepot) {
+                            const quantityToAdd = product.quantity || 1;
+                            const depotStockKey = `products/${product.id}/stockByDepot/${defaultDepot.id}`;
+                            stockUpdates[depotStockKey] = firebase.database.ServerValue.increment(quantityToAdd);
+                        }
                     }
                     
                     // Mettre à jour les prix du produit
-                    productUpdates[`products/${product.id}/costPrice`] = product.costPrice;
-                    productUpdates[`products/${product.id}/sellPrice`] = product.sellPrice;
+                    productUpdates[`products/${product.id}/costPrice`] = product.costPrice || 0;
+                    productUpdates[`products/${product.id}/sellPrice`] = product.sellPrice || 0;
                     productUpdates[`products/${product.id}/updatedAt`] = new Date().toISOString();
+                    
+                    // Optionnel : Mettre à jour le fournisseur principal
+                    productUpdates[`products/${product.id}/supplier`] = selectedSupplier.name;
                 });
                 
-                // Appliquer les mises à jour
-                await database.ref().update(stockUpdates);
-                await database.ref().update(productUpdates);
+                // Appliquer d'abord les mises à jour du stock
+                if (Object.keys(stockUpdates).length > 0) {
+                    await database.ref().update(stockUpdates);
+                    console.log("✅ Mises à jour de stock appliquées");
+                }
                 
-                // Enregistrer les mouvements de stock
+                // Ensuite appliquer les mises à jour des produits
+                if (Object.keys(productUpdates).length > 0) {
+                    await database.ref().update(productUpdates);
+                    console.log("✅ Mises à jour des produits appliquées");
+                }
+                
+                // 2. Enregistrer les mouvements de stock dans 'stockMovements'
                 const movementPromises = selectedProductsForPurchase.map(async (product) => {
-                    if (product.distribution) {
+                    if (product.distribution && Object.keys(product.distribution).length > 0) {
+                        // Distribution multi-dépôts
                         for (const [depotId, quantity] of Object.entries(product.distribution)) {
-                            const movementRef = database.ref('stockMovements').push();
-                            const movementData = {
-                                productId: product.id,
-                                productName: product.name,
-                                quantity: quantity,
-                                type: 'in',
-                                movementType: 'entrée',
-                                reference: formData.reference,
-                                purchaseId: formData.id,
-                                depotId: depotId,
-                                depotName: getDepotName(depotId),
-                                date: new Date().toISOString(),
-                                user: currentUser?.email || 'admin',
-                                costPrice: product.costPrice || 0
-                            };
-                            await movementRef.set(movementData);
+                            if (quantity > 0) {
+                                const movementRef = database.ref('stockMovements').push();
+                                const depot = depots.find(d => d.id === depotId);
+                                const movementData = {
+                                    productId: product.id,
+                                    productName: product.name,
+                                    productCode: product.code || '',
+                                    quantity: quantity,
+                                    type: 'in',
+                                    movementType: 'entrée',
+                                    fromDepot: null,
+                                    toDepot: depotId,
+                                    depotName: depot ? depot.name : 'Inconnu',
+                                    reason: 'achat',
+                                    reference: formData.reference,
+                                    purchaseId: formData.id,
+                                    date: new Date().toISOString(),
+                                    userName: currentUser?.displayName || currentUser?.email || 'Administrateur',
+                                    createdAt: new Date().toISOString(),
+                                    costPrice: product.costPrice || 0,
+                                    sellPrice: product.sellPrice || 0
+                                };
+                                await movementRef.set(movementData);
+                            }
                         }
+                    } else {
+                        // Mouvement sans distribution spécifique
+                        const movementRef = database.ref('stockMovements').push();
+                        const defaultDepot = depots.find(d => d.status === 'active');
+                        const movementData = {
+                            productId: product.id,
+                            productName: product.name,
+                            productCode: product.code || '',
+                            quantity: product.quantity || 1,
+                            type: 'in',
+                            movementType: 'entrée',
+                            fromDepot: null,
+                            toDepot: defaultDepot?.id || '',
+                            depotName: defaultDepot ? defaultDepot.name : 'Inconnu',
+                            reason: 'achat',
+                            reference: formData.reference,
+                            purchaseId: formData.id,
+                            date: new Date().toISOString(),
+                            userName: currentUser?.displayName || currentUser?.email || 'Administrateur',
+                            createdAt: new Date().toISOString(),
+                            costPrice: product.costPrice || 0,
+                            sellPrice: product.sellPrice || 0
+                        };
+                        await movementRef.set(movementData);
                     }
                 });
                 
                 await Promise.all(movementPromises);
+                console.log("✅ Mouvements de stock enregistrés");
+                
+                // ==================== FIN DE LA MISE À JOUR DU STOCK ====================
                 
                 // Enregistrer le paiement si partiel ou complet
                 if (formData.paidAmount > 0) {
@@ -2522,9 +2621,10 @@
                         createdAt: new Date().toISOString()
                     };
                     await paymentRef.set(paymentData);
+                    console.log("✅ Paiement enregistré");
                 }
                 
-                showToast("Achat enregistré avec succès", "success");
+                showToast("✅ Achat enregistré avec succès et stock mis à jour!", "success");
                 closeNewPurchaseModal();
                 
                 // Ajouter à la liste locale
@@ -2533,7 +2633,7 @@
                 updateStats();
                 
             } catch (error) {
-                console.error("Erreur d'enregistrement:", error);
+                console.error("❌ Erreur d'enregistrement:", error);
                 showToast("Erreur lors de l'enregistrement: " + error.message, "error");
             }
         }
@@ -2620,13 +2720,13 @@
                     };
                 }
                 
-                showToast("Paiement enregistré avec succès", "success");
+                showToast("✅ Paiement enregistré avec succès", "success");
                 closePaymentModal();
                 updatePurchasesTable();
                 updateStats();
                 
             } catch (error) {
-                console.error("Erreur d'enregistrement:", error);
+                console.error("❌ Erreur d'enregistrement:", error);
                 showToast("Erreur lors de l'enregistrement: " + error.message, "error");
             }
         }
@@ -2737,10 +2837,14 @@
                     
                     if (data) {
                         Object.keys(data).forEach(key => {
-                            products.push({
+                            const product = {
                                 id: key,
                                 ...data[key]
-                            });
+                            };
+                            
+                            // Normaliser le stockByDepot
+                            product.stockByDepot = product.stockByDepot || {};
+                            products.push(product);
                         });
                         console.log(`✅ ${products.length} produits chargés`);
                     }
@@ -2905,7 +3009,7 @@
                                         Payer
                                     </button>
                                 ` : ''}
-                                <button class="btn btn-info btn-small" onclick="window.location.href='view-purchases.html?purchase=${purchase.id}'" style="padding: 5px 10px; font-size: 12px;">
+                                <button class="btn btn-info btn-small" onclick="viewPurchaseDetails('${purchase.id}')" style="padding: 5px 10px; font-size: 12px;">
                                     <i class="fas fa-eye"></i>
                                     Voir
                                 </button>
@@ -2916,6 +3020,11 @@
             });
             
             tableBody.innerHTML = html;
+        }
+        
+        function viewPurchaseDetails(purchaseId) {
+            // Rediriger vers la page de détails ou afficher dans un modal
+            window.location.href = `view-purchases.html?purchase=${purchaseId}`;
         }
         
         function updateStats() {
@@ -2952,7 +3061,10 @@
             });
             
             // Activer l'onglet sélectionné
-            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            const selectedTab = document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
             
             // Filtrer les achats
             filterPurchases(tabName);
@@ -3040,7 +3152,7 @@
                                         Payer
                                     </button>
                                 ` : ''}
-                                <button class="btn btn-info btn-small" onclick="window.location.href='view-purchases.html?purchase=${purchase.id}'" style="padding: 5px 10px; font-size: 12px;">
+                                <button class="btn btn-info btn-small" onclick="viewPurchaseDetails('${purchase.id}')" style="padding: 5px 10px; font-size: 12px;">
                                     <i class="fas fa-eye"></i>
                                     Voir
                                 </button>
@@ -3058,7 +3170,7 @@
         function getCategoryName(categoryId) {
             if (!categoryId) return 'Non catégorisé';
             const category = categories.find(c => c.id === categoryId);
-            return category ? category.name : categoryId;
+            return category ? category.name : 'Non catégorisé';
         }
         
         function getDepotName(depotId) {
