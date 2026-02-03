@@ -492,7 +492,7 @@
             gap: 10px;
             margin-bottom: 15px;
             padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px dashed var(--border);
         }
 
         .delivery-depot i {
@@ -1160,6 +1160,308 @@
             0% { background: rgba(46, 125, 50, 0.1); }
             100% { background: var(--card-bg); }
         }
+
+        /* ==================== MODULE IMPRESSION A5 ==================== */
+        #a5DeliveryNote { 
+            display: none; 
+            width: 148mm; 
+            min-height: 210mm; 
+            padding: 7mm;
+            background: white; 
+            margin: 0 auto; 
+            color: #000 !important;
+            direction: ltr;
+            position: relative;
+            box-sizing: border-box;
+            font-weight: bold !important;
+        }
+
+        .print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2.5px solid #000;
+            padding-bottom: 8px;
+            margin-bottom: 5px;
+        }
+        
+        .print-title {
+            text-align: center;
+            margin: 10px 0 5px 0;
+        }
+        
+        .print-title h2 {
+            border: 2px solid #000;
+            display: inline-block;
+            padding: 5px 20px;
+            font-size: 16px;
+            margin: 0;
+            font-weight: bold;
+            color: #000 !important;
+        }
+
+        /* Informations client en horizontal */
+        .client-info-horizontal {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+            border: 1px solid #000;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 9.5px;
+            font-weight: bold !important;
+            color: #000 !important;
+        }
+
+        .client-info-column {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .client-info-column p {
+            margin: 2px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: bold !important;
+            color: #000 !important;
+        }
+
+        /* TABLEAU OPTIMISÉ */
+        .print-table-container {
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            table-layout: fixed;
+            font-size: 9px !important;
+            font-weight: bold !important;
+        }
+        
+        .print-table th, .print-table td {
+            border: 1.5px solid #000;
+            padding: 4px 3px !important;
+            font-size: 9px !important;
+            text-align: center;
+            height: auto !important;
+            line-height: 1.2;
+            vertical-align: middle;
+            min-height: 5mm;
+            max-height: 6mm;
+            font-weight: bold !important;
+            color: #000 !important;
+        }
+        
+        .print-table th {
+            background: #f2f2f2 !important;
+            font-weight: bold !important;
+            padding: 5px 3px !important;
+            color: #000 !important;
+        }
+        
+        /* Largeurs spécifiques des colonnes */
+        .print-table th:nth-child(1),
+        .print-table td:nth-child(1) {
+            width: 7%;
+        }
+        
+        .print-table th:nth-child(2),
+        .print-table td:nth-child(2) {
+            width: 53%;
+            text-align: left;
+            padding-left: 5px !important;
+        }
+        
+        .print-table th:nth-child(3),
+        .print-table td:nth-child(3) {
+            width: 10%;
+        }
+        
+        .print-table th:nth-child(4),
+        .print-table td:nth-child(4) {
+            width: 15%;
+        }
+        
+        .print-table th:nth-child(5),
+        .print-table td:nth-child(5) {
+            width: 15%;
+        }
+
+        /* الصف الأخير مع الحدود الكاملة */
+        .print-table tr:last-child td {
+            border-bottom: 1.5px solid #000;
+        }
+
+        .print-footer {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-top: 10px;
+        }
+
+        .round-stamp {
+            width: 110px;
+            height: 110px;
+            border: 3px double var(--primary);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--primary);
+            font-weight: bold !important;
+            transform: rotate(-12deg);
+            font-size: 8px;
+        }
+
+        .round-stamp .comp-name {
+            font-size: 8px;
+            text-transform: uppercase;
+            line-height: 1.1;
+            font-weight: bold !important;
+            color: #000 !important;
+        }
+        
+        .round-stamp .depo-label {
+            font-size: 7px;
+            border-top: 1px solid var(--primary);
+            width: 80%;
+            margin-top: 2px;
+            padding-top: 1px;
+            font-weight: bold !important;
+            color: #000 !important;
+        }
+        
+        .round-stamp .depo-name {
+            font-size: 9px;
+            color: var(--danger);
+            line-height: 1.1;
+            font-weight: bold !important;
+        }
+
+        .sig-box {
+            border-top: 1px solid #000;
+            width: 140px;
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            padding-top: 3px;
+            font-weight: bold !important;
+            color: #000 !important;
+        }
+
+        .page-break {
+            page-break-before: always;
+            margin-top: 20mm;
+        }
+
+        @media print {
+            body * { 
+                visibility: hidden; 
+            }
+            
+            #a5DeliveryNote, #a5DeliveryNote * { 
+                visibility: visible; 
+                color: #000 !important;
+                font-weight: bold !important;
+            }
+            
+            #a5DeliveryNote {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 148mm;
+                height: 210mm;
+                border: none;
+                margin: 0;
+                padding: 7mm;
+                background: white !important;
+                color: #000 !important;
+            }
+            
+            .no-print { 
+                display: none !important; 
+            }
+            
+            @page { 
+                size: A5 portrait; 
+                margin: 0; 
+            }
+        }
+
+        /* Modal Impression */
+        .modal-print-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-print-overlay.active {
+            display: flex;
+        }
+
+        .modal-print {
+            background: var(--card-bg);
+            border-radius: 15px;
+            width: 100%;
+            max-width: 950px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+        }
+
+        .modal-print-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-print-header h3 {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-print-modal {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-print-body {
+            padding: 30px;
+        }
     </style>
 </head>
 <body>
@@ -1448,6 +1750,37 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL D'IMPRESSION A5 ==================== -->
+    <div class="modal-print-overlay" id="printModal">
+        <div class="modal-print">
+            <div class="modal-print-header">
+                <h3><i class="fas fa-print"></i> Bon de Livraison A5</h3>
+                <button class="close-print-modal" onclick="closePrintModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-print-body">
+                <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h3 style="color: var(--primary); margin: 0;"><i class="fas fa-print"></i> Bon de Livraison A5</h3>
+                        <span style="background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;" id="printBonNumber">BL-0000-000</span>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="printDeliveryNote()">
+                            <i class="fas fa-print"></i> Imprimer
+                        </button>
+                        <button class="btn btn-secondary" onclick="closePrintModal()">
+                            <i class="fas fa-times"></i> Fermer
+                        </button>
+                    </div>
+                </div>
+                <div id="a5DeliveryNote">
+                    <!-- Le contenu du bon sera injecté ici -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==================== CONFIGURATION FIREBASE ====================
         const firebaseConfig = {
@@ -1480,6 +1813,7 @@
         };
         let newDeliveries = new Set(); // Pour suivre les nouvelles ventes
         let lastUpdateTime = Date.now();
+        let currentDeliveryForPrint = null; // Pour le module d'impression
 
         // ==================== INITIALISATION ====================
         document.addEventListener('DOMContentLoaded', function() {
@@ -1599,6 +1933,7 @@
                 if (e.key === 'Escape') {
                     closeDeliveryDetails();
                     closeStatusChangeModal();
+                    closePrintModal();
                 }
                 
                 if (e.ctrlKey && e.key === 'r') {
@@ -1608,7 +1943,7 @@
             });
             
             // Modals
-            const modals = document.querySelectorAll('.modal-overlay');
+            const modals = document.querySelectorAll('.modal-overlay, .modal-print-overlay');
             modals.forEach(modal => {
                 modal.addEventListener('click', function(e) {
                     if (e.target === this) {
@@ -2052,7 +2387,7 @@
                                     <i class="fas fa-exchange-alt"></i>
                                     Statut
                                 </button>
-                                <button class="action-btn print" onclick="printDelivery('${delivery.id}')">
+                                <button class="action-btn print" onclick="openPrintModal('${delivery.id}')">
                                     <i class="fas fa-print"></i>
                                     Imprimer
                                 </button>
@@ -2118,7 +2453,7 @@
                                 <button class="action-btn edit" onclick="changeDeliveryStatus('${delivery.id}')" title="Changer statut">
                                     <i class="fas fa-exchange-alt"></i>
                                 </button>
-                                <button class="action-btn print" onclick="printDelivery('${delivery.id}')" title="Imprimer">
+                                <button class="action-btn print" onclick="openPrintModal('${delivery.id}')" title="Imprimer">
                                     <i class="fas fa-print"></i>
                                 </button>
                                 ${delivery.status === 'pending' ? `
@@ -2323,9 +2658,9 @@
                 ` : ''}
                 
                 <div style="display: flex; gap: 10px; margin-top: 30px;">
-                    <button class="btn btn-primary" onclick="printDelivery('${delivery.id}')">
+                    <button class="btn btn-primary" onclick="openPrintModal('${delivery.id}')">
                         <i class="fas fa-print"></i>
-                        Imprimer
+                        Imprimer A5
                     </button>
                     <button class="btn btn-warning" onclick="changeDeliveryStatus('${delivery.id}')">
                         <i class="fas fa-exchange-alt"></i>
@@ -2545,114 +2880,195 @@
                 });
         }
         
-        function printDelivery(deliveryId) {
+        // ==================== MODULE D'IMPRESSION A5 ====================
+        
+        function openPrintModal(deliveryId) {
+            const modal = document.getElementById('printModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Trouver la livraison
             const delivery = deliveries.find(d => d.id === deliveryId);
+            if (delivery) {
+                currentDeliveryForPrint = delivery;
+                showDeliveryNoteForPrint(delivery);
+            } else {
+                showToast("Livraison non trouvée", "error");
+                closePrintModal();
+            }
+        }
+        
+        function closePrintModal() {
+            const modal = document.getElementById('printModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            currentDeliveryForPrint = null;
+        }
+        
+        function showDeliveryNoteForPrint(delivery) {
             if (!delivery) return;
             
-            // Ouvrir une nouvelle fenêtre pour l'impression
-            const printWindow = window.open('', '_blank');
+            const depot = depots.find(d => d.id === delivery.depotId);
+            const depotName = depot ? depot.name : 'Non spécifié';
+            const depotCity = depot ? depot.city : '';
             
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html lang="fr">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Bon de Livraison - ${delivery.bonNumber}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; direction: rtl; }
-                        .header { text-align: center; margin-bottom: 30px; }
-                        .company-name { font-size: 24px; font-weight: bold; color: #1a237e; }
-                        .document-title { font-size: 20px; margin: 10px 0; }
-                        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-                        .section { margin-bottom: 20px; }
-                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-                        th { background-color: #f5f5f5; }
-                        .total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 20px; }
-                        .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #666; }
-                        .status { padding: 5px 10px; border-radius: 4px; font-weight: bold; }
-                        .status-delivered { background: #d4edda; color: #155724; }
-                        .status-pending { background: #fff3cd; color: #856404; }
-                        .status-processing { background: #d1ecf1; color: #0c5460; }
-                        .status-cancelled { background: #f8d7da; color: #721c24; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <div class="company-name">ETTIJARA ALAAMA SOUSS</div>
-                        <div class="document-title">BON DE LIVRAISON</div>
-                        <div>N°: ${delivery.bonNumber}</div>
-                        <div>Date: ${formatDate(delivery.createdAt || delivery.date)}</div>
+            const container = document.getElementById('a5DeliveryNote');
+            const items = delivery.items || [];
+            
+            let grandTotal = 0;
+            items.forEach(item => {
+                const quantity = item.quantity || 0;
+                const price = item.price || 0;
+                const total = item.total || (quantity * price);
+                grandTotal += total;
+            });
+            
+            const bonNumber = delivery.deliveryNumber || delivery.bonNumber || delivery.id.substring(0, 8).toUpperCase();
+            const creationDate = delivery.createdAt ? new Date(delivery.createdAt) : new Date();
+            const formattedDate = creationDate.toLocaleDateString('fr-FR');
+            const formattedTime = creationDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            
+            // Mettre à jour le numéro du bon dans le header
+            document.getElementById('printBonNumber').textContent = bonNumber;
+            
+            // إنشاء أسطر الجدول بدون أسطر فارغة
+            let itemsHtml = '';
+            const totalItems = items.length;
+            
+            for (let i = 0; i < totalItems; i++) {
+                const item = items[i];
+                const quantity = item.quantity || 0;
+                const price = item.price || 0;
+                const total = item.total || (quantity * price);
+                
+                itemsHtml += `
+                    <tr>
+                        <td style="font-weight: bold !important; color: #000 !important;">${i + 1}</td>
+                        <td style="text-align:left; padding-left: 5px !important; font-weight: bold !important; color: #000 !important;">${item.name || 'Produit sans nom'}</td>
+                        <td style="font-weight: bold !important; color: #000 !important;">${quantity}</td>
+                        <td style="font-weight: bold !important; color: #000 !important;">${price.toFixed(2)}</td>
+                        <td style="font-weight: bold !important; color: #000 !important;">${total.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+            
+            container.innerHTML = `
+                <div class="print-header">
+                    <div style="text-align:left; flex: 1;">
+                        <h3 style="margin:0; color: #000 !important; font-size: 18px; line-height: 1.2; font-weight: bold !important;">ETTIJARA ALAAMA SOUSS</h3>
+                        <p style="font-size:9px; margin: 2px 0; font-weight: bold !important; color: #000 !important;">Tél: 0525265980 | Email: ettijaraalaamasouss@gmail.com</p>
+                        <p style="font-size:9px; margin-top: 5px; font-weight: bold !important; color: #000 !important;">
+                            <strong>Dépôt:</strong> ${depotName} ${depotCity ? '- ' + depotCity : ''}
+                        </p>
                     </div>
-                    
-                    <div class="info-grid">
-                        <div class="section">
-                            <h3>Informations Client</h3>
-                            <p><strong>Nom:</strong> ${delivery.clientName}</p>
-                            <p><strong>Téléphone:</strong> ${delivery.clientPhone}</p>
-                            <p><strong>Adresse:</strong> ${delivery.clientAddress || 'Non spécifié'}</p>
+                    <div style="text-align:right; font-size:10px;">
+                        <div style="border: 1px solid #000; padding: 6px; border-radius: 4px;">
+                            <p style="margin: 1px 0; font-weight: bold !important; color: #000 !important;"><strong>N° BON:</strong> ${bonNumber}</p>
+                            <p style="margin: 1px 0; font-weight: bold !important; color: #000 !important;"><strong>DATE:</strong> ${formattedDate}</p>
+                            <p style="margin: 1px 0; font-weight: bold !important; color: #000 !important;"><strong>HEURE:</strong> ${formattedTime}</p>
                         </div>
-                        <div class="section">
-                            <h3>Informations Livraison</h3>
-                            <p><strong>Dépôt:</strong> ${delivery.depotName || 'Non spécifié'}</p>
-                            <p><strong>Chauffeur:</strong> ${delivery.driver || 'Non spécifié'}</p>
-                            <p><strong>Statut:</strong> 
-                                <span class="status status-${delivery.status}">${getStatusText(delivery.status)}</span>
+                    </div>
+                </div>
+
+                <div class="print-title">
+                    <h2 style="font-weight: bold !important; color: #000 !important;">BON DE LIVRAISON</h2>
+                </div>
+
+                <!-- Informations client en horizontal -->
+                <div class="client-info-horizontal">
+                    <div class="client-info-column">
+                        <p style="font-weight: bold !important; font-size: 10px; color: #000 !important;">INFORMATIONS CLIENT</p>
+                        <p style="font-weight: bold !important; color: #000 !important;"><strong>Nom:</strong> ${delivery.clientName || 'Non spécifié'}</p>
+                        <p style="font-weight: bold !important; color: #000 !important;"><strong>Tél:</strong> ${delivery.clientPhone || 'Non spécifié'}</p>
+                    </div>
+                    <div class="client-info-column">
+                        <p style="font-weight: bold !important; color: #000 !important;"><strong>Adresse:</strong></p>
+                        <p style="font-weight: bold !important; color: #000 !important;">${delivery.clientAddress || 'Non spécifiée'}</p>
+                    </div>
+                    <div class="client-info-column">
+                        ${delivery.driver ? `<p style="font-weight: bold !important; color: #000 !important;"><strong>Livreur:</strong> ${delivery.driver}</p>` : ''}
+                        ${delivery.paymentMethod ? `
+                            <p style="font-weight: bold !important; color: #000 !important;"><strong>Paiement:</strong> ${delivery.paymentMethod === 'cash' ? 'Espèces' : 
+                                                           delivery.paymentMethod === 'check' ? 'Chèque' : 
+                                                           delivery.paymentMethod === 'card' ? 'Carte Bancaire' : 
+                                                           delivery.paymentMethod === 'transfer' ? 'Virement' : delivery.paymentMethod}
                             </p>
-                            <p><strong>Paiement:</strong> ${getPaymentMethodText(delivery.paymentMethod)}</p>
-                        </div>
+                        ` : ''}
                     </div>
-                    
-                    <h3>Détails des Articles</h3>
-                    <table>
+                </div>
+
+                <div class="print-table-container">
+                    <table class="print-table">
                         <thead>
                             <tr>
-                                <th>Produit</th>
-                                <th>Quantité</th>
-                                <th>Prix Unitaire (DH)</th>
-                                <th>Total (DH)</th>
+                                <th width="7%" style="font-weight: bold !important; color: #000 !important;">N°</th>
+                                <th width="53%" style="font-weight: bold !important; color: #000 !important;">Désignation</th>
+                                <th width="10%" style="font-weight: bold !important; color: #000 !important;">Qté</th>
+                                <th width="15%" style="font-weight: bold !important; color: #000 !important;">Prix Unitaire (DH)</th>
+                                <th width="15%" style="font-weight: bold !important; color: #000 !important;">Total (DH)</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            ${delivery.items ? delivery.items.map(item => `
-                                <tr>
-                                    <td>${item.name}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.price.toFixed(2)}</td>
-                                    <td>${(item.quantity * item.price).toFixed(2)}</td>
-                                </tr>
-                            `).join('') : ''}
-                        </tbody>
+                        <tbody>${itemsHtml}</tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" style="text-align: right; border: none; padding-top: 8px; font-weight: bold !important; font-size: 10px; color: #000 !important;">
+                                    TOTAL GÉNÉRAL (DH) :
+                                </td>
+                                <td style="border: 2.5px solid #000; padding-top: 8px; background: #f9f9f9; font-weight: bold !important; font-size: 11px; color: #000 !important;">
+                                    ${grandTotal.toFixed(2)}
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
-                    
-                    <div class="total">
-                        Total: ${formatCurrency(delivery.totalAmount || 0)} DH
-                    </div>
-                    
-                    ${delivery.notes ? `
-                        <div class="section">
-                            <h3>Notes</h3>
-                            <p>${delivery.notes}</p>
+                </div>
+                
+                ${delivery.notes ? `
+                <div style="margin-top: 8px; padding: 5px; border: 1px solid #ddd; border-radius: 3px; font-size: 9px; font-weight: bold !important; color: #000 !important;">
+                    <strong>Remarques:</strong> ${delivery.notes}
+                </div>
+                ` : ''}
+
+                <div class="print-footer">
+                    <div style="text-align: center;">
+                        <p style="font-size: 10px; margin-bottom: 3px; font-weight: bold !important; color: #000 !important;">Le client</p>
+                        <div class="sig-box">
+                            Signature
                         </div>
-                    ` : ''}
-                    
-                    <div class="footer">
-                        <p>ETTIJARA ALAAMA SOUSS - Système de Gestion Commerciale</p>
-                        <p>Document généré le ${new Date().toLocaleDateString('fr-FR')} ${new Date().toLocaleTimeString('fr-FR')}</p>
                     </div>
-                </body>
-                </html>
-            `);
+
+                    <div class="round-stamp">
+                        <div class="comp-name">ETTIJARA ALAAMA SOUSS</div>
+                        <div class="depo-label">DÉPÔT</div>
+                        <div class="depo-name">${depotName}</div>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <p style="font-size: 10px; margin-bottom: 3px; font-weight: bold !important; color: #000 !important;">La société</p>
+                        <div class="sig-box">
+                            Signature & Cachet
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; font-size: 7px; text-align: center; color: #000 !important; border-top: 1px dashed #ddd; padding-top: 8px; font-weight: bold !important;">
+                    <p>
+                        <strong>ETTIJARA ALAAMA SOUSS</strong> | Tél: 0525265980 | Email: ettijaraalaamasouss@gmail.com
+                    </p>
+                    <p>
+                        Document généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} 
+                        | ETTIJARA ALAAMA SOUSS © ${new Date().getFullYear()} | Ce document est émis par ordinateur, signature non requise.
+                    </p>
+                </div>
+            `;
+        }
+        
+        function printDeliveryNote() {
+            if (!currentDeliveryForPrint) {
+                showToast("Aucun bon à imprimer", "error");
+                return;
+            }
             
-            printWindow.document.close();
-            printWindow.focus();
-            
-            // Attendre que le contenu soit chargé avant d'imprimer
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 500);
+            window.print();
         }
         
         // ==================== EXPORTATION ====================
