@@ -1296,6 +1296,22 @@
             color: #4b5563;
         }
 
+        /* Debug Button */
+        .debug-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header { 
@@ -1395,9 +1411,19 @@
                 padding: 10px;
             }
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
+    <!-- Bouton de debug -->
+    <button class="debug-button" onclick="showDebugInfo()" title="Debug Info">
+        <i class="fas fa-bug"></i>
+    </button>
+
     <header class="header">
         <div class="logo">
             <i class="fas fa-chart-line"></i>
@@ -1500,12 +1526,12 @@
                 <p>Enregistrer un nouveau client</p>
             </div>
             
-            <div class="action-card" onclick="migrateProductsToMultiDepot()">
+            <div class="action-card" onclick="createTestDepots()">
                 <div class="action-icon">
-                    <i class="fas fa-database"></i>
+                    <i class="fas fa-warehouse"></i>
                 </div>
-                <h4>Migrer Données</h4>
-                <p>Vers multi-dépôts</p>
+                <h4>Créer Dépôts Test</h4>
+                <p>Ajouter des dépôts de test</p>
             </div>
             
             <div class="action-card" onclick="refreshDashboard()">
@@ -2219,6 +2245,8 @@
         }
         
         function getProductsInSelectedDepot() {
+            if (!selectedDepotForDelivery) return [];
+            
             return products.filter(p => {
                 // Vérifier si le produit a du stock dans le dépôt sélectionné
                 if (p.stockByDepot && p.stockByDepot[selectedDepotForDelivery.id]) {
@@ -2254,29 +2282,50 @@
             
             if (!depotGrid) return;
             
+            console.log("🔍 Dépôts disponibles pour sélection:", depots);
+            
             if (depots.length === 0) {
                 depotGrid.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-light);">
                         <i class="fas fa-warehouse" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
                         <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun dépôt trouvé</h3>
-                        <p>Veuillez ajouter des dépôts depuis la page "Stock"</p>
+                        <p>Nombre de dépôts chargés: ${depots.length}</p>
+                        <p style="margin-top: 15px; font-size: 14px;">
+                            <button onclick="createTestDepots()" class="btn btn-primary" style="margin-top: 10px;">
+                                <i class="fas fa-plus"></i>
+                                Créer des dépôts de test
+                            </button>
+                        </p>
                     </div>
                 `;
                 return;
             }
             
             let html = '';
+            let activeDepots = 0;
+            
             depots.forEach(depot => {
-                if (depot.status !== 'active') return;
+                // Pour le debug, afficher tous les dépôts même sans statut
+                const isActive = depot.status === 'active' || !depot.status;
                 
                 // Compter les produits dans ce dépôt
-                const productsInDepot = getProductsInSelectedDepot();
+                const productsInDepot = products.filter(p => {
+                    if (p.stockByDepot && p.stockByDepot[depot.id]) {
+                        return p.stockByDepot[depot.id] > 0;
+                    }
+                    return p.depot === depot.id && (p.quantity || 0) > 0;
+                });
                 const productCount = productsInDepot.length;
                 
                 // Calculer la valeur totale du stock
                 const totalStockValue = productsInDepot.reduce((sum, product) => {
-                    return sum + ((getProductStockInDepot(product, depot.id) || 0) * (product.costPrice || 0));
+                    const stock = getProductStockInDepot(product, depot.id);
+                    return sum + (stock * (product.costPrice || 0));
                 }, 0);
+                
+                if (isActive) {
+                    activeDepots++;
+                }
                 
                 html += `
                     <div class="depot-selection-card" onclick="selectDepotForDelivery('${depot.id}')" id="depot-card-${depot.id}">
@@ -2284,8 +2333,8 @@
                             <i class="fas fa-warehouse"></i>
                         </div>
                         <div class="depot-info">
-                            <div class="name">${depot.name}</div>
-                            <div class="location">${depot.city || 'Ville non spécifiée'}</div>
+                            <div class="name">${depot.name || 'Sans nom'}</div>
+                            <div class="location">${depot.city || depot.address || 'Non spécifié'}</div>
                             <div class="stats">
                                 <div class="stat-item">
                                     <div class="stat-value">${productCount}</div>
@@ -2296,8 +2345,8 @@
                                     <div class="stat-label">Valeur</div>
                                 </div>
                                 <div class="stat-item">
-                                    <div class="stat-value">${depot.status === 'active' ? '✓' : '✗'}</div>
-                                    <div class="stat-label">${depot.status === 'active' ? 'Actif' : 'Inactif'}</div>
+                                    <div class="stat-value">${isActive ? '✓' : '✗'}</div>
+                                    <div class="stat-label">${isActive ? 'Actif' : 'Inactif'}</div>
                                 </div>
                             </div>
                         </div>
@@ -2306,6 +2355,7 @@
             });
             
             depotGrid.innerHTML = html;
+            console.log(`✅ ${activeDepots} dépôts actifs affichés sur ${depots.length} total`);
         }
         
         function selectDepotForDelivery(depotId) {
@@ -2322,22 +2372,28 @@
             
             // Stocker le dépôt sélectionné
             selectedDepotForDelivery = depots.find(d => d.id === depotId);
+            console.log("📦 Dépôt sélectionné:", selectedDepotForDelivery);
             
             // Activer le bouton continuer
             document.getElementById('continueToStep2').disabled = false;
         }
         
         function proceedToStep2() {
-            if (!selectedDepotForDelivery) return;
+            if (!selectedDepotForDelivery) {
+                showToast("Veuillez sélectionner un dépôt", "error");
+                return;
+            }
+            
+            console.log("🚀 Passage à l'étape 2 avec dépôt:", selectedDepotForDelivery.name);
             
             // Afficher l'étape 2 et cacher l'étape 1
             document.getElementById('step1').style.display = 'none';
             document.getElementById('step2').style.display = 'block';
             
             // Afficher les informations du dépôt sélectionné
-            document.getElementById('selectedDepotName').textContent = selectedDepotForDelivery.name;
+            document.getElementById('selectedDepotName').textContent = selectedDepotForDelivery.name || 'Sans nom';
             document.getElementById('selectedDepotInfo').textContent = 
-                `${selectedDepotForDelivery.city} | ${selectedDepotForDelivery.address || ''}`;
+                `${selectedDepotForDelivery.city || ''} | ${selectedDepotForDelivery.address || ''}`;
             
             // Réinitialiser les autres champs
             document.getElementById('clientName').value = '';
@@ -2371,6 +2427,8 @@
             const categoryFilterBar = document.getElementById('categoryFilters');
             const noProductsMessage = document.getElementById('noProductsMessage');
             
+            if (!container) return;
+            
             // Appliquer le filtre de recherche
             if (filterText) {
                 const searchLower = filterText.toLowerCase();
@@ -2391,26 +2449,30 @@
             // Si aucun produit
             if (filteredProducts.length === 0) {
                 container.innerHTML = '';
-                noProductsMessage.style.display = 'block';
-                
-                // Personnaliser le message
-                if (filterText || categoryId !== 'all') {
-                    noProductsMessage.innerHTML = `
-                        <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                        <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun produit trouvé</h3>
-                        <p>Aucun produit ne correspond à votre recherche dans ce dépôt.</p>
-                    `;
-                } else {
-                    noProductsMessage.innerHTML = `
-                        <i class="fas fa-warehouse" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
-                        <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun produit dans ce dépôt</h3>
-                        <p>Il n'y a actuellement aucun produit disponible dans le dépôt "${selectedDepotForDelivery?.name || ''}".</p>
-                    `;
+                if (noProductsMessage) {
+                    noProductsMessage.style.display = 'block';
+                    
+                    // Personnaliser le message
+                    if (filterText || categoryId !== 'all') {
+                        noProductsMessage.innerHTML = `
+                            <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun produit trouvé</h3>
+                            <p>Aucun produit ne correspond à votre recherche dans ce dépôt.</p>
+                        `;
+                    } else {
+                        noProductsMessage.innerHTML = `
+                            <i class="fas fa-warehouse" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Aucun produit dans ce dépôt</h3>
+                            <p>Il n'y a actuellement aucun produit disponible dans le dépôt "${selectedDepotForDelivery?.name || ''}".</p>
+                        `;
+                    }
                 }
                 return;
             }
             
-            noProductsMessage.style.display = 'none';
+            if (noProductsMessage) {
+                noProductsMessage.style.display = 'none';
+            }
             
             // Grouper par catégorie
             const productsByCategory = {};
@@ -3203,54 +3265,85 @@
             }
         }
         
-        // ==================== MIGRATION DES DONNÉES ====================
+        // ==================== FONCTIONS DE TEST ET DEBUG ====================
         
-        async function migrateProductsToMultiDepot() {
-            const confirmMigrate = confirm("Migrer les produits vers la structure multi-dépôts ?\n\nCette opération conservera les données existantes en les convertissant vers la nouvelle structure.");
-            if (!confirmMigrate) return;
+        async function createTestDepots() {
+            const confirmCreate = confirm("Créer des dépôts de test ?\n\nCette opération ajoutera 3 dépôts de test à votre base de données.");
+            if (!confirmCreate) return;
             
-            showToast("Migration en cours...", "info");
+            showToast("Création des dépôts de test...", "info");
             
             try {
-                const productsRef = database.ref('products');
-                const snapshot = await productsRef.once('value');
-                const productsData = snapshot.val();
-                const updates = {};
+                const depotsRef = database.ref('depots');
                 
-                Object.keys(productsData).forEach(productId => {
-                    const product = productsData[productId];
-                    
-                    // Si le produit a un champ depot mais pas stockByDepot
-                    if (product.depot && (!product.stockByDepot || Object.keys(product.stockByDepot).length === 0)) {
-                        const stockByDepot = {};
-                        const quantity = product.quantity || product.currentStock || 0;
-                        
-                        // Créer la structure stockByDepot
-                        stockByDepot[product.depot] = quantity;
-                        
-                        updates[`products/${productId}/stockByDepot`] = stockByDepot;
-                        updates[`products/${productId}/totalStock`] = quantity;
-                        
-                        // Calculer la valeur totale
-                        const totalValue = quantity * (product.costPrice || 0);
-                        updates[`products/${productId}/totalValue`] = totalValue;
-                        updates[`products/${productId}/updatedAt`] = new Date().toISOString();
+                const testDepots = [
+                    {
+                        name: "Dépôt Principal Agadir",
+                        city: "Agadir",
+                        address: "Zone Industrielle, Agadir",
+                        status: "active",
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        name: "Dépôt Marrakech",
+                        city: "Marrakech",
+                        address: "Quartier Sidi Ghanem, Marrakech",
+                        status: "active",
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        name: "Dépôt Casablanca",
+                        city: "Casablanca",
+                        address: "Ain Sebaa, Casablanca",
+                        status: "active",
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    }
+                ];
+                
+                const promises = testDepots.map(async (depot) => {
+                    try {
+                        const newRef = depotsRef.push();
+                        await newRef.set(depot);
+                        console.log(`✅ Dépôt test créé: ${depot.name}`);
+                        return depot.name;
+                    } catch (error) {
+                        console.error(`❌ Erreur création dépôt ${depot.name}:`, error);
+                        return null;
                     }
                 });
                 
-                if (Object.keys(updates).length > 0) {
-                    await database.ref().update(updates);
-                    showToast(`${Object.keys(updates).length / 5} produits migrés avec succès !`, "success");
-                    // Recharger les données
-                    setTimeout(() => loadProducts(), 1000);
-                } else {
-                    showToast("Aucune donnée à migrer", "info");
-                }
+                const results = await Promise.all(promises);
+                const successful = results.filter(r => r !== null);
+                
+                showToast(`${successful.length} dépôts de test créés avec succès !`, "success");
+                
+                // Recharger les dépôts
+                setTimeout(() => loadDepots(), 1000);
                 
             } catch (error) {
-                console.error("❌ Erreur de migration:", error);
-                showToast("Erreur lors de la migration", "error");
+                console.error("❌ Erreur création dépôts test:", error);
+                showToast("Erreur lors de la création des dépôts", "error");
             }
+        }
+        
+        function showDebugInfo() {
+            console.log("=== DEBUG INFO ===");
+            console.log("Connexion Firebase:", isConnected);
+            console.log("Nombre de dépôts:", depots.length);
+            console.log("Dépôts:", depots);
+            console.log("Nombre de produits:", products.length);
+            console.log("Nombre de clients:", clients.length);
+            console.log("Nombre de livraisons:", deliveries.length);
+            console.log("Nombre de catégories:", categories.length);
+            console.log("Dépôt sélectionné:", selectedDepotForDelivery);
+            console.log("Client sélectionné:", selectedClient);
+            console.log("Produits sélectionnés:", selectedProducts.length);
+            console.log("===================");
+            
+            showToast(`Debug: ${depots.length} dépôts, ${products.length} produits, ${clients.length} clients`, "info");
         }
         
         // ==================== FIREBASE ====================
@@ -3341,12 +3434,18 @@
                             });
                         });
                         console.log(`✅ ${depots.length} dépôts chargés`);
+                        console.log("Dépôts détaillés:", depots);
+                    } else {
+                        console.log("ℹ️ Aucun dépôt trouvé dans Firebase");
                     }
+                    loadClients();
+                }, (error) => {
+                    console.error("❌ Erreur de chargement des dépôts:", error);
                     loadClients();
                 });
                 
             } catch (error) {
-                console.error("❌ Erreur de chargement des dépôts:", error);
+                console.error("❌ Erreur dans loadDepots:", error);
                 loadClients();
             }
         }
@@ -4012,7 +4111,7 @@
         
         function refreshDashboard() {
             showToast("Actualisation du dashboard en cours...", "info");
-            loadDeliveries();
+            loadDepots();
             loadProducts();
             loadClients();
         }
