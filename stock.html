@@ -1317,6 +1317,15 @@
                     <p>Importer les stocks depuis un fichier Excel</p>
                 </div>
                 
+                <!-- Import Tarifs Action Card -->
+                <div class="action-card" onclick="openTarifImportModal()">
+                    <div class="action-icon">
+                        <i class="fas fa-file-import"></i>
+                    </div>
+                    <h4>Importer Tarifs</h4>
+                    <p>Mettre à jour les prix depuis fichier Excel IPAR</p>
+                </div>
+                
                 <div class="action-card" onclick="openStockAdjustmentModal()">
                     <div class="action-icon">
                         <i class="fas fa-exchange-alt"></i>
@@ -2212,6 +2221,106 @@
         </div>
     </div>
 
+    <!-- Tarif Import Modal -->
+    <div class="modal-overlay" id="tarifImportModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-import"></i> Importer Tarifs depuis Excel IPAR</h3>
+                <button class="modal-close" onclick="closeTarifImportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="tarifImportForm">
+                    <div class="form-group">
+                        <label for="tarifExcelFile">Fichier Excel des Tarifs <span class="required">*</span></label>
+                        <input type="file" id="tarifExcelFile" class="form-input" accept=".xlsx,.xls,.csv" required>
+                        <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
+                            Format attendu: Fichier Excel IPAR avec colonnes [CODE, Designation, prix de vente, TARIFS GROS]
+                        </p>
+                    </div>
+                    
+                    <div id="tarifPreview" style="display: none; margin-top: 15px;">
+                        <h4><i class="fas fa-eye"></i> Prévisualisation des tarifs</h4>
+                        <div style="max-height: 250px; overflow-y: auto; margin-top: 10px; border: 1px solid var(--border); border-radius: 8px;">
+                            <table id="tarifPreviewTable" style="width: 100%; font-size: 12px;">
+                                <thead style="background: var(--light); position: sticky; top: 0;">
+                                    <tr>
+                                        <th style="padding: 10px; text-align: center;">CODE</th>
+                                        <th style="padding: 10px; text-align: right;">Designation</th>
+                                        <th style="padding: 10px; text-align: center;">Prix Vente</th>
+                                        <th style="padding: 10px; text-align: center;">Tarif Gros</th>
+                                        <th style="padding: 10px; text-align: center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tarifPreviewTableBody">
+                                    <!-- Data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <p style="font-size: 12px; color: var(--text-light); margin-top: 10px;">
+                            <i class="fas fa-info-circle"></i> <span id="tarifPreviewCount">0</span> produits détectés dans le fichier
+                        </p>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="tarifUpdateStrategy">Stratégie de mise à jour</label>
+                        <select id="tarifUpdateStrategy" class="form-input">
+                            <option value="update_all">Mettre à jour tous les produits correspondants</option>
+                            <option value="update_sell_only">Mettre à jour seulement les prix de vente</option>
+                            <option value="update_cost_only">Mettre à jour seulement les prix d'achat</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tarifUpdateMethod">Calcul du prix d'achat</label>
+                        <select id="tarifUpdateMethod" class="form-input">
+                            <option value="formula">Calcul automatique (96% du tarif gros)</option>
+                            <option value="manual">Utiliser prix d'achat du fichier (colonne B)</option>
+                        </select>
+                        <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
+                            Note: La formule automatique calcule: Prix d'achat = Tarif Gros × 0.96 (soit 4% de réduction)
+                        </p>
+                    </div>
+                    
+                    <div id="tarifSummary" style="display: none; margin-top: 15px; padding: 15px; background: var(--light); border-radius: 8px;">
+                        <h4><i class="fas fa-chart-bar"></i> Résumé de la mise à jour</h4>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                            <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                <div style="font-size: 24px; font-weight: bold; color: var(--primary);" id="summaryTotal">0</div>
+                                <div style="font-size: 12px; color: var(--text-light);">Total</div>
+                            </div>
+                            <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                <div style="font-size: 24px; font-weight: bold; color: var(--success);" id="summaryMatched">0</div>
+                                <div style="font-size: 12px; color: var(--text-light);">Correspondances</div>
+                            </div>
+                            <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                <div style="font-size: 24px; font-weight: bold; color: var(--warning);" id="summaryNew">0</div>
+                                <div style="font-size: 12px; color: var(--text-light);">Nouveaux</div>
+                            </div>
+                            <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                <div style="font-size: 24px; font-weight: bold; color: var(--info);" id="summarySkipped">0</div>
+                                <div style="font-size: 12px; color: var(--text-light);">Ignorés</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                        <div style="font-size: 12px; color: var(--text-light);">
+                            <i class="fas fa-info-circle"></i> Compatible avec le format de votre fichier IPAR Excel
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn btn-secondary" onclick="closeTarifImportModal()">
+                                Annuler
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sync-alt"></i> Mettre à jour les Tarifs
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div class="modal-overlay" id="loadingOverlay" style="display: none; background: rgba(0,0,0,0.7);">
         <div style="text-align: center; color: white;">
@@ -2272,6 +2381,7 @@
         let turnoverChart = null;
         let confirmCallback = null;
         let excelImportData = [];
+        let tarifImportData = [];
 
         // ==================== SYSTEME DE LOGS ====================
         class Logger {
@@ -2732,10 +2842,12 @@
             document.getElementById('adjustmentForm').addEventListener('submit', saveStockAdjustment);
             document.getElementById('transferForm').addEventListener('submit', saveStockTransfer);
             document.getElementById('excelImportForm').addEventListener('submit', handleExcelImport);
+            document.getElementById('tarifImportForm').addEventListener('submit', handleTarifImport);
             document.getElementById('confirmActionBtn').addEventListener('click', executeConfirmAction);
             
-            // Excel file change event
+            // Excel file change events
             document.getElementById('excelFile').addEventListener('change', handleExcelFileSelect);
+            document.getElementById('tarifExcelFile').addEventListener('change', handleTarifExcelFileSelect);
             
             // Initialiser Firebase
             initializeFirebase();
@@ -4698,6 +4810,410 @@
             return results;
         }
         
+        // ==================== TARIF IMPORT MODAL ====================
+        function openTarifImportModal() {
+            document.getElementById('tarifImportModal').classList.add('active');
+            
+            // Reset form and hide preview
+            document.getElementById('tarifImportForm').reset();
+            document.getElementById('tarifPreview').style.display = 'none';
+            document.getElementById('tarifSummary').style.display = 'none';
+            tarifImportData = [];
+        }
+        
+        function closeTarifImportModal() {
+            document.getElementById('tarifImportModal').classList.remove('active');
+            tarifImportData = [];
+        }
+        
+        function handleTarifExcelFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // Get first sheet
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Convert to JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    // Parse tarif data
+                    const parsedData = parseTarifExcelData(jsonData);
+                    tarifImportData = parsedData;
+                    
+                    // Display preview
+                    displayTarifPreview(parsedData);
+                    
+                    // Update summary
+                    updateTarifSummary(parsedData);
+                    
+                } catch (error) {
+                    Logger.error("TARIF_EXCEL_PARSE", error);
+                    NotificationSystem.show("Erreur lors de la lecture du fichier Excel", "error");
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function parseTarifExcelData(jsonData) {
+            const parsedData = [];
+            
+            if (jsonData.length === 0) return parsedData;
+            
+            // Détecter les colonnes basées sur le format Excel IPAR
+            let codeCol = -1, designationCol = -1, sellPriceCol = -1, grosPriceCol = -1, purchasePriceCol = -1;
+            
+            // Chercher les en-têtes
+            for (let i = 0; i < Math.min(10, jsonData.length); i++) {
+                const row = jsonData[i];
+                if (!row) continue;
+                
+                for (let j = 0; j < row.length; j++) {
+                    const cellValue = String(row[j] || '').toLowerCase().trim();
+                    
+                    if (cellValue.includes('code') || cellValue === 'us-' || cellValue.includes('référence')) {
+                        codeCol = j;
+                    } else if (cellValue.includes('designation') || cellValue.includes('désignation') || cellValue.includes('produit')) {
+                        designationCol = j;
+                    } else if (cellValue.includes('prix de vente') || cellValue.includes('prix vente') || cellValue.includes('vente')) {
+                        sellPriceCol = j;
+                    } else if (cellValue.includes('tarif') && cellValue.includes('gros')) {
+                        grosPriceCol = j;
+                    } else if (cellValue.includes('prix d\'achat') || cellValue.includes('achat')) {
+                        purchasePriceCol = j;
+                    }
+                }
+                
+                // Si on a trouvé des en-têtes, on peut commencer à partir de la ligne suivante
+                if (codeCol !== -1 || designationCol !== -1) {
+                    // Déterminer la première ligne de données (ignorer les lignes vides et en-têtes)
+                    const startRow = i + 1;
+                    
+                    for (let k = startRow; k < jsonData.length; k++) {
+                        const dataRow = jsonData[k];
+                        if (!dataRow || dataRow.length === 0) continue;
+                        
+                        const code = dataRow[codeCol] ? String(dataRow[codeCol]).trim() : '';
+                        const designation = dataRow[designationCol] ? String(dataRow[designationCol]).trim() : '';
+                        const sellPrice = parseFloat(dataRow[sellPriceCol]) || 0;
+                        const grosPrice = parseFloat(dataRow[grosPriceCol]) || 0;
+                        const purchasePrice = parseFloat(dataRow[purchasePriceCol]) || 0;
+                        
+                        // Skip empty rows
+                        if (!code && !designation) continue;
+                        
+                        // Vérifier si c'est une ligne avec formule
+                        if (code.startsWith('=') || designation.startsWith('=')) continue;
+                        
+                        // Chercher le produit correspondant dans notre base
+                        let matchedProduct = null;
+                        if (code) {
+                            // Chercher par code exact
+                            matchedProduct = products.find(p => p.code === code);
+                            
+                            // Si non trouvé, chercher par similarité de nom
+                            if (!matchedProduct && designation) {
+                                matchedProduct = products.find(p => 
+                                    p.name.toLowerCase().includes(designation.toLowerCase()) ||
+                                    designation.toLowerCase().includes(p.name.toLowerCase())
+                                );
+                            }
+                        }
+                        
+                        parsedData.push({
+                            code: code,
+                            designation: designation,
+                            sellPrice: sellPrice,
+                            grosPrice: grosPrice,
+                            purchasePrice: purchasePrice,
+                            matchedProduct: matchedProduct,
+                            rowIndex: k
+                        });
+                    }
+                    
+                    break;
+                }
+            }
+            
+            // Si pas d'en-têtes trouvés, utiliser des positions par défaut
+            if (parsedData.length === 0 && jsonData.length > 0) {
+                // Chercher des modèles dans les données
+                for (let i = 0; i < jsonData.length; i++) {
+                    const row = jsonData[i];
+                    if (!row || row.length < 5) continue;
+                    
+                    // Chercher un code produit (ex: US-2066)
+                    const possibleCode = String(row[0] || '').trim();
+                    const possibleDesignation = String(row[1] || '').trim();
+                    
+                    if (possibleCode.match(/^[A-Z]{2}-[0-9]{4}$/i) || 
+                        possibleCode.match(/^[A-Z]{2}-[0-9]{3,}$/i)) {
+                        
+                        const sellPrice = parseFloat(row[2]) || 0;
+                        const grosPrice = parseFloat(row[4]) || 0;
+                        
+                        let matchedProduct = products.find(p => p.code === possibleCode);
+                        
+                        parsedData.push({
+                            code: possibleCode,
+                            designation: possibleDesignation,
+                            sellPrice: sellPrice,
+                            grosPrice: grosPrice,
+                            purchasePrice: 0,
+                            matchedProduct: matchedProduct,
+                            rowIndex: i
+                        });
+                    }
+                }
+            }
+            
+            return parsedData;
+        }
+        
+        function displayTarifPreview(data) {
+            const previewTableBody = document.getElementById('tarifPreviewTableBody');
+            const previewCount = document.getElementById('tarifPreviewCount');
+            const previewSection = document.getElementById('tarifPreview');
+            
+            if (data.length === 0) {
+                previewTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-light);">
+                            Aucune donnée de tarif valide trouvée
+                        </td>
+                    </tr>
+                `;
+                previewCount.textContent = '0';
+                previewSection.style.display = 'block';
+                return;
+            }
+            
+            let html = '';
+            const previewLimit = Math.min(15, data.length);
+            
+            for (let i = 0; i < previewLimit; i++) {
+                const item = data[i];
+                const status = item.matchedProduct ? 'Mise à jour' : 'Nouveau produit';
+                const statusClass = item.matchedProduct ? 'success' : 'primary';
+                
+                // Calculer le prix d'achat selon la formule (96% du tarif gros)
+                const calculatedPurchasePrice = item.grosPrice * 0.96;
+                
+                html += `
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border); text-align: center; font-family: monospace;">
+                            ${item.code || '<span style="color: var(--text-light); font-style: italic;">N/A</span>'}
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border); text-align: right; font-size: 11px;">
+                            ${item.designation.substring(0, 30)}${item.designation.length > 30 ? '...' : ''}
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border); text-align: center;">
+                            <strong>${item.sellPrice.toFixed(2)}</strong> DH
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border); text-align: center;">
+                            ${item.grosPrice.toFixed(2)} DH
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border); text-align: center;">
+                            <span style="background: var(--${statusClass}); color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">
+                                ${status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            if (data.length > previewLimit) {
+                html += `
+                    <tr>
+                        <td colspan="5" style="padding: 10px; text-align: center; color: var(--text-light); font-style: italic;">
+                            ... et ${data.length - previewLimit} autres produits
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            previewTableBody.innerHTML = html;
+            previewCount.textContent = data.length;
+            previewSection.style.display = 'block';
+        }
+        
+        function updateTarifSummary(data) {
+            let total = data.length;
+            let matched = data.filter(item => item.matchedProduct).length;
+            let newProducts = data.filter(item => !item.matchedProduct).length;
+            let skipped = 0; // Pourrait être utilisé pour des produits ignorés
+            
+            document.getElementById('summaryTotal').textContent = total;
+            document.getElementById('summaryMatched').textContent = matched;
+            document.getElementById('summaryNew').textContent = newProducts;
+            document.getElementById('summarySkipped').textContent = skipped;
+            
+            document.getElementById('tarifSummary').style.display = 'block';
+        }
+        
+        async function handleTarifImport(e) {
+            e.preventDefault();
+            
+            if (tarifImportData.length === 0) {
+                NotificationSystem.show("Aucune donnée de tarif à importer", "error");
+                return;
+            }
+            
+            NotificationSystem.showLoading("Mise à jour des tarifs depuis Excel IPAR...");
+            
+            try {
+                const updateStrategy = document.getElementById('tarifUpdateStrategy').value;
+                const updateMethod = document.getElementById('tarifUpdateMethod').value;
+                
+                const results = await updatePricesFromTarifData(tarifImportData, updateStrategy, updateMethod);
+                
+                // Afficher les résultats
+                let message = `Mise à jour des tarifs terminée : `;
+                message += `${results.updatedProducts} produits mis à jour`;
+                
+                if (results.newProducts > 0) {
+                    message += `, ${results.newProducts} nouveaux produits créés`;
+                }
+                
+                if (results.skippedProducts > 0) {
+                    message += `, ${results.skippedProducts} produits ignorés`;
+                }
+                
+                NotificationSystem.show(message, "success");
+                
+                // Rafraîchir les données
+                refreshStockData();
+                
+                // Fermer la modal
+                closeTarifImportModal();
+                
+                Logger.log("TARIF_IMPORT_SUCCESS", results);
+                
+            } catch (error) {
+                Logger.error("TARIF_IMPORT", error);
+                NotificationSystem.show("Erreur lors de la mise à jour des tarifs: " + error.message, "error");
+            } finally {
+                NotificationSystem.hideLoading();
+            }
+        }
+        
+        async function updatePricesFromTarifData(data, strategy, method) {
+            const results = {
+                updatedProducts: 0,
+                newProducts: 0,
+                skippedProducts: 0,
+                totalProcessed: data.length
+            };
+            
+            const updates = {};
+            const newProducts = [];
+            
+            // Traiter chaque produit du fichier tarif
+            for (const item of data) {
+                try {
+                    if (item.matchedProduct) {
+                        // Produit existant - mettre à jour les prix
+                        const product = item.matchedProduct;
+                        const productId = product.id;
+                        
+                        // Déterminer le prix d'achat selon la méthode choisie
+                        let purchasePrice = 0;
+                        if (method === 'formula') {
+                            // Calculer selon la formule: 96% du tarif gros
+                            purchasePrice = item.grosPrice * 0.96;
+                        } else if (method === 'manual' && item.purchasePrice > 0) {
+                            // Utiliser le prix d'achat du fichier
+                            purchasePrice = item.purchasePrice;
+                        } else {
+                            // Par défaut, utiliser la formule
+                            purchasePrice = item.grosPrice * 0.96;
+                        }
+                        
+                        // Appliquer la stratégie de mise à jour
+                        if (strategy === 'update_all') {
+                            updates[`products/${productId}/costPrice`] = parseFloat(purchasePrice.toFixed(2));
+                            updates[`products/${productId}/sellPrice`] = parseFloat(item.sellPrice.toFixed(2));
+                        } else if (strategy === 'update_sell_only') {
+                            updates[`products/${productId}/sellPrice`] = parseFloat(item.sellPrice.toFixed(2));
+                        } else if (strategy === 'update_cost_only') {
+                            updates[`products/${productId}/costPrice`] = parseFloat(purchasePrice.toFixed(2));
+                        }
+                        
+                        // Mettre à jour la date de modification
+                        updates[`products/${productId}/updatedAt`] = new Date().toISOString();
+                        
+                        results.updatedProducts++;
+                        
+                    } else if (item.code) {
+                        // Nouveau produit - option pour créer automatiquement
+                        // Pour l'instant, on ignore
+                        results.skippedProducts++;
+                        
+                        // Option: Créer un nouveau produit automatiquement
+                        /*
+                        const newProductData = {
+                            code: item.code,
+                            name: item.designation || `Produit ${item.code}`,
+                            category: '', // Catégorie par défaut
+                            costPrice: item.grosPrice * 0.96,
+                            sellPrice: item.sellPrice,
+                            stockByDepot: {},
+                            totalStock: 0,
+                            minStock: 10,
+                            maxStock: 100,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString()
+                        };
+                        newProducts.push(newProductData);
+                        results.newProducts++;
+                        */
+                    }
+                    
+                } catch (error) {
+                    Logger.error("UPDATE_PRODUCT_PRICE", {
+                        item: item,
+                        error: error.message
+                    });
+                    results.skippedProducts++;
+                }
+            }
+            
+            // Appliquer toutes les mises à jour en une seule transaction
+            if (Object.keys(updates).length > 0) {
+                await database.ref().update(updates);
+                
+                // Enregistrer un log de la mise à jour des tarifs
+                await recordStockMovement({
+                    type: 'adjustment',
+                    reason: 'tarif_update',
+                    notes: `Mise à jour des tarifs depuis Excel IPAR: ${results.updatedProducts} produits mis à jour`,
+                    date: new Date().toISOString(),
+                    userName: currentUser?.email || 'Administrateur',
+                    createdAt: new Date().toISOString()
+                });
+            }
+            
+            // Créer les nouveaux produits si nécessaire
+            for (const newProduct of newProducts) {
+                try {
+                    const newRef = database.ref('products').push();
+                    await newRef.set(newProduct);
+                } catch (error) {
+                    Logger.error("CREATE_NEW_PRODUCT_FROM_TARIF", error);
+                }
+            }
+            
+            return results;
+        }
+        
         function openConfirmModal(message, callback) {
             document.getElementById('confirmMessage').textContent = message;
             confirmCallback = callback;
@@ -4723,6 +5239,7 @@
             closeAdjustmentModal();
             closeTransferModal();
             closeExcelImportModal();
+            closeTarifImportModal();
             closeConfirmModal();
         }
         
