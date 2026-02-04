@@ -1189,6 +1189,10 @@
                             <div class="label">Ventes</div>
                         </div>
                         <div class="stat-card">
+                            <div class="number" id="purchasesCount">0</div>
+                            <div class="label">Achats</div>
+                        </div>
+                        <div class="stat-card">
                             <div class="number" id="suppliersCount">0</div>
                             <div class="label">Fournisseurs</div>
                         </div>
@@ -1247,7 +1251,7 @@
                         <div class="form-group">
                             <label>Supprimer toutes les données (sauf les dépôts et catégories)</label>
                             <p style="color: var(--text-light); font-size: 14px; margin-bottom: 15px;">
-                                Cette action supprimera définitivement tous les clients, produits, ventes, fournisseurs et mouvements de stock.
+                                Cette action supprimera définitivement tous les clients, produits, ventes, achats, fournisseurs et mouvements de stock.
                                 <br>
                                 <strong>Les dépôts et catégories seront conservés.</strong>
                             </p>
@@ -1261,6 +1265,7 @@
                                     <div><i class="fas fa-trash" style="color: var(--danger);"></i> Tous les clients</div>
                                     <div><i class="fas fa-trash" style="color: var(--danger);"></i> Tous les produits</div>
                                     <div><i class="fas fa-trash" style="color: var(--danger);"></i> Toutes les ventes</div>
+                                    <div><i class="fas fa-trash" style="color: var(--danger);"></i> Tous les achats</div>
                                     <div><i class="fas fa-trash" style="color: var(--danger);"></i> Tous les fournisseurs</div>
                                     <div><i class="fas fa-trash" style="color: var(--danger);"></i> Tous les mouvements de stock</div>
                                     <div><i class="fas fa-trash" style="color: var(--danger);"></i> Tous les paiements</div>
@@ -1499,7 +1504,7 @@
                         Vous êtes sur le point de supprimer <strong>TOUTES LES DONNÉES</strong> (sauf les dépôts et catégories).
                     </p>
                     <p style="color: var(--text-light); font-size: 14px;">
-                        Cette action est <strong>IRRÉVERSIBLE</strong>. Tous les clients, produits, ventes, fournisseurs et mouvements de stock seront définitivement supprimés.
+                        Cette action est <strong>IRRÉVERSIBLE</strong>. Tous les clients, produits, ventes, achats, fournisseurs et mouvements de stock seront définitivement supprimés.
                     </p>
                 </div>
                 
@@ -1546,6 +1551,7 @@
             clients: 0,
             products: 0,
             deliveries: 0,
+            purchases: 0,
             suppliers: 0,
             depots: 0,
             categories: 0,
@@ -2105,7 +2111,7 @@
             
             try {
                 // Charger le nombre d'éléments pour chaque table
-                const tables = ['clients', 'products', 'deliveries', 'suppliers', 'depots', 'categories', 'stockMovements', 'payments'];
+                const tables = ['clients', 'products', 'deliveries', 'purchases', 'suppliers', 'depots', 'categories', 'stockMovements', 'payments'];
                 
                 const promises = tables.map(async (table) => {
                     try {
@@ -2173,6 +2179,7 @@
                         <div><i class="fas fa-users" style="color: var(--danger);"></i> ${dbStats.clients} clients</div>
                         <div><i class="fas fa-box" style="color: var(--danger);"></i> ${dbStats.products} produits</div>
                         <div><i class="fas fa-shopping-cart" style="color: var(--danger);"></i> ${dbStats.deliveries} ventes</div>
+                        <div><i class="fas fa-shopping-basket" style="color: var(--danger);"></i> ${dbStats.purchases} achats</div>
                         <div><i class="fas fa-truck-loading" style="color: var(--danger);"></i> ${dbStats.suppliers} fournisseurs</div>
                         <div><i class="fas fa-exchange-alt" style="color: var(--danger);"></i> ${dbStats.stockMovements} mouvements</div>
                         <div><i class="fas fa-money-bill-wave" style="color: var(--danger);"></i> ${dbStats.payments} paiements</div>
@@ -2214,7 +2221,7 @@
             
             try {
                 // Liste des tables à supprimer (sauf depots et categories)
-                const tablesToDelete = ['clients', 'products', 'deliveries', 'suppliers', 'stockMovements', 'payments'];
+                const tablesToDelete = ['clients', 'products', 'deliveries', 'purchases', 'suppliers', 'stockMovements', 'payments'];
                 
                 // Supprimer chaque table
                 const deletePromises = tablesToDelete.map(async (table) => {
@@ -2302,7 +2309,7 @@
             
             try {
                 // Récupérer toutes les données
-                const tables = ['clients', 'products', 'deliveries', 'suppliers', 'depots', 'categories', 'stockMovements', 'payments'];
+                const tables = ['clients', 'products', 'deliveries', 'purchases', 'suppliers', 'depots', 'categories', 'stockMovements', 'payments'];
                 const backupData = {};
                 
                 const promises = tables.map(async (table) => {
