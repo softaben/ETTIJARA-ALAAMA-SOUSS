@@ -2800,6 +2800,99 @@
             }
         }
 
+        // ==================== VÉRIFICATION D'UNICITÉ DU CODE ====================
+        async function checkProductCodeUniqueness(code, excludeProductId = null) {
+            try {
+                const productsRef = database.ref('products');
+                const snapshot = await productsRef.once('value');
+                const productsData = snapshot.val();
+                
+                if (!productsData) return true; // Aucun produit existant
+                
+                for (const productId in productsData) {
+                    const product = productsData[productId];
+                    
+                    // Vérifier si le produit est exclu (cas d'une modification)
+                    if (excludeProductId && productId === excludeProductId) continue;
+                    
+                    // Vérifier l'unicité du code (insensible à la casse)
+                    if (product.code && product.code.trim().toLowerCase() === code.trim().toLowerCase()) {
+                        return false; // Code déjà existant
+                    }
+                }
+                
+                return true; // Code unique
+            } catch (error) {
+                Logger.error("CHECK_PRODUCT_CODE_UNIQUENESS", error);
+                return false; // En cas d'erreur, considérer comme non valide
+            }
+        }
+
+        // Fonction pour vérifier le code avant la soumission du formulaire
+        async function validateProductCode() {
+            const codeInput = document.getElementById('productCode');
+            const code = codeInput.value.trim();
+            const productId = document.getElementById('productId').value;
+            
+            if (!code) {
+                return { isValid: false, message: "Le code produit est obligatoire" };
+            }
+            
+            const isUnique = await checkProductCodeUniqueness(code, productId || null);
+            
+            if (!isUnique) {
+                return { 
+                    isValid: false, 
+                    message: "Ce code produit existe déjà. Veuillez utiliser un code unique." 
+                };
+            }
+            
+            return { isValid: true, message: "" };
+        }
+
+        // Fonction pour afficher une erreur de code
+        function showCodeError(message) {
+            let errorElement = document.getElementById('codeError');
+            if (!errorElement) {
+                const codeInput = document.getElementById('productCode');
+                errorElement = document.createElement('div');
+                errorElement.id = 'codeError';
+                errorElement.style.color = 'var(--danger)';
+                errorElement.style.fontSize = '12px';
+                errorElement.style.marginTop = '5px';
+                errorElement.style.padding = '5px';
+                errorElement.style.borderRadius = '4px';
+                errorElement.style.backgroundColor = 'rgba(198, 40, 40, 0.1)';
+                codeInput.parentNode.appendChild(errorElement);
+            }
+            errorElement.textContent = message;
+            document.getElementById('productCode').style.borderColor = 'var(--danger)';
+        }
+
+        function hideCodeError() {
+            const errorElement = document.getElementById('codeError');
+            if (errorElement) {
+                errorElement.remove();
+            }
+            document.getElementById('productCode').style.borderColor = '';
+        }
+
+        // Générer automatiquement un code unique
+        function generateUniqueProductCode(baseCode = 'PROD') {
+            // Essayer plusieurs formats jusqu'à trouver un code unique
+            const existingCodes = products.map(p => p.code?.toLowerCase());
+            
+            // Essayer PROD-0001, PROD-0002, etc.
+            let counter = 1;
+            while (true) {
+                const candidate = `${baseCode}-${String(counter).padStart(4, '0')}`;
+                if (!existingCodes.includes(candidate.toLowerCase())) {
+                    return candidate;
+                }
+                counter++;
+            }
+        }
+
         // ==================== INITIALISATION ====================
         document.addEventListener('DOMContentLoaded', function() {
             Logger.log("SYSTEM_START", "Système de gestion de stock multi-dépôts démarré");
@@ -2825,6 +2918,16 @@
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.user-menu')) {
                     document.getElementById('userDropdown').classList.remove('show');
+                }
+            });
+            
+            // Validation en temps réel du code produit
+            document.getElementById('productCode')?.addEventListener('blur', async function() {
+                const validation = await validateProductCode();
+                if (!validation.isValid) {
+                    showCodeError(validation.message);
+                } else {
+                    hideCodeError();
                 }
             });
             
@@ -4165,12 +4268,15 @@
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
             
-            // Générer un code produit automatique
-            const nextId = products.length + 1;
-            document.getElementById('productCode').value = `PROD-${String(nextId).padStart(4, '0')}`;
+            // Générer un code produit automatique et unique
+            const uniqueCode = generateUniqueProductCode();
+            document.getElementById('productCode').value = uniqueCode;
             document.getElementById('productInitialQuantity').value = '0';
             document.getElementById('productMinStock').value = '10';
             document.getElementById('productMaxStock').value = '100';
+            
+            // Cacher les erreurs
+            hideCodeError();
             
             document.getElementById('productModal').classList.add('active');
         }
@@ -4204,11 +4310,15 @@
             document.getElementById('productBarcode').value = product.barcode || '';
             document.getElementById('productSupplier').value = product.supplier || '';
             
+            // Cacher les erreurs
+            hideCodeError();
+            
             document.getElementById('productModal').classList.add('active');
         }
         
         function closeProductModal() {
             document.getElementById('productModal').classList.remove('active');
+            hideCodeError();
         }
         
         function openAddCategoryModal() {
@@ -4509,6 +4619,10 @@
                 }
             }
             
+            // Vérifier les doublons dans le fichier
+            const codesInFile = new Set();
+            const duplicatesInFile = new Set();
+            
             for (let i = startRow; i < jsonData.length; i++) {
                 const row = jsonData[i];
                 if (!row) continue;
@@ -4522,6 +4636,16 @@
                 
                 // Only add if we have at least a code or name
                 if (code || name) {
+                    // Vérifier les doublons dans le fichier
+                    if (code && codesInFile.has(code.toLowerCase())) {
+                        duplicatesInFile.add(code.toLowerCase());
+                        continue; // Ignorer les doublons dans le fichier
+                    }
+                    
+                    if (code) {
+                        codesInFile.add(code.toLowerCase());
+                    }
+                    
                     parsedData.push({
                         code: code,
                         name: name,
@@ -4531,16 +4655,22 @@
                 }
             }
             
+            // Avertissement pour les doublons dans le fichier
+            if (duplicatesInFile.size > 0) {
+                console.warn("Codes en double dans le fichier Excel:", Array.from(duplicatesInFile));
+                NotificationSystem.show(`${duplicatesInFile.size} codes en double détectés dans le fichier et ignorés`, "warning");
+            }
+            
             // Try to match with existing products
             parsedData.forEach(item => {
                 // Try exact code match first
-                let matchedProduct = products.find(p => p.code === item.code);
+                let matchedProduct = products.find(p => p.code && p.code.toLowerCase() === item.code.toLowerCase());
                 
                 // If not found, try name similarity
                 if (!matchedProduct && item.name) {
                     matchedProduct = products.find(p => 
-                        p.name.toLowerCase().includes(item.name.toLowerCase()) ||
-                        item.name.toLowerCase().includes(p.name.toLowerCase())
+                        p.name && (p.name.toLowerCase().includes(item.name.toLowerCase()) ||
+                        item.name.toLowerCase().includes(p.name.toLowerCase()))
                     );
                 }
                 
@@ -4671,6 +4801,10 @@
                     message += `, ${results.skippedProducts} produits ignorés`;
                 }
                 
+                if (results.duplicateCodes > 0) {
+                    message += `, ${results.duplicateCodes} codes en double ignorés`;
+                }
+                
                 NotificationSystem.show(message, "success");
                 
                 // Refresh data
@@ -4694,15 +4828,41 @@
                 newProducts: 0,
                 updatedProducts: 0,
                 skippedProducts: 0,
+                duplicateCodes: 0,
                 totalProducts: data.length
             };
             
             const depot = depots.find(d => d.id === depotId);
             if (!depot) throw new Error("Dépôt non trouvé");
             
+            // Vérifier les doublons avant l'importation
+            const existingCodes = new Set(products.map(p => p.code?.toLowerCase()));
+            const codesToImport = new Set();
+            const duplicateCodes = new Set();
+            
+            // Vérifier les doublons dans les données à importer
+            data.forEach(item => {
+                const normalizedCode = item.code?.toLowerCase();
+                if (normalizedCode) {
+                    if (codesToImport.has(normalizedCode)) {
+                        duplicateCodes.add(normalizedCode);
+                        results.duplicateCodes++;
+                    } else {
+                        codesToImport.add(normalizedCode);
+                    }
+                }
+            });
+            
             // Process each product
             for (const item of data) {
                 try {
+                    // Ignorer les doublons dans le fichier
+                    const normalizedCode = item.code?.toLowerCase();
+                    if (normalizedCode && duplicateCodes.has(normalizedCode)) {
+                        results.skippedProducts++;
+                        continue;
+                    }
+                    
                     if (item.matchedProduct) {
                         // Product exists
                         if (importType === 'new') {
@@ -4765,6 +4925,13 @@
                         
                     } else {
                         // New product
+                        // Vérifier si le code existe déjà dans la base
+                        if (item.code && existingCodes.has(item.code.toLowerCase())) {
+                            results.skippedProducts++;
+                            results.duplicateCodes++;
+                            continue;
+                        }
+                        
                         // Find a category for the new product
                         let categoryId = '';
                         if (categories.length > 0) {
@@ -5055,7 +5222,7 @@
                         let matchedProduct = null;
                         if (code) {
                             // Chercher par code exact
-                            matchedProduct = products.find(p => p.code === code);
+                            matchedProduct = products.find(p => p.code && p.code.toLowerCase() === code.toLowerCase());
                             
                             // Si non trouvé, chercher par similarité de code (ignorer les espaces, caractères spéciaux)
                             if (!matchedProduct) {
@@ -5132,7 +5299,7 @@
                                 }
                             }
                             
-                            let matchedProduct = products.find(p => p.code === code);
+                            let matchedProduct = products.find(p => p.code && p.code.toLowerCase() === code.toLowerCase());
                             
                             potentialDataRows.push({
                                 code: code,
@@ -5159,8 +5326,8 @@
             
             parsedData.forEach(item => {
                 const key = item.code || item.designation;
-                if (key && !seenCodes.has(key)) {
-                    seenCodes.add(key);
+                if (key && !seenCodes.has(key.toLowerCase())) {
+                    seenCodes.add(key.toLowerCase());
                     uniqueData.push(item);
                 }
             });
@@ -5204,7 +5371,7 @@
                 // Chercher le produit correspondant
                 let matchedProduct = null;
                 if (code) {
-                    matchedProduct = products.find(p => p.code === code);
+                    matchedProduct = products.find(p => p.code && p.code.toLowerCase() === code.toLowerCase());
                 }
                 
                 parsedData.push({
@@ -5411,8 +5578,32 @@
                 newProducts: 0,
                 skippedProducts: 0,
                 failedProducts: 0,
+                duplicateCodes: 0,
                 totalProcessed: data.length
             };
+            
+            const existingCodes = new Set(products.map(p => p.code?.toLowerCase()));
+            const codesInFile = new Set();
+            const duplicatesInFile = new Set();
+            
+            // Vérifier les doublons dans le fichier
+            data.forEach(item => {
+                const normalizedCode = item.code?.toLowerCase();
+                if (normalizedCode) {
+                    if (codesInFile.has(normalizedCode)) {
+                        duplicatesInFile.add(normalizedCode);
+                        results.duplicateCodes++;
+                    } else {
+                        codesInFile.add(normalizedCode);
+                    }
+                }
+            });
+            
+            // Avertissement pour les doublons dans le fichier
+            if (duplicatesInFile.size > 0) {
+                console.warn("Codes en double dans le fichier tarif:", Array.from(duplicatesInFile));
+                NotificationSystem.show(`${duplicatesInFile.size} codes en double détectés dans le fichier et ignorés`, "warning");
+            }
             
             const updates = {};
             const newProducts = [];
@@ -5421,6 +5612,13 @@
             // Traiter chaque produit du fichier tarif
             for (const item of data) {
                 try {
+                    // Ignorer les doublons dans le fichier
+                    const normalizedCode = item.code?.toLowerCase();
+                    if (normalizedCode && duplicatesInFile.has(normalizedCode)) {
+                        results.skippedProducts++;
+                        continue;
+                    }
+                    
                     if (item.matchedProduct) {
                         // Produit existant - mettre à jour les prix
                         const product = item.matchedProduct;
@@ -5482,6 +5680,13 @@
                         }
                         
                     } else if (item.code && item.code.trim() !== '' && createNewProductsFlag) {
+                        // Vérifier si le code existe déjà dans la base
+                        if (existingCodes.has(item.code.toLowerCase())) {
+                            results.skippedProducts++;
+                            results.duplicateCodes++;
+                            continue;
+                        }
+                        
                         // Nouveau produit - option pour créer automatiquement
                         // Trouver une catégorie par défaut
                         let categoryId = '';
@@ -5800,6 +6005,14 @@
             
             NotificationSystem.showLoading("Enregistrement du produit...");
             
+            // Vérifier l'unicité du code avant de continuer
+            const codeValidation = await validateProductCode();
+            if (!codeValidation.isValid) {
+                NotificationSystem.show(codeValidation.message, "error");
+                NotificationSystem.hideLoading();
+                return;
+            }
+            
             const productId = document.getElementById('productId').value;
             const isNew = !productId;
             
@@ -5807,7 +6020,7 @@
             const initialQuantity = parseFloat(document.getElementById('productInitialQuantity').value) || 0;
             
             const productData = {
-                code: document.getElementById('productCode').value,
+                code: document.getElementById('productCode').value.trim(),
                 name: document.getElementById('productName').value,
                 category: document.getElementById('productCategory').value,
                 costPrice: parseFloat(document.getElementById('productCostPrice').value) || 0,
