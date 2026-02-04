@@ -1308,6 +1308,15 @@
                     <p>Ajouter un nouveau produit au stock</p>
                 </div>
                 
+                <!-- Import Excel Action Card -->
+                <div class="action-card" onclick="openExcelImportModal()">
+                    <div class="action-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h4>Importer Excel</h4>
+                    <p>Importer les stocks depuis un fichier Excel</p>
+                </div>
+                
                 <div class="action-card" onclick="openStockAdjustmentModal()">
                     <div class="action-icon">
                         <i class="fas fa-exchange-alt"></i>
@@ -1582,7 +1591,7 @@
                         <button class="btn btn-primary" onclick="openStockAdjustmentModal()">
                             <i class="fas fa-plus"></i> Ajustement Stock
                         </button>
-                        <button class="btn btn-cyan" onclick="openTransferStockModal()">
+                        <button class="btn-cyan" onclick="openTransferStockModal()">
                             <i class="fas fa-truck"></i> Transfert
                         </button>
                         <button class="btn btn-secondary" onclick="refreshMovements()">
@@ -2107,6 +2116,102 @@
         </div>
     </div>
 
+    <!-- Excel Import Modal -->
+    <div class="modal-overlay" id="excelImportModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-excel"></i> Importer des Stocks depuis Excel</h3>
+                <button class="modal-close" onclick="closeExcelImportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="excelImportForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="selectDepot">Sélectionner le Dépôt <span class="required">*</span></label>
+                            <select id="selectDepot" class="form-input" required>
+                                <option value="">Choisir un dépôt...</option>
+                            </select>
+                            <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
+                                Les stocks du fichier Excel seront ajoutés à ce dépôt
+                            </p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="importType">Type d'Importation <span class="required">*</span></label>
+                            <select id="importType" class="form-input" required>
+                                <option value="add">Ajouter aux stocks existants</option>
+                                <option value="replace">Remplacer les stocks</option>
+                                <option value="new">Nouveaux produits seulement</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="excelFile">Fichier Excel <span class="required">*</span></label>
+                        <input type="file" id="excelFile" class="form-input" accept=".xlsx,.xls,.csv" required>
+                        <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
+                            Format attendu: Colonnes [Code, Nom, Stock] ou [ID de l'article, Nom de l'article, Stock]
+                        </p>
+                    </div>
+                    
+                    <div id="excelPreview" style="display: none; margin-top: 15px;">
+                        <h4><i class="fas fa-eye"></i> Prévisualisation des données</h4>
+                        <div style="max-height: 250px; overflow-y: auto; margin-top: 10px; border: 1px solid var(--border); border-radius: 8px;">
+                            <table id="previewTable" style="width: 100%; font-size: 12px;">
+                                <thead style="background: var(--light); position: sticky; top: 0;">
+                                    <tr>
+                                        <th style="padding: 10px; text-align: center;">Code</th>
+                                        <th style="padding: 10px; text-align: right;">Nom</th>
+                                        <th style="padding: 10px; text-align: center;">Stock</th>
+                                        <th style="padding: 10px; text-align: center;">Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="previewTableBody">
+                                    <!-- Data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <p style="font-size: 12px; color: var(--text-light); margin-top: 10px;">
+                            <i class="fas fa-info-circle"></i> <span id="previewCount">0</span> produits détectés dans le fichier
+                        </p>
+                    </div>
+                    
+                    <div id="importSummary" style="display: none; margin-top: 15px; padding: 15px; background: var(--light); border-radius: 8px;">
+                        <h4><i class="fas fa-chart-bar"></i> Résumé de l'importation</h4>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                            <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                <div style="font-size: 24px; font-weight: bold; color: var(--primary);" id="summaryNew">0</div>
+                                <div style="font-size: 12px; color: var(--text-light);">Nouveaux</div>
+                            </div>
+                            <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                <div style="font-size: 24px; font-weight: bold; color: var(--success);" id="summaryUpdate">0</div>
+                                <div style="font-size: 12px; color: var(--text-light);">Mise à jour</div>
+                            </div>
+                            <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                <div style="font-size: 24px; font-weight: bold; color: var(--warning);" id="summarySkip">0</div>
+                                <div style="font-size: 12px; color: var(--text-light);">Ignorés</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                        <div style="font-size: 12px; color: var(--text-light);">
+                            <i class="fas fa-info-circle"></i> Compatible avec le format de votre fichier Excel
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn btn-secondary" onclick="closeExcelImportModal()">
+                                Annuler
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload"></i> Importer
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div class="modal-overlay" id="loadingOverlay" style="display: none; background: rgba(0,0,0,0.7);">
         <div style="text-align: center; color: white;">
@@ -2166,6 +2271,7 @@
         let performanceChart = null;
         let turnoverChart = null;
         let confirmCallback = null;
+        let excelImportData = [];
 
         // ==================== SYSTEME DE LOGS ====================
         class Logger {
@@ -2625,7 +2731,11 @@
             document.getElementById('depotForm').addEventListener('submit', saveDepot);
             document.getElementById('adjustmentForm').addEventListener('submit', saveStockAdjustment);
             document.getElementById('transferForm').addEventListener('submit', saveStockTransfer);
+            document.getElementById('excelImportForm').addEventListener('submit', handleExcelImport);
             document.getElementById('confirmActionBtn').addEventListener('click', executeConfirmAction);
+            
+            // Excel file change event
+            document.getElementById('excelFile').addEventListener('change', handleExcelFileSelect);
             
             // Initialiser Firebase
             initializeFirebase();
@@ -4129,6 +4239,465 @@
             document.getElementById('transferStockInfo').style.display = 'none';
         }
         
+        // ==================== EXCEL IMPORT MODAL ====================
+        function openExcelImportModal() {
+            document.getElementById('excelImportModal').classList.add('active');
+            
+            // Populate depot dropdown
+            const depotSelect = document.getElementById('selectDepot');
+            let depotHtml = '<option value="">Choisir un dépôt...</option>';
+            
+            depots.forEach(depot => {
+                if (depot.status === 'active') {
+                    depotHtml += `<option value="${depot.id}">${depot.name} - ${depot.city}</option>`;
+                }
+            });
+            
+            depotSelect.innerHTML = depotHtml;
+            
+            // Reset form and hide preview
+            document.getElementById('excelImportForm').reset();
+            document.getElementById('excelPreview').style.display = 'none';
+            document.getElementById('importSummary').style.display = 'none';
+            excelImportData = [];
+        }
+        
+        function closeExcelImportModal() {
+            document.getElementById('excelImportModal').classList.remove('active');
+            excelImportData = [];
+        }
+        
+        function handleExcelFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // Get first sheet
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Convert to JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    // Parse data
+                    const parsedData = parseExcelData(jsonData);
+                    excelImportData = parsedData;
+                    
+                    // Display preview
+                    displayExcelPreview(parsedData);
+                    
+                    // Update summary
+                    updateImportSummary(parsedData);
+                    
+                } catch (error) {
+                    Logger.error("EXCEL_PARSE", error);
+                    NotificationSystem.show("Erreur lors de la lecture du fichier Excel", "error");
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function parseExcelData(jsonData) {
+            const parsedData = [];
+            
+            if (jsonData.length === 0) return parsedData;
+            
+            // Try to detect column positions
+            let codeCol = -1, nameCol = -1, stockCol = -1;
+            
+            // Look for header row (usually first row)
+            const firstRow = jsonData[0] || [];
+            
+            // Check common French column names
+            for (let i = 0; i < firstRow.length; i++) {
+                const cellValue = String(firstRow[i] || '').toLowerCase();
+                
+                if (cellValue.includes('code') || cellValue.includes('id') || cellValue.includes('référence') || cellValue.includes('article')) {
+                    codeCol = i;
+                } else if (cellValue.includes('nom') || cellValue.includes('produit') || cellValue.includes('désignation')) {
+                    nameCol = i;
+                } else if (cellValue.includes('stock') || cellValue.includes('quantité') || cellValue.includes('qte')) {
+                    stockCol = i;
+                }
+            }
+            
+            // If headers not found in first row, try to infer from data patterns
+            if (codeCol === -1 || nameCol === -1 || stockCol === -1) {
+                // Try to find data pattern in first few rows
+                for (let i = 0; i < Math.min(10, jsonData.length); i++) {
+                    const row = jsonData[i];
+                    if (!row) continue;
+                    
+                    for (let j = 0; j < row.length; j++) {
+                        const cellValue = String(row[j] || '');
+                        
+                        if (codeCol === -1) {
+                            // Check for product code pattern (e.g., CO-0052, US-2222)
+                            if (cellValue.match(/^[A-Z]{2}-[0-9]{4}$/) || 
+                                cellValue.match(/^[A-Z]{2}-[0-9]{3,}$/) ||
+                                cellValue.match(/^[A-Z0-9]{4,}-[0-9]{2,}$/)) {
+                                codeCol = j;
+                            }
+                        }
+                        
+                        if (nameCol === -1) {
+                            // Check for product name (long text)
+                            if (cellValue.length > 10 && cellValue.includes(' ')) {
+                                nameCol = j;
+                            }
+                        }
+                        
+                        if (stockCol === -1) {
+                            // Check for stock (numeric)
+                            if (!isNaN(parseFloat(cellValue)) && cellValue.trim() !== '') {
+                                stockCol = j;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // If still not found, use default positions (0, 1, 2)
+            if (codeCol === -1) codeCol = 0;
+            if (nameCol === -1) nameCol = 1;
+            if (stockCol === -1) stockCol = 2;
+            
+            // Extract data (skip header row if it contains non-numeric stock)
+            let startRow = 0;
+            if (jsonData.length > 0) {
+                const firstRowStock = jsonData[0] && jsonData[0][stockCol];
+                if (firstRowStock && isNaN(parseFloat(firstRowStock))) {
+                    startRow = 1; // Skip header row
+                }
+            }
+            
+            for (let i = startRow; i < jsonData.length; i++) {
+                const row = jsonData[i];
+                if (!row) continue;
+                
+                const code = String(row[codeCol] || '').trim();
+                const name = String(row[nameCol] || '').trim();
+                const stock = parseFloat(row[stockCol]) || 0;
+                
+                // Skip empty rows
+                if (code === '' && name === '' && stock === 0) continue;
+                
+                // Only add if we have at least a code or name
+                if (code || name) {
+                    parsedData.push({
+                        code: code,
+                        name: name,
+                        stock: stock,
+                        matchedProduct: null
+                    });
+                }
+            }
+            
+            // Try to match with existing products
+            parsedData.forEach(item => {
+                // Try exact code match first
+                let matchedProduct = products.find(p => p.code === item.code);
+                
+                // If not found, try name similarity
+                if (!matchedProduct && item.name) {
+                    matchedProduct = products.find(p => 
+                        p.name.toLowerCase().includes(item.name.toLowerCase()) ||
+                        item.name.toLowerCase().includes(p.name.toLowerCase())
+                    );
+                }
+                
+                item.matchedProduct = matchedProduct;
+            });
+            
+            return parsedData;
+        }
+        
+        function displayExcelPreview(data) {
+            const previewTableBody = document.getElementById('previewTableBody');
+            const previewCount = document.getElementById('previewCount');
+            const previewSection = document.getElementById('excelPreview');
+            
+            if (data.length === 0) {
+                previewTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 20px; color: var(--text-light);">
+                            Aucune donnée valide trouvée
+                        </td>
+                    </tr>
+                `;
+                previewCount.textContent = '0';
+                previewSection.style.display = 'block';
+                return;
+            }
+            
+            let html = '';
+            const previewLimit = Math.min(20, data.length);
+            
+            for (let i = 0; i < previewLimit; i++) {
+                const item = data[i];
+                const status = item.matchedProduct ? 'Existant' : 'Nouveau';
+                const statusClass = item.matchedProduct ? 'success' : 'primary';
+                
+                html += `
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border); text-align: center; font-family: monospace;">
+                            ${item.code || '<span style="color: var(--text-light); font-style: italic;">N/A</span>'}
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border); text-align: right;">
+                            ${item.name.substring(0, 40)}${item.name.length > 40 ? '...' : ''}
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border); text-align: center;">
+                            <strong>${item.stock}</strong>
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border); text-align: center;">
+                            <span style="background: var(--${statusClass}); color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">
+                                ${status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            if (data.length > previewLimit) {
+                html += `
+                    <tr>
+                        <td colspan="4" style="padding: 10px; text-align: center; color: var(--text-light); font-style: italic;">
+                            ... et ${data.length - previewLimit} autres produits
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            previewTableBody.innerHTML = html;
+            previewCount.textContent = data.length;
+            previewSection.style.display = 'block';
+        }
+        
+        function updateImportSummary(data) {
+            const importType = document.getElementById('importType').value;
+            let newCount = 0;
+            let updateCount = 0;
+            let skipCount = 0;
+            
+            data.forEach(item => {
+                if (item.matchedProduct) {
+                    if (importType === 'new') {
+                        skipCount++;
+                    } else {
+                        updateCount++;
+                    }
+                } else {
+                    newCount++;
+                }
+            });
+            
+            document.getElementById('summaryNew').textContent = newCount;
+            document.getElementById('summaryUpdate').textContent = updateCount;
+            document.getElementById('summarySkip').textContent = skipCount;
+            document.getElementById('importSummary').style.display = 'block';
+        }
+        
+        async function handleExcelImport(e) {
+            e.preventDefault();
+            
+            const depotId = document.getElementById('selectDepot').value;
+            const importType = document.getElementById('importType').value;
+            
+            if (!depotId) {
+                NotificationSystem.show("Veuillez sélectionner un dépôt", "error");
+                return;
+            }
+            
+            if (excelImportData.length === 0) {
+                NotificationSystem.show("Aucune donnée à importer", "error");
+                return;
+            }
+            
+            const depot = depots.find(d => d.id === depotId);
+            if (!depot) {
+                NotificationSystem.show("Dépôt non trouvé", "error");
+                return;
+            }
+            
+            NotificationSystem.showLoading("Importation des données Excel...");
+            
+            try {
+                const results = await importStockFromExcel(excelImportData, depotId, importType);
+                
+                // Show results
+                let message = `Importation terminée : `;
+                message += `${results.newProducts} nouveaux produits, `;
+                message += `${results.updatedProducts} produits mis à jour`;
+                
+                if (results.skippedProducts > 0) {
+                    message += `, ${results.skippedProducts} produits ignorés`;
+                }
+                
+                NotificationSystem.show(message, "success");
+                
+                // Refresh data
+                refreshStockData();
+                
+                // Close modal
+                closeExcelImportModal();
+                
+                Logger.log("EXCEL_IMPORT_SUCCESS", results);
+                
+            } catch (error) {
+                Logger.error("EXCEL_IMPORT", error);
+                NotificationSystem.show("Erreur lors de l'importation: " + error.message, "error");
+            } finally {
+                NotificationSystem.hideLoading();
+            }
+        }
+        
+        async function importStockFromExcel(data, depotId, importType) {
+            const results = {
+                newProducts: 0,
+                updatedProducts: 0,
+                skippedProducts: 0,
+                totalProducts: data.length
+            };
+            
+            const depot = depots.find(d => d.id === depotId);
+            if (!depot) throw new Error("Dépôt non trouvé");
+            
+            // Process each product
+            for (const item of data) {
+                try {
+                    if (item.matchedProduct) {
+                        // Product exists
+                        if (importType === 'new') {
+                            results.skippedProducts++;
+                            continue;
+                        }
+                        
+                        const product = item.matchedProduct;
+                        const currentStock = StockManager.getProductStockInDepot(product, depotId);
+                        let newStock = currentStock;
+                        
+                        if (importType === 'add') {
+                            newStock = currentStock + item.stock;
+                        } else if (importType === 'replace') {
+                            newStock = item.stock;
+                        }
+                        
+                        // Update product stock
+                        const updates = {};
+                        updates[`products/${product.id}/stockByDepot/${depotId}`] = newStock;
+                        
+                        // Recalculate total stock
+                        const updatedStockByDepot = {
+                            ...(product.stockByDepot || {}),
+                            [depotId]: newStock
+                        };
+                        
+                        let newTotalStock = 0;
+                        Object.values(updatedStockByDepot).forEach(qty => {
+                            newTotalStock += qty;
+                        });
+                        
+                        updates[`products/${product.id}/totalStock`] = newTotalStock;
+                        updates[`products/${product.id}/updatedAt`] = new Date().toISOString();
+                        
+                        await database.ref().update(updates);
+                        
+                        // Record stock movement if stock changed
+                        if (newStock !== currentStock) {
+                            const movementType = newStock > currentStock ? 'in' : 'out';
+                            const quantity = Math.abs(newStock - currentStock);
+                            
+                            await recordStockMovement({
+                                productId: product.id,
+                                productName: product.name,
+                                depotId: depotId,
+                                type: movementType,
+                                quantity: quantity,
+                                reason: 'import_excel',
+                                notes: `Importation depuis Excel (${importType})`,
+                                previousStock: currentStock,
+                                newStock: newStock,
+                                date: new Date().toISOString(),
+                                userName: currentUser?.email || 'Administrateur',
+                                createdAt: new Date().toISOString()
+                            });
+                        }
+                        
+                        results.updatedProducts++;
+                        
+                    } else {
+                        // New product
+                        // Find a category for the new product
+                        let categoryId = '';
+                        if (categories.length > 0) {
+                            // Try to find a default category
+                            const defaultCategory = categories.find(c => 
+                                c.name.toLowerCase().includes('divers') || 
+                                c.name.toLowerCase().includes('autre') ||
+                                c.name === 'Non classé'
+                            );
+                            categoryId = defaultCategory ? defaultCategory.id : categories[0].id;
+                        }
+                        
+                        const newProductData = {
+                            code: item.code || `IMP-${Date.now()}-${results.newProducts}`,
+                            name: item.name,
+                            category: categoryId,
+                            stockByDepot: {
+                                [depotId]: item.stock
+                            },
+                            totalStock: item.stock,
+                            minStock: 10,
+                            maxStock: 100,
+                            costPrice: 0,
+                            sellPrice: 0,
+                            description: `Importé depuis Excel le ${new Date().toLocaleDateString('fr-FR')} dans le dépôt ${depot.name}`,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString(),
+                            createdBy: currentUser?.email || 'Administrateur'
+                        };
+                        
+                        const newRef = database.ref('products').push();
+                        await newRef.set(newProductData);
+                        
+                        // Record initial stock movement
+                        await recordStockMovement({
+                            productId: newRef.key,
+                            productName: item.name,
+                            depotId: depotId,
+                            type: 'in',
+                            quantity: item.stock,
+                            reason: 'import_excel_new',
+                            notes: 'Nouveau produit importé depuis Excel',
+                            previousStock: 0,
+                            newStock: item.stock,
+                            date: new Date().toISOString(),
+                            userName: currentUser?.email || 'Administrateur',
+                            createdAt: new Date().toISOString()
+                        });
+                        
+                        results.newProducts++;
+                    }
+                    
+                } catch (error) {
+                    Logger.error("IMPORT_PRODUCT", {
+                        product: item,
+                        error: error.message
+                    });
+                    // Continue with next product even if one fails
+                }
+            }
+            
+            return results;
+        }
+        
         function openConfirmModal(message, callback) {
             document.getElementById('confirmMessage').textContent = message;
             confirmCallback = callback;
@@ -4153,6 +4722,7 @@
             closeDepotModal();
             closeAdjustmentModal();
             closeTransferModal();
+            closeExcelImportModal();
             closeConfirmModal();
         }
         
