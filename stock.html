@@ -2238,6 +2238,25 @@
                         </p>
                     </div>
                     
+                    <!-- Bouton de détection automatique -->
+                    <div class="form-group" style="margin-top: 10px;">
+                        <button type="button" class="btn btn-secondary" onclick="autoDetectFormat()" 
+                                style="font-size: 12px; padding: 5px 10px;">
+                            <i class="fas fa-magic"></i> Détecter automatiquement le format
+                        </button>
+                        <p style="font-size: 11px; color: var(--text-light); margin-top: 5px;">
+                            Si le fichier n'est pas détecté automatiquement, cliquez ici pour forcer la détection
+                        </p>
+                    </div>
+                    
+                    <!-- Option pour créer de nouveaux produits -->
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="createNewProducts" style="width: auto;">
+                            <span>Créer automatiquement les nouveaux produits non trouvés</span>
+                        </label>
+                    </div>
+                    
                     <div id="tarifPreview" style="display: none; margin-top: 15px;">
                         <h4><i class="fas fa-eye"></i> Prévisualisation des tarifs</h4>
                         <div style="max-height: 250px; overflow-y: auto; margin-top: 10px; border: 1px solid var(--border); border-radius: 8px;">
@@ -4863,6 +4882,108 @@
             reader.readAsArrayBuffer(file);
         }
         
+        // ==================== FONCTIONS DE DÉTECTION DE FORMAT ====================
+        function detectExcelFormat(jsonData) {
+            const formatInfo = {
+                codeColumn: -1,
+                nameColumn: -1,
+                sellPriceColumn: -1,
+                grosPriceColumn: -1,
+                purchasePriceColumn: -1,
+                hasHeaders: false
+            };
+            
+            if (!jsonData || jsonData.length === 0) return formatInfo;
+            
+            // Analyser les premières lignes
+            for (let i = 0; i < Math.min(5, jsonData.length); i++) {
+                const row = jsonData[i];
+                if (!row) continue;
+                
+                // Vérifier si la ligne contient des en-têtes
+                let headerCount = 0;
+                for (let j = 0; j < row.length; j++) {
+                    const cell = String(row[j] || '').toLowerCase().trim();
+                    if (cell.includes('code') || cell.includes('désignation') || cell.includes('prix') || cell.includes('tarif')) {
+                        headerCount++;
+                    }
+                }
+                
+                if (headerCount >= 2) {
+                    formatInfo.hasHeaders = true;
+                    // Mettre à jour les colonnes basées sur les en-têtes
+                    for (let j = 0; j < row.length; j++) {
+                        const cell = String(row[j] || '').toLowerCase().trim();
+                        if (cell.includes('code') || cell.includes('us-') || cell.includes('référence') || cell.includes('article') || cell.includes('id')) {
+                            formatInfo.codeColumn = j;
+                        } else if (cell.includes('designation') || cell.includes('désignation') || cell.includes('nom') || cell.includes('produit') || cell.includes('libellé')) {
+                            formatInfo.nameColumn = j;
+                        } else if (cell.includes('prix de vente') || cell.includes('prix vente') || cell.includes('vente') || cell.includes('pvente') || cell.includes('pv')) {
+                            formatInfo.sellPriceColumn = j;
+                        } else if (cell.includes('tarif') && cell.includes('gros') || cell.includes('gros') || cell.includes('ptarif')) {
+                            formatInfo.grosPriceColumn = j;
+                        } else if (cell.includes('prix d\'achat') || cell.includes('achat') || cell.includes('pac') || cell.includes('pachat')) {
+                            formatInfo.purchasePriceColumn = j;
+                        }
+                    }
+                    break;
+                }
+            }
+            
+            // Si pas d'en-têtes détectés, essayer de deviner
+            if (!formatInfo.hasHeaders) {
+                // Analyser les 10 premières lignes pour trouver des motifs
+                const columnStats = {};
+                
+                for (let i = 0; i < Math.min(10, jsonData.length); i++) {
+                    const row = jsonData[i];
+                    if (!row) continue;
+                    
+                    for (let j = 0; j < row.length; j++) {
+                        const cell = String(row[j] || '').trim();
+                        
+                        if (!columnStats[j]) {
+                            columnStats[j] = { codes: 0, names: 0, prices: 0 };
+                        }
+                        
+                        // Vérifier le type de contenu
+                        if (cell.match(/^[A-Z]{2}-[0-9]{3,}$/i)) {
+                            columnStats[j].codes++;
+                        } else if (cell.length > 10 && cell.includes(' ')) {
+                            columnStats[j].names++;
+                        } else if (!isNaN(parseFloat(cell)) && cell !== '') {
+                            columnStats[j].prices++;
+                        }
+                    }
+                }
+                
+                // Déterminer les colonnes les plus probables
+                let maxCodes = 0, maxNames = 0, maxPrices1 = 0, maxPrices2 = 0;
+                
+                Object.keys(columnStats).forEach(col => {
+                    const stats = columnStats[col];
+                    if (stats.codes > maxCodes) {
+                        maxCodes = stats.codes;
+                        formatInfo.codeColumn = parseInt(col);
+                    }
+                    if (stats.names > maxNames) {
+                        maxNames = stats.names;
+                        formatInfo.nameColumn = parseInt(col);
+                    }
+                    if (stats.prices > maxPrices1) {
+                        maxPrices2 = maxPrices1;
+                        maxPrices1 = stats.prices;
+                        formatInfo.sellPriceColumn = parseInt(col);
+                    } else if (stats.prices > maxPrices2) {
+                        maxPrices2 = stats.prices;
+                        formatInfo.grosPriceColumn = parseInt(col);
+                    }
+                });
+            }
+            
+            return formatInfo;
+        }
+        
         function parseTarifExcelData(jsonData) {
             const parsedData = [];
             
@@ -4871,23 +4992,23 @@
             // Détecter les colonnes basées sur le format Excel IPAR
             let codeCol = -1, designationCol = -1, sellPriceCol = -1, grosPriceCol = -1, purchasePriceCol = -1;
             
-            // Chercher les en-têtes
-            for (let i = 0; i < Math.min(10, jsonData.length); i++) {
+            // Chercher les en-têtes - analyser les 5 premières lignes
+            for (let i = 0; i < Math.min(5, jsonData.length); i++) {
                 const row = jsonData[i];
                 if (!row) continue;
                 
                 for (let j = 0; j < row.length; j++) {
                     const cellValue = String(row[j] || '').toLowerCase().trim();
                     
-                    if (cellValue.includes('code') || cellValue === 'us-' || cellValue.includes('référence')) {
+                    if (cellValue.includes('code') || cellValue === 'us-' || cellValue.includes('référence') || cellValue.includes('article') || cellValue.includes('id')) {
                         codeCol = j;
-                    } else if (cellValue.includes('designation') || cellValue.includes('désignation') || cellValue.includes('produit')) {
+                    } else if (cellValue.includes('designation') || cellValue.includes('désignation') || cellValue.includes('produit') || cellValue.includes('nom') || cellValue.includes('libellé')) {
                         designationCol = j;
-                    } else if (cellValue.includes('prix de vente') || cellValue.includes('prix vente') || cellValue.includes('vente')) {
+                    } else if (cellValue.includes('prix de vente') || cellValue.includes('prix vente') || cellValue.includes('vente') || cellValue.includes('pvente') || cellValue.includes('pv')) {
                         sellPriceCol = j;
-                    } else if (cellValue.includes('tarif') && cellValue.includes('gros')) {
+                    } else if (cellValue.includes('tarif') && cellValue.includes('gros') || cellValue.includes('gros') || cellValue.includes('ptarif')) {
                         grosPriceCol = j;
-                    } else if (cellValue.includes('prix d\'achat') || cellValue.includes('achat')) {
+                    } else if (cellValue.includes('prix d\'achat') || cellValue.includes('achat') || cellValue.includes('pac') || cellValue.includes('pachat')) {
                         purchasePriceCol = j;
                     }
                 }
@@ -4901,17 +5022,34 @@
                         const dataRow = jsonData[k];
                         if (!dataRow || dataRow.length === 0) continue;
                         
+                        // Extraire les valeurs
                         const code = dataRow[codeCol] ? String(dataRow[codeCol]).trim() : '';
                         const designation = dataRow[designationCol] ? String(dataRow[designationCol]).trim() : '';
-                        const sellPrice = parseFloat(dataRow[sellPriceCol]) || 0;
-                        const grosPrice = parseFloat(dataRow[grosPriceCol]) || 0;
-                        const purchasePrice = parseFloat(dataRow[purchasePriceCol]) || 0;
+                        
+                        // Essayer plusieurs colonnes pour les prix
+                        let sellPrice = 0;
+                        if (sellPriceCol !== -1) sellPrice = parseFloat(dataRow[sellPriceCol]) || 0;
+                        
+                        let grosPrice = 0;
+                        if (grosPriceCol !== -1) grosPrice = parseFloat(dataRow[grosPriceCol]) || 0;
+                        
+                        let purchasePrice = 0;
+                        if (purchasePriceCol !== -1) purchasePrice = parseFloat(dataRow[purchasePriceCol]) || 0;
+                        
+                        // Si pas de prix de vente mais un tarif gros, utiliser le tarif gros
+                        if (sellPrice === 0 && grosPrice > 0) {
+                            sellPrice = grosPrice;
+                        }
                         
                         // Skip empty rows
                         if (!code && !designation) continue;
                         
-                        // Vérifier si c'est une ligne avec formule
-                        if (code.startsWith('=') || designation.startsWith('=')) continue;
+                        // Vérifier si c'est une ligne avec formule ou total
+                        if (code.startsWith('=') || designation.startsWith('=') || 
+                            code.toLowerCase().includes('total') || designation.toLowerCase().includes('total') ||
+                            code.toLowerCase().includes('somme') || designation.toLowerCase().includes('somme')) {
+                            continue;
+                        }
                         
                         // Chercher le produit correspondant dans notre base
                         let matchedProduct = null;
@@ -4919,11 +5057,20 @@
                             // Chercher par code exact
                             matchedProduct = products.find(p => p.code === code);
                             
+                            // Si non trouvé, chercher par similarité de code (ignorer les espaces, caractères spéciaux)
+                            if (!matchedProduct) {
+                                const normalizedCode = code.replace(/\s+/g, '').toLowerCase();
+                                matchedProduct = products.find(p => 
+                                    p.code && p.code.replace(/\s+/g, '').toLowerCase() === normalizedCode
+                                );
+                            }
+                            
                             // Si non trouvé, chercher par similarité de nom
                             if (!matchedProduct && designation) {
                                 matchedProduct = products.find(p => 
-                                    p.name.toLowerCase().includes(designation.toLowerCase()) ||
-                                    designation.toLowerCase().includes(p.name.toLowerCase())
+                                    p.name && (p.name.toLowerCase().includes(designation.toLowerCase()) ||
+                                    designation.toLowerCase().includes(p.name.toLowerCase()) ||
+                                    p.name.toLowerCase().replace(/\s+/g, '') === designation.toLowerCase().replace(/\s+/g, ''))
                                 );
                             }
                         }
@@ -4943,36 +5090,132 @@
                 }
             }
             
-            // Si pas d'en-têtes trouvés, utiliser des positions par défaut
+            // Si pas d'en-têtes trouvés, utiliser des positions par défaut et essayer de détecter automatiquement
             if (parsedData.length === 0 && jsonData.length > 0) {
-                // Chercher des modèles dans les données
-                for (let i = 0; i < jsonData.length; i++) {
+                // Essayer de détecter les colonnes par motif
+                const potentialDataRows = [];
+                
+                for (let i = 0; i < Math.min(100, jsonData.length); i++) {
                     const row = jsonData[i];
-                    if (!row || row.length < 5) continue;
+                    if (!row || row.length < 3) continue;
                     
-                    // Chercher un code produit (ex: US-2066)
-                    const possibleCode = String(row[0] || '').trim();
-                    const possibleDesignation = String(row[1] || '').trim();
-                    
-                    if (possibleCode.match(/^[A-Z]{2}-[0-9]{4}$/i) || 
-                        possibleCode.match(/^[A-Z]{2}-[0-9]{3,}$/i)) {
+                    // Chercher un code produit (ex: US-2066, CO-0052, etc.)
+                    for (let j = 0; j < row.length; j++) {
+                        const cellValue = String(row[j] || '').trim();
                         
-                        const sellPrice = parseFloat(row[2]) || 0;
-                        const grosPrice = parseFloat(row[4]) || 0;
-                        
-                        let matchedProduct = products.find(p => p.code === possibleCode);
-                        
-                        parsedData.push({
-                            code: possibleCode,
-                            designation: possibleDesignation,
-                            sellPrice: sellPrice,
-                            grosPrice: grosPrice,
-                            purchasePrice: 0,
-                            matchedProduct: matchedProduct,
-                            rowIndex: i
-                        });
+                        // Pattern pour les codes produits
+                        if (cellValue.match(/^[A-Z]{2}-[0-9]{4}$/i) || 
+                            cellValue.match(/^[A-Z]{2}-[0-9]{3,}$/i) ||
+                            cellValue.match(/^[A-Z0-9]{4,}-[0-9]{2,}$/i) ||
+                            cellValue.match(/^[A-Z]{2}[0-9]{4,}$/i)) {
+                            
+                            // C'est probablement une ligne de produit
+                            const code = cellValue;
+                            let designation = '';
+                            let sellPrice = 0;
+                            let grosPrice = 0;
+                            
+                            // Chercher la désignation (colonne suivante)
+                            if (j + 1 < row.length) {
+                                designation = String(row[j + 1] || '').trim();
+                            }
+                            
+                            // Chercher les prix (colonne suivante ou après)
+                            for (let k = j + 2; k < Math.min(j + 5, row.length); k++) {
+                                const priceValue = parseFloat(row[k]) || 0;
+                                if (priceValue > 0) {
+                                    if (sellPrice === 0) {
+                                        sellPrice = priceValue;
+                                    } else if (grosPrice === 0) {
+                                        grosPrice = priceValue;
+                                    }
+                                }
+                            }
+                            
+                            let matchedProduct = products.find(p => p.code === code);
+                            
+                            potentialDataRows.push({
+                                code: code,
+                                designation: designation,
+                                sellPrice: sellPrice,
+                                grosPrice: grosPrice,
+                                purchasePrice: 0,
+                                matchedProduct: matchedProduct,
+                                rowIndex: i
+                            });
+                            
+                            break;
+                        }
                     }
                 }
+                
+                // Prendre les premières lignes de données trouvées
+                parsedData.push(...potentialDataRows.slice(0, 100));
+            }
+            
+            // Filtrer les doublons
+            const uniqueData = [];
+            const seenCodes = new Set();
+            
+            parsedData.forEach(item => {
+                const key = item.code || item.designation;
+                if (key && !seenCodes.has(key)) {
+                    seenCodes.add(key);
+                    uniqueData.push(item);
+                }
+            });
+            
+            return uniqueData;
+        }
+        
+        function parseTarifExcelDataWithFormat(jsonData, formatInfo) {
+            const parsedData = [];
+            
+            if (jsonData.length === 0) return parsedData;
+            
+            const startRow = formatInfo.hasHeaders ? 1 : 0;
+            
+            for (let i = startRow; i < jsonData.length; i++) {
+                const row = jsonData[i];
+                if (!row) continue;
+                
+                const code = formatInfo.codeColumn >= 0 ? String(row[formatInfo.codeColumn] || '').trim() : '';
+                const designation = formatInfo.nameColumn >= 0 ? String(row[formatInfo.nameColumn] || '').trim() : '';
+                
+                let sellPrice = 0;
+                if (formatInfo.sellPriceColumn >= 0) {
+                    sellPrice = parseFloat(row[formatInfo.sellPriceColumn]) || 0;
+                }
+                
+                let grosPrice = 0;
+                if (formatInfo.grosPriceColumn >= 0) {
+                    grosPrice = parseFloat(row[formatInfo.grosPriceColumn]) || 0;
+                }
+                
+                // Skip empty rows
+                if (!code && !designation) continue;
+                
+                // Skip totals or formulas
+                if (code.startsWith('=') || code.toLowerCase().includes('total') || 
+                    designation.toLowerCase().includes('total')) {
+                    continue;
+                }
+                
+                // Chercher le produit correspondant
+                let matchedProduct = null;
+                if (code) {
+                    matchedProduct = products.find(p => p.code === code);
+                }
+                
+                parsedData.push({
+                    code: code,
+                    designation: designation,
+                    sellPrice: sellPrice,
+                    grosPrice: grosPrice,
+                    purchasePrice: 0,
+                    matchedProduct: matchedProduct,
+                    rowIndex: i
+                });
             }
             
             return parsedData;
@@ -5059,6 +5302,58 @@
             document.getElementById('tarifSummary').style.display = 'block';
         }
         
+        function autoDetectFormat() {
+            const fileInput = document.getElementById('tarifExcelFile');
+            if (!fileInput.files[0]) {
+                NotificationSystem.show("Veuillez d'abord sélectionner un fichier", "warning");
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    // Détecter le format
+                    const formatInfo = detectExcelFormat(jsonData);
+                    
+                    // Afficher les informations de détection
+                    let detectionMessage = `Format détecté: `;
+                    if (formatInfo.hasHeaders) {
+                        detectionMessage += `Avec en-têtes | `;
+                    } else {
+                        detectionMessage += `Sans en-têtes | `;
+                    }
+                    
+                    detectionMessage += `Colonne Code: ${formatInfo.codeColumn >= 0 ? formatInfo.codeColumn + 1 : 'Non détectée'} | `;
+                    detectionMessage += `Colonne Nom: ${formatInfo.nameColumn >= 0 ? formatInfo.nameColumn + 1 : 'Non détectée'} | `;
+                    detectionMessage += `Colonne Prix Vente: ${formatInfo.sellPriceColumn >= 0 ? formatInfo.sellPriceColumn + 1 : 'Non détectée'}`;
+                    
+                    NotificationSystem.show(detectionMessage, "info");
+                    
+                    // Re-parser avec les informations détectées
+                    const parsedData = parseTarifExcelDataWithFormat(jsonData, formatInfo);
+                    tarifImportData = parsedData;
+                    
+                    // Afficher la prévisualisation
+                    displayTarifPreview(parsedData);
+                    updateTarifSummary(parsedData);
+                    
+                } catch (error) {
+                    Logger.error("AUTO_DETECT_FORMAT", error);
+                    NotificationSystem.show("Erreur lors de la détection du format", "error");
+                }
+            };
+            
+            reader.readAsArrayBuffer(fileInput.files[0]);
+        }
+        
         async function handleTarifImport(e) {
             e.preventDefault();
             
@@ -5072,8 +5367,9 @@
             try {
                 const updateStrategy = document.getElementById('tarifUpdateStrategy').value;
                 const updateMethod = document.getElementById('tarifUpdateMethod').value;
+                const createNewProducts = document.getElementById('createNewProducts').checked;
                 
-                const results = await updatePricesFromTarifData(tarifImportData, updateStrategy, updateMethod);
+                const results = await updatePricesFromTarifData(tarifImportData, updateStrategy, updateMethod, createNewProducts);
                 
                 // Afficher les résultats
                 let message = `Mise à jour des tarifs terminée : `;
@@ -5085,6 +5381,10 @@
                 
                 if (results.skippedProducts > 0) {
                     message += `, ${results.skippedProducts} produits ignorés`;
+                }
+                
+                if (results.failedProducts > 0) {
+                    message += `, ${results.failedProducts} échecs`;
                 }
                 
                 NotificationSystem.show(message, "success");
@@ -5105,16 +5405,18 @@
             }
         }
         
-        async function updatePricesFromTarifData(data, strategy, method) {
+        async function updatePricesFromTarifData(data, strategy, method, createNewProductsFlag) {
             const results = {
                 updatedProducts: 0,
                 newProducts: 0,
                 skippedProducts: 0,
+                failedProducts: 0,
                 totalProcessed: data.length
             };
             
             const updates = {};
             const newProducts = [];
+            const movements = [];
             
             // Traiter chaque produit du fichier tarif
             for (const item of data) {
@@ -5124,57 +5426,108 @@
                         const product = item.matchedProduct;
                         const productId = product.id;
                         
+                        // Vérifier si les prix ont changé
+                        const currentSellPrice = product.sellPrice || 0;
+                        const currentCostPrice = product.costPrice || 0;
+                        
                         // Déterminer le prix d'achat selon la méthode choisie
-                        let purchasePrice = 0;
+                        let newPurchasePrice = currentCostPrice;
                         if (method === 'formula') {
                             // Calculer selon la formule: 96% du tarif gros
-                            purchasePrice = item.grosPrice * 0.96;
+                            newPurchasePrice = item.grosPrice * 0.96;
                         } else if (method === 'manual' && item.purchasePrice > 0) {
                             // Utiliser le prix d'achat du fichier
-                            purchasePrice = item.purchasePrice;
-                        } else {
+                            newPurchasePrice = item.purchasePrice;
+                        } else if (item.grosPrice > 0) {
                             // Par défaut, utiliser la formule
+                            newPurchasePrice = item.grosPrice * 0.96;
+                        }
+                        
+                        const newSellPrice = item.sellPrice || currentSellPrice;
+                        
+                        // Vérifier si les prix ont réellement changé
+                        const sellPriceChanged = Math.abs(newSellPrice - currentSellPrice) > 0.01;
+                        const costPriceChanged = Math.abs(newPurchasePrice - currentCostPrice) > 0.01;
+                        
+                        if (sellPriceChanged || costPriceChanged) {
+                            // Appliquer la stratégie de mise à jour
+                            if (strategy === 'update_all') {
+                                updates[`products/${productId}/costPrice`] = parseFloat(newPurchasePrice.toFixed(2));
+                                updates[`products/${productId}/sellPrice`] = parseFloat(newSellPrice.toFixed(2));
+                            } else if (strategy === 'update_sell_only' && sellPriceChanged) {
+                                updates[`products/${productId}/sellPrice`] = parseFloat(newSellPrice.toFixed(2));
+                            } else if (strategy === 'update_cost_only' && costPriceChanged) {
+                                updates[`products/${productId}/costPrice`] = parseFloat(newPurchasePrice.toFixed(2));
+                            }
+                            
+                            // Mettre à jour la date de modification
+                            updates[`products/${productId}/updatedAt`] = new Date().toISOString();
+                            updates[`products/${productId}/lastPriceUpdate`] = new Date().toISOString();
+                            
+                            // Ajouter au log des mouvements
+                            movements.push({
+                                productId: productId,
+                                productName: product.name,
+                                productCode: product.code,
+                                previousSellPrice: currentSellPrice,
+                                newSellPrice: newSellPrice,
+                                previousCostPrice: currentCostPrice,
+                                newCostPrice: newPurchasePrice,
+                                updateDate: new Date().toISOString()
+                            });
+                            
+                            results.updatedProducts++;
+                        } else {
+                            results.skippedProducts++;
+                        }
+                        
+                    } else if (item.code && item.code.trim() !== '' && createNewProductsFlag) {
+                        // Nouveau produit - option pour créer automatiquement
+                        // Trouver une catégorie par défaut
+                        let categoryId = '';
+                        if (categories.length > 0) {
+                            // Chercher une catégorie "Divers" ou prendre la première
+                            const defaultCategory = categories.find(c => 
+                                c.name.toLowerCase().includes('divers') || 
+                                c.name.toLowerCase().includes('autre') ||
+                                c.name === 'Non classé'
+                            );
+                            categoryId = defaultCategory ? defaultCategory.id : categories[0].id;
+                        }
+                        
+                        // Calculer le prix d'achat
+                        let purchasePrice = 0;
+                        if (method === 'formula') {
+                            purchasePrice = item.grosPrice * 0.96;
+                        } else if (method === 'manual' && item.purchasePrice > 0) {
+                            purchasePrice = item.purchasePrice;
+                        } else if (item.grosPrice > 0) {
                             purchasePrice = item.grosPrice * 0.96;
                         }
                         
-                        // Appliquer la stratégie de mise à jour
-                        if (strategy === 'update_all') {
-                            updates[`products/${productId}/costPrice`] = parseFloat(purchasePrice.toFixed(2));
-                            updates[`products/${productId}/sellPrice`] = parseFloat(item.sellPrice.toFixed(2));
-                        } else if (strategy === 'update_sell_only') {
-                            updates[`products/${productId}/sellPrice`] = parseFloat(item.sellPrice.toFixed(2));
-                        } else if (strategy === 'update_cost_only') {
-                            updates[`products/${productId}/costPrice`] = parseFloat(purchasePrice.toFixed(2));
-                        }
-                        
-                        // Mettre à jour la date de modification
-                        updates[`products/${productId}/updatedAt`] = new Date().toISOString();
-                        
-                        results.updatedProducts++;
-                        
-                    } else if (item.code) {
-                        // Nouveau produit - option pour créer automatiquement
-                        // Pour l'instant, on ignore
-                        results.skippedProducts++;
-                        
-                        // Option: Créer un nouveau produit automatiquement
-                        /*
                         const newProductData = {
                             code: item.code,
                             name: item.designation || `Produit ${item.code}`,
-                            category: '', // Catégorie par défaut
-                            costPrice: item.grosPrice * 0.96,
-                            sellPrice: item.sellPrice,
+                            category: categoryId,
                             stockByDepot: {},
                             totalStock: 0,
                             minStock: 10,
                             maxStock: 100,
+                            costPrice: parseFloat(purchasePrice.toFixed(2)),
+                            sellPrice: parseFloat((item.sellPrice || 0).toFixed(2)),
+                            description: `Importé depuis fichier tarif le ${new Date().toLocaleDateString('fr-FR')}`,
+                            supplier: 'IPAR',
+                            barcode: '',
                             createdAt: new Date().toISOString(),
-                            updatedAt: new Date().toISOString()
+                            updatedAt: new Date().toISOString(),
+                            createdBy: currentUser?.email || 'Administrateur',
+                            importSource: 'tarif_excel'
                         };
+                        
                         newProducts.push(newProductData);
                         results.newProducts++;
-                        */
+                    } else {
+                        results.skippedProducts++;
                     }
                     
                 } catch (error) {
@@ -5182,36 +5535,234 @@
                         item: item,
                         error: error.message
                     });
-                    results.skippedProducts++;
+                    results.failedProducts++;
                 }
             }
             
-            // Appliquer toutes les mises à jour en une seule transaction
-            if (Object.keys(updates).length > 0) {
-                await database.ref().update(updates);
+            try {
+                // Appliquer toutes les mises à jour en une seule transaction
+                if (Object.keys(updates).length > 0) {
+                    await database.ref().update(updates);
+                    
+                    // Enregistrer un log de la mise à jour des tarifs
+                    await recordStockMovement({
+                        type: 'adjustment',
+                        reason: 'tarif_update',
+                        notes: `Mise à jour des tarifs depuis Excel IPAR: ${results.updatedProducts} produits mis à jour`,
+                        details: JSON.stringify({
+                            strategy: strategy,
+                            method: method,
+                            results: results,
+                            movementsCount: movements.length
+                        }),
+                        date: new Date().toISOString(),
+                        userName: currentUser?.email || 'Administrateur',
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    // Enregistrer les détails des changements de prix
+                    if (movements.length > 0) {
+                        const priceChangesRef = database.ref('priceChanges');
+                        movements.forEach(async (change) => {
+                            await priceChangesRef.push(change);
+                        });
+                    }
+                }
                 
-                // Enregistrer un log de la mise à jour des tarifs
-                await recordStockMovement({
-                    type: 'adjustment',
-                    reason: 'tarif_update',
-                    notes: `Mise à jour des tarifs depuis Excel IPAR: ${results.updatedProducts} produits mis à jour`,
-                    date: new Date().toISOString(),
-                    userName: currentUser?.email || 'Administrateur',
-                    createdAt: new Date().toISOString()
-                });
-            }
-            
-            // Créer les nouveaux produits si nécessaire
-            for (const newProduct of newProducts) {
-                try {
-                    const newRef = database.ref('products').push();
-                    await newRef.set(newProduct);
-                } catch (error) {
-                    Logger.error("CREATE_NEW_PRODUCT_FROM_TARIF", error);
+                // Créer les nouveaux produits si nécessaire
+                for (const newProduct of newProducts) {
+                    try {
+                        const newRef = database.ref('products').push();
+                        await newRef.set(newProduct);
+                        
+                        // Enregistrer le mouvement pour le nouveau produit
+                        await recordStockMovement({
+                            productId: newRef.key,
+                            productName: newProduct.name,
+                            type: 'in',
+                            reason: 'new_product_from_tarif',
+                            notes: `Nouveau produit créé à partir du fichier tarif: ${newProduct.code}`,
+                            date: new Date().toISOString(),
+                            userName: currentUser?.email || 'Administrateur',
+                            createdAt: new Date().toISOString()
+                        });
+                        
+                    } catch (error) {
+                        Logger.error("CREATE_NEW_PRODUCT_FROM_TARIF", error);
+                        results.failedProducts++;
+                    }
                 }
+                
+                // Générer un rapport de mise à jour
+                generateUpdateReport(results, movements);
+                
+            } catch (error) {
+                Logger.error("APPLY_TARIF_UPDATES", error);
+                throw error;
             }
             
             return results;
+        }
+        
+        // ==================== FONCTIONS DE RAPPORTS ====================
+        function generateUpdateReport(results, movements) {
+            let reportHtml = `
+                <div style="background: var(--card-bg); border-radius: 8px; padding: 20px; margin-top: 20px;">
+                    <h3><i class="fas fa-clipboard-check"></i> Rapport de Mise à Jour des Tarifs</h3>
+                    <p><strong>Date:</strong> ${new Date().toLocaleDateString('fr-FR')} ${new Date().toLocaleTimeString('fr-FR')}</p>
+                    
+                    <div class="stats-grid" style="margin: 20px 0;">
+                        <div class="stat-card">
+                            <div class="stat-icon total">
+                                <i class="fas fa-file-import"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Total Traité</h3>
+                                <div class="value">${results.totalProcessed}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Mis à Jour</h3>
+                                <div class="value">${results.updatedProducts}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon primary">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Nouveaux</h3>
+                                <div class="value">${results.newProducts}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon warning">
+                                <i class="fas fa-minus-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Ignorés</h3>
+                                <div class="value">${results.skippedProducts}</div>
+                            </div>
+                        </div>
+                    </div>
+            `;
+            
+            if (movements.length > 0) {
+                reportHtml += `
+                    <h4>Détail des Changements de Prix</h4>
+                    <div style="max-height: 300px; overflow-y: auto; margin-top: 10px;">
+                        <table style="width: 100%; font-size: 12px;">
+                            <thead style="background: var(--light); position: sticky; top: 0;">
+                                <tr>
+                                    <th style="padding: 8px;">Produit</th>
+                                    <th style="padding: 8px;">Code</th>
+                                    <th style="padding: 8px;">Ancien Prix</th>
+                                    <th style="padding: 8px;">Nouveau Prix</th>
+                                    <th style="padding: 8px;">Variation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                movements.slice(0, 50).forEach(movement => {
+                    const variationSell = movement.newSellPrice - movement.previousSellPrice;
+                    const variationPercent = movement.previousSellPrice > 0 ? 
+                        ((variationSell / movement.previousSellPrice) * 100).toFixed(2) : '100.00';
+                    
+                    reportHtml += `
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid var(--border);">${movement.productName}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid var(--border);">${movement.productCode}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid var(--border);">${formatNumber(movement.previousSellPrice)} DH</td>
+                            <td style="padding: 8px; border-bottom: 1px solid var(--border);">
+                                <strong>${formatNumber(movement.newSellPrice)} DH</strong>
+                            </td>
+                            <td style="padding: 8px; border-bottom: 1px solid var(--border); color: ${variationSell >= 0 ? 'var(--success)' : 'var(--danger)'}">
+                                ${variationSell >= 0 ? '+' : ''}${formatNumber(variationSell)} DH (${variationPercent}%)
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                if (movements.length > 50) {
+                    reportHtml += `
+                        <tr>
+                            <td colspan="5" style="padding: 10px; text-align: center; color: var(--text-light);">
+                                ... et ${movements.length - 50} autres changements
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+                reportHtml += `
+                        </tbody>
+                    </table>
+                </div>
+                `;
+            }
+            
+            reportHtml += `
+                    <div style="margin-top: 20px; padding: 15px; background: var(--light); border-radius: 8px;">
+                        <h4><i class="fas fa-download"></i> Exporter le Rapport</h4>
+                        <button onclick="exportUpdateReport(${JSON.stringify(results)}, ${JSON.stringify(movements)})" 
+                                class="btn btn-success" style="margin-top: 10px;">
+                            <i class="fas fa-file-excel"></i> Exporter en Excel
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Afficher le rapport dans la section rapports
+            const reportsContent = document.getElementById('reportsContent');
+            if (reportsContent) {
+                reportsContent.innerHTML = reportHtml;
+                switchTab('reports');
+            }
+        }
+        
+        function exportUpdateReport(results, movements) {
+            const exportData = movements.map(movement => {
+                const variation = movement.newSellPrice - movement.previousSellPrice;
+                const variationPercent = movement.previousSellPrice > 0 ? 
+                    ((variation / movement.previousSellPrice) * 100).toFixed(2) : '100.00';
+                
+                return {
+                    'Code Produit': movement.productCode,
+                    'Nom Produit': movement.productName,
+                    'Ancien Prix Vente': movement.previousSellPrice,
+                    'Nouveau Prix Vente': movement.newSellPrice,
+                    'Variation (DH)': variation,
+                    'Variation (%)': variationPercent,
+                    'Ancien Prix Achat': movement.previousCostPrice || 0,
+                    'Nouveau Prix Achat': movement.newCostPrice || 0,
+                    'Date Mise à Jour': new Date(movement.updateDate).toLocaleDateString('fr-FR'),
+                    'Heure Mise à Jour': new Date(movement.updateDate).toLocaleTimeString('fr-FR')
+                };
+            });
+            
+            // Ajouter un résumé
+            const summary = [{
+                'Résumé': '=== RAPPORT DE MISE À JOUR DES TARIFS ===',
+                '': '',
+                'Date': new Date().toLocaleDateString('fr-FR'),
+                'Heure': new Date().toLocaleTimeString('fr-FR'),
+                'Total Produits Traités': results.totalProcessed,
+                'Produits Mis à Jour': results.updatedProducts,
+                'Nouveaux Produits': results.newProducts,
+                'Produits Ignorés': results.skippedProducts,
+                'Échecs': results.failedProducts
+            }];
+            
+            const allData = [...summary, ...exportData];
+            
+            ExportManager.exportToExcel(allData, "rapport_mise_a_jour_tarifs", "Mise à jour tarifs");
         }
         
         function openConfirmModal(message, callback) {
